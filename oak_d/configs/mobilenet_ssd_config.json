@@ -1,0 +1,7 @@
+{
+    "useNN": "mobilenet_ssd",
+    "resolution": [300, 300],
+    "nnBlob": "mobilenet-ssd",
+    "threads": 2,
+    "confidenceThreshold": 0.5
+}
