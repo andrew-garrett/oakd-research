@@ -48,7 +48,7 @@ class OAKPipeline:
 
 
     def readJSON(self):
-        with open("/app/oak_d\\configs\\oak_config.json", 'r') as f:
+        with open("/app/oak_d/configs/oak_config.json", 'r') as f:
             params = json.load(f)
             params = params["oakPipeline"]
             self.__params = params
@@ -60,7 +60,7 @@ class OAKPipeline:
             self.__useApril = params["processing"]["april"]["useApril"]
             self.__useNN = params["processing"]["nn"]["useNN"]
         if self.__useNN is not None and len(self.__useNN) > 0:
-            with open("/app/oak_d\\configs\\" + self.__useNN.lower() + "_config.json", 'r') as f:
+            with open("/app/oak_d/configs/" + self.__useNN.lower() + "_config.json", 'r') as f:
                 nn_params = json.load(f)
                 self.__params["processing"]["nn"] = nn_params
         

@@ -7,6 +7,9 @@ import os, sys
 import csv
 import cv2
 
+for root, folders, files in os.walk("./"):
+    for file in files:
+        print(os.path.join(root, file))
 from oak_d.OAKPipeline import OAKPipeline
 from processingPipelines.processingPipeline import ProcessingPipeline
 from displayPipeline import DisplayPipeline
@@ -19,14 +22,14 @@ from displayPipeline import DisplayPipeline
 if __name__ == "__main__":
     oak_cam = OAKPipeline()
     oak_processor = ProcessingPipeline()
-    oak_display = DisplayPipeline()
+    # oak_display = DisplayPipeline()
     oak_cam.startDevice()
     counter = 1
     t0 = time()
     while oak_cam.isOpened():
         oak_cam.read()
         oak_processor.processPayload(oak_cam.frame_dict)
-        oak_display.show(oak_cam.frame_dict)
+        # oak_display.show(oak_cam.frame_dict)
         if counter % 100 == 0:
             dt = time() - t0
             print("Time Elapsed: ", time() - t0)

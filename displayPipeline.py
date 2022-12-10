@@ -52,7 +52,7 @@ class DisplayPipeline:
 
 
     def readJSON(self):
-        with open("/app/oak_d\\configs\\oak_config.json", 'r') as f:
+        with open("/app/oak_d/configs/oak_config.json", 'r') as f:
             params = json.load(f)
             params = params["oakPipeline"]
             self.__params = params
@@ -64,10 +64,10 @@ class DisplayPipeline:
             self.__displayResolution = tuple(params["display"]["resolution"])
         if self.__useNN is not None and len(self.__useNN) > 0:
             if self.__useNN == "mobilenet_ssd" or self.__useNN == "mobilenet_spatial_ssd":
-                with open(".\\data\\label_maps\\voc_20cl.txt", "r") as f:
+                with open("./data/label_maps/voc_20cl.txt", "r") as f:
                     self.label_mapping = f.readlines()
             elif self.__useNN == "yolo" or self.__useNN == "tiny_yolo":
-                with open(".\\data\\label_maps\\coco_80cl.txt", "r") as f:
+                with open("./data/label_maps/coco_80cl.txt", "r") as f:
                     self.label_mapping = f.readlines()
 
 
@@ -188,7 +188,7 @@ class DisplayPipeline:
         except:
             print("Directory already exists.")
 
-        im_list = list(os.listdir(".\\data\\processed"))
+        im_list = list(os.listdir("./data/processed"))
         curr_id = -1
         for im_name in im_list:
             im_id = int(im_name[-7:-4])
@@ -196,10 +196,10 @@ class DisplayPipeline:
                 curr_id = im_id
         curr_id_str = str(curr_id + 1).zfill(3)
         if self.__useRGB:
-            rgb_im_name = "..\\data\\raw\\RGB_" + curr_id_str + ".png"
+            rgb_im_name = "../data/raw/RGB_" + curr_id_str + ".png"
             cv2.imwrite(rgb_im_name, frame_dict["rgb"])
         if self.__useDepth:
-            depth_im_name = "..\\data\\raw\\DEPTH_" + curr_id_str + ".png"
+            depth_im_name = "../data/raw/DEPTH_" + curr_id_str + ".png"
             cv2.imwrite(depth_im_name, frame_dict["depth"])
 
 
