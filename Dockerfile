@@ -11,4 +11,4 @@ ADD ./processingPipelines/ /app/processingPipelines/
 ADD ./data/ /app/data/
 COPY ./displayPipeline.py ./main.py /app/
 
-# CMD [ "python3", "main.py" ]
+CMD [ "python3", "main.py" ]
