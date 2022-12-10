@@ -1,13 +1,13 @@
 FROM luxonis/depthai-library:latest
 
+COPY ./requirements.txt .
+
+RUN python3 pip install -r requirements.txt
+
 WORKDIR /app
 
-# COPY ./requirements.txt .
+ADD ./oak_d/ /app/oak_d/
+ADD ./processingPipelines/ /app/processingPipelines/
+COPY ./displayPipeline.py ./main.py /app/
 
-# RUN python3 pip install -r requirements.txt
-
-ADD ./oak_d/ /app/
-ADD ./processingPipelines /app/
-COPY ./displayPipeline.py ./main.py ./
-
-CMD [ "python3", "main.py" ]
+# CMD [ "python3", "main.py" ]
