@@ -7,9 +7,6 @@ import os, sys
 import csv
 import cv2
 
-for root, folders, files in os.walk("./"):
-    for file in files:
-        print(os.path.join(root, file))
 from oak_d.OAKPipeline import OAKPipeline
 from processingPipelines.processingPipeline import ProcessingPipeline
 from displayPipeline import DisplayPipeline
