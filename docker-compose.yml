@@ -1,0 +1,21 @@
+version: '3.3'
+
+priveleged: true
+
+services:
+  oak_home:
+    image: custom_oak_image:latest
+    volumes:
+      - type: volume
+        source: /dev/bus/usb
+        target: /dev/bus/usb
+      - type: volume
+        source: /tmp/.X11-unix
+        target: /tmp/.X11-unix
+    environment:
+      - DISPLAY=$DISPLAY
+    restart: on failure
+    device_cgroup_rules:
+      - 'c 189:* rmw'
+
+volumes:
