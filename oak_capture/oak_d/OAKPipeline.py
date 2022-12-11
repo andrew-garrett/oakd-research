@@ -5,8 +5,6 @@
 import json
 import depthai as dai
 import blobconverter
-import pyvirtualcam
-from pyvirtualcam import PixelFormat
 
 
 ##########################################################################
@@ -26,8 +24,7 @@ class OAKPipeline:
     configured by config.json.  Currently has functionality for collecting rgb and
     stereo depth images, as on-board apriltag detection data.
     """
-    def __init__(self, forward=False):
-        self.forward = forward # flag for forwarding frames
+    def __init__(self):
         self.__pipeline = dai.Pipeline()
         self.readJSON() # read config for populating parameters
         self.frame_dict = {}
@@ -49,10 +46,6 @@ class OAKPipeline:
                 self.initYOLONode() # yolo detection node
             self.frame_dict["nn"] = None
 
-        self.virtual_cameras = None
-        if self.forward:
-            self.initVirtualCameras()
-
 
     def readJSON(self):
         with open("./oak_d/configs/oak_config.json", 'r') as f:
@@ -71,17 +64,6 @@ class OAKPipeline:
                 nn_params = json.load(f)
                 self.__params["processing"]["nn"] = nn_params
         
-
-    def initVirtualCameras(self):
-        if self.__useRGB:
-            rgb_virtual_cam = pyvirtualcam.Camera(1920 // 3, 1080 // 3, self.__params["fps"], fmt=PixelFormat.BGR, device="/dev/video0")
-            self.virtual_cameras["rgb"] = rgb_virtual_cam
-        # if self.__useDepth:
-        #     bgr_virtual_cam = pyvirtualcam.Camera(1920 // 3, 1080 // 3, self.__params["fps"], fmt=PixelFormat.BGR, device="/dev/video0")
-        #     self.virtual_cam_array.append(rgb_virtual_cam)
-        # if self.__use
-        # return self.virtual_cam_array
-
 
     def initRGBNode(self):
         """
@@ -287,9 +269,7 @@ class OAKPipeline:
             self.__nnNetworkQueue = self.__device.getOutputQueue(name=self.__useNN+" Network", maxSize=1, blocking=False)
         self.__device.startPipeline()
         self.__streaming = True
-        if self.forward:
-            return self.virtual_cameras
-        return {}
+        return
 
 
     def read(self):
