@@ -1,0 +1,7 @@
+{
+    "useNN": "mobilenetv2", 
+    "resolution": [224, 224],
+    "nnBlob": "mobilenet-v2",
+    "threads": 2,
+    "confidenceThreshold": 0.5
+}

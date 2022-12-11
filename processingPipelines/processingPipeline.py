@@ -33,7 +33,7 @@ class ProcessingPipeline:
 
     
     def readJSON(self):
-        with open("/app/oak_d/configs/oak_config.json", 'r') as f:
+        with open("./oak_d/configs/oak_config.json", 'r') as f:
             params = json.load(f)
             oak_params = params["oakPipeline"]
             self.__params = params
@@ -57,8 +57,8 @@ class ProcessingPipeline:
         
 
     def saveData(self):
-        rawROOT = "./app/data/raw/"
-        processingROOT = "./app/data/processed/"
+        rawROOT = "./data/raw/"
+        processingROOT = "./data/processed/"
         try:
             os.mkdir(processingROOT)
         except FileExistsError:
@@ -78,12 +78,12 @@ class ProcessingPipeline:
 
     def clearData(self, raw=False, processed=False):
         if raw:
-            rawROOT = "./app/data/raw/"
+            rawROOT = "./data/raw/"
             rm_files = list(os.listdir(rawROOT))
             for r_f in rm_files:
                 os.remove(rawROOT + r_f)
         if processed:
-            processedROOT = "./app/data/processed/"
+            processedROOT = "./data/processed/"
             rm_files = list(os.listdir(processedROOT))
             for r_f in rm_files:
                 os.remove(processedROOT + r_f)

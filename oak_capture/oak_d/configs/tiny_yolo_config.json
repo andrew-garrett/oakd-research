@@ -1,0 +1,10 @@
+{
+    "useNN": "tiny_yolo", 
+    "resolution": [416, 416],
+    "nnBlob": "yolo-v4-tiny-tf",
+    "threads": 2,
+    "confidenceThreshold": 0.5,
+    "numClasses": 80,
+    "coordinateSize": 4,
+    "iouThreshold": 0.5
+}

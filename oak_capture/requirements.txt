@@ -1,0 +1,4 @@
+depthai>=2.16.0.0
+blobconverter
+numpy>=1.22.4
+pyvirtualcam

@@ -52,7 +52,7 @@ class DisplayPipeline:
 
 
     def readJSON(self):
-        with open("/app/oak_d/configs/oak_config.json", 'r') as f:
+        with open("./oak_d/configs/oak_config.json", 'r') as f:
             params = json.load(f)
             params = params["oakPipeline"]
             self.__params = params

@@ -1,9 +1,9 @@
 version: '3.3'
 
 services:
-  oak_home:
+  oak_capture:
     privileged: true
-    image: custom_oak_image:latest
+    image: oak_capture:latest
     volumes:
       - type: bind
         source: /dev/bus/usb
