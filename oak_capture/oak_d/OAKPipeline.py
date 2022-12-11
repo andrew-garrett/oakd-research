@@ -18,37 +18,41 @@ TODO:
     - Align/sync depth capture with rgb capture
 """
 
+
 class OAKPipeline:
     """
     Class to manage data from OAK-D Camera.  Creates a stream pipeline that is
     configured by config.json.  Currently has functionality for collecting rgb and
     stereo depth images, as on-board apriltag detection data.
     """
+
     def __init__(self):
         self.__pipeline = dai.Pipeline()
-        self.readJSON() # read config for populating parameters
+        self.readJSON()  # read config for populating parameters
         self.frame_dict = {}
         self.__streaming = False
 
         if self.__useRGB:
-            self.initRGBNode() # rgb node
+            self.initRGBNode()  # rgb node
             self.frame_dict["rgb"] = None
         if self.__useDepth:
-            self.initDepthNode() # full stereo node
+            self.initDepthNode()  # full stereo node
             self.frame_dict["depth"] = None
         if self.__useApril:
-            self.initAprilTagNode() # aprilTag detection node
+            self.initAprilTagNode()  # aprilTag detection node
             self.frame_dict["april"] = None
         if self.__useNN is not None and len(self.__useNN) > 0:
-            if self.__useNN == "mobilenet_ssd" or self.__useNN == "mobilenet_spatial_ssd":
-                self.initMobileNetNode() # mobilenet detection node
+            if (
+                self.__useNN == "mobilenet_ssd"
+                or self.__useNN == "mobilenet_spatial_ssd"
+            ):
+                self.initMobileNetNode()  # mobilenet detection node
             elif self.__useNN == "yolo" or self.__useNN == "tiny_yolo":
-                self.initYOLONode() # yolo detection node
+                self.initYOLONode()  # yolo detection node
             self.frame_dict["nn"] = None
 
-
     def readJSON(self):
-        with open("./oak_d/configs/oak_config.json", 'r') as f:
+        with open("./oak_d/configs/oak_config.json", "r") as f:
             params = json.load(f)
             params = params["oakPipeline"]
             self.__params = params
@@ -60,17 +64,21 @@ class OAKPipeline:
             self.__useApril = params["processing"]["april"]["useApril"]
             self.__useNN = params["processing"]["nn"]["useNN"]
         if self.__useNN is not None and len(self.__useNN) > 0:
-            with open("./oak_d/configs/" + self.__useNN.lower() + "_config.json", 'r') as f:
+            with open(
+                "./oak_d/configs/" + self.__useNN.lower() + "_config.json", "r"
+            ) as f:
                 nn_params = json.load(f)
                 self.__params["processing"]["nn"] = nn_params
-        
 
     def initRGBNode(self):
         """
         Initialize RGB Camera
         """
-        rgbResolution = getattr(dai.ColorCameraProperties.SensorResolution, self.__params["rgb"]["resolution"])
-        rgbPreviewResolutionPx = (1920 // 3, 1080 // 3) # (1920, 1080) # 
+        rgbResolution = getattr(
+            dai.ColorCameraProperties.SensorResolution,
+            self.__params["rgb"]["resolution"],
+        )
+        rgbPreviewResolutionPx = (1920 // 3, 1080 // 3)  # (1920, 1080) #
         # rgb camera
         self.cam_rgb = self.__pipeline.create(dai.node.ColorCamera)
         self.cam_rgb.setFps(self.__params["fps"])
@@ -83,12 +91,14 @@ class OAKPipeline:
         self.xout_rgb.setStreamName("rgb")
         self.cam_rgb.preview.link(self.xout_rgb.input)
 
-    
     def initDepthNode(self):
         """
         Initialize Depth Node
         """
-        depthResolution = getattr(dai.MonoCameraProperties.SensorResolution, self.__params["depth"]["resolution"])
+        depthResolution = getattr(
+            dai.MonoCameraProperties.SensorResolution,
+            self.__params["depth"]["resolution"],
+        )
         # left camera
         self.cam_left = self.__pipeline.create(dai.node.MonoCamera)
         self.cam_left.setFps(self.__params["fps"])
@@ -115,13 +125,14 @@ class OAKPipeline:
         self.cam_right.out.link(self.cam_stereo.right)
         self.cam_stereo.disparity.link(self.xout_stereo.input)
 
-    
     def initAprilTagNode(self):
         """
         Initialize AprilTag Detection Node
         """
         aprilResolution = self.__params["processing"]["april"]["resolution"]
-        aprilFamily = getattr(dai.AprilTagConfig.Family, self.__params["processing"]["april"]["tagFamily"])
+        aprilFamily = getattr(
+            dai.AprilTagConfig.Family, self.__params["processing"]["april"]["tagFamily"]
+        )
         # apriltag detection
         self.aprilTag = self.__pipeline.create(dai.node.AprilTag)
         self.manip = self.__pipeline.create(dai.node.ImageManip)
@@ -153,29 +164,44 @@ class OAKPipeline:
         Parameterized by a depth flag (MobileNetDetectionNetwork vs MobileNetSpatialDetectionNetwork)
         """
         input_dim = self.__params["processing"]["nn"]["resolution"]
-        nnBlob = blobconverter.from_zoo(name=self.__params["processing"]["nn"]["nnBlob"], shaves=6)
+        nnBlob = blobconverter.from_zoo(
+            name=self.__params["processing"]["nn"]["nnBlob"], shaves=6
+        )
         # dai mobilenet node
-        depth_switch = ("useDepth" in self.__params["processing"]["nn"].keys() and self.__params["processing"]["nn"]["useDepth"])
+        depth_switch = (
+            "useDepth" in self.__params["processing"]["nn"].keys()
+            and self.__params["processing"]["nn"]["useDepth"]
+        )
         if depth_switch:
             if not self.__useDepth:
                 self.initDepthNode()
-            self.mobilenet = self.__pipeline.create(dai.node.MobileNetSpatialDetectionNetwork)
+            self.mobilenet = self.__pipeline.create(
+                dai.node.MobileNetSpatialDetectionNetwork
+            )
         else:
             self.mobilenet = self.__pipeline.create(dai.node.MobileNetDetectionNetwork)
         self.xout_mobilenet = self.__pipeline.create(dai.node.XLinkOut)
         self.xout_mobilenet_network = self.__pipeline.create(dai.node.XLinkOut)
         self.xout_mobilenet.setStreamName(self.__useNN)
         self.xout_mobilenet_network.setStreamName(self.__useNN + " Network")
-        self.mobilenet.setConfidenceThreshold(self.__params["processing"]["nn"]["confidenceThreshold"])
-        self.mobilenet.setNumInferenceThreads(self.__params["processing"]["nn"]["threads"])
+        self.mobilenet.setConfidenceThreshold(
+            self.__params["processing"]["nn"]["confidenceThreshold"]
+        )
+        self.mobilenet.setNumInferenceThreads(
+            self.__params["processing"]["nn"]["threads"]
+        )
         self.mobilenet.setBlobPath(nnBlob)
         self.mobilenet.input.setBlocking(False)
         self.mobilenet.out.link(self.xout_mobilenet.input)
         self.mobilenet.outNetwork.link(self.xout_mobilenet_network.input)
         if self.__useRGB:
             if depth_switch:
-                self.mobilenet.setDepthLowerThreshold(self.__params["processing"]["nn"]["depthLowerThreshold"])
-                self.mobilenet.setDepthUpperThreshold(self.__params["processing"]["nn"]["depthUpperThreshold"])
+                self.mobilenet.setDepthLowerThreshold(
+                    self.__params["processing"]["nn"]["depthLowerThreshold"]
+                )
+                self.mobilenet.setDepthUpperThreshold(
+                    self.__params["processing"]["nn"]["depthUpperThreshold"]
+                )
                 self.cam_stereo.depth.link(self.mobilenet.inputDepth)
                 self.manip = self.__pipeline.create(dai.node.ImageManip)
                 self.manip.initialConfig.setResize(input_dim[0], input_dim[1])
@@ -188,54 +214,67 @@ class OAKPipeline:
                 self.cam_rgb.preview.link(self.mobilenet.input)
                 self.mobilenet.passthrough.link(self.xout_rgb.input)
 
-
     def initMobileNetSpatialNode(self):
         """
         Initialize MobileNet Spatial Detection Network Node
         """
         input_dim = self.__params["processing"]["nn"]["resolution"]
-        nnBlob = blobconverter.from_zoo(name=self.__params["processing"]["nn"]["nnBlob"], shaves=6)
+        nnBlob = blobconverter.from_zoo(
+            name=self.__params["processing"]["nn"]["nnBlob"], shaves=6
+        )
 
         # depth only
         if not self.__useDepth:
             self.initDepthNode()
-        self.mobilenet = self.__pipeline.create(dai.node.MobileNetSpatialDetectionNetwork)
+        self.mobilenet = self.__pipeline.create(
+            dai.node.MobileNetSpatialDetectionNetwork
+        )
         # re-used from above
         self.xout_mobilenet = self.__pipeline.create(dai.node.XLinkOut)
         self.xout_mobilenet_network = self.__pipeline.create(dai.node.XLinkOut)
         self.xout_mobilenet.setStreamName(self.__useNN)
         self.xout_mobilenet_network.setStreamName(self.__useNN + " Network")
-        self.mobilenet.setConfidenceThreshold(self.__params["processing"]["nn"]["confidenceThreshold"])
-        self.mobilenet.setNumInferenceThreads(self.__params["processing"]["nn"]["threads"])
+        self.mobilenet.setConfidenceThreshold(
+            self.__params["processing"]["nn"]["confidenceThreshold"]
+        )
+        self.mobilenet.setNumInferenceThreads(
+            self.__params["processing"]["nn"]["threads"]
+        )
         self.mobilenet.setBlobPath(nnBlob)
         self.mobilenet.input.setBlocking(False)
         self.mobilenet.out.link(self.xout_mobilenet.input)
         self.mobilenet.outNetwork.link(self.xout_mobilenet_network.input)
         # depth only
-        self.mobilenet.setDepthLowerThreshold(self.__params["processing"]["nn"]["depthLowerThreshold"])
-        self.mobilenet.setDepthUpperThreshold(self.__params["processing"]["nn"]["depthUpperThreshold"])
+        self.mobilenet.setDepthLowerThreshold(
+            self.__params["processing"]["nn"]["depthLowerThreshold"]
+        )
+        self.mobilenet.setDepthUpperThreshold(
+            self.__params["processing"]["nn"]["depthUpperThreshold"]
+        )
         self.cam_stereo.depth.link(self.mobilenet.inputDepth)
         self.manip = self.__pipeline.create(dai.node.ImageManip)
         self.manip.initialConfig.setResize(input_dim[0], input_dim[1])
         self.manip.initialConfig.setKeepAspectRatio(False)
         self.cam_rgb.preview.link(self.manip.inputImage)
         self.manip.out.link(self.mobilenet.input)
-        
-
 
     def initYOLONode(self):
         """
         Initialize YOLO Detection Network Node
         """
         input_dim = self.__params["processing"]["nn"]["resolution"]
-        nnBlob = blobconverter.from_zoo(name=self.__params["processing"]["nn"]["nnBlob"], shaves=6)
+        nnBlob = blobconverter.from_zoo(
+            name=self.__params["processing"]["nn"]["nnBlob"], shaves=6
+        )
         # dai yolo node
         self.yolo = self.__pipeline.create(dai.node.YoloDetectionNetwork)
         self.xout_yolo = self.__pipeline.create(dai.node.XLinkOut)
         self.xout_yolo_network = self.__pipeline.create(dai.node.XLinkOut)
         self.xout_yolo.setStreamName(self.__useNN)
         self.xout_yolo_network.setStreamName(self.__useNN + " Network")
-        self.yolo.setConfidenceThreshold(self.__params["processing"]["nn"]["confidenceThreshold"])
+        self.yolo.setConfidenceThreshold(
+            self.__params["processing"]["nn"]["confidenceThreshold"]
+        )
         self.yolo.setNumClasses(self.__params["processing"]["nn"]["numClasses"])
         self.yolo.setCoordinateSize(self.__params["processing"]["nn"]["coordinateSize"])
         self.yolo.setAnchors([10, 14, 23, 27, 37, 58, 81, 82, 135, 169, 344, 319])
@@ -252,25 +291,39 @@ class OAKPipeline:
             self.cam_rgb.preview.link(self.yolo.input)
             self.yolo.passthrough.link(self.xout_rgb.input)
 
-
     def startDevice(self):
         self.__device = dai.Device(self.__pipeline)
         if self.__useRGB:
-            self.__rgbQueue = self.__device.getOutputQueue(name="rgb", maxSize=1, blocking=False)
+            self.__rgbQueue = self.__device.getOutputQueue(
+                name="rgb", maxSize=1, blocking=False
+            )
         if self.__useDepth:
-            self.__leftQueue = self.__device.getOutputQueue(name="left", maxSize=1, blocking=False)
-            self.__rightQueue = self.__device.getOutputQueue(name="right", maxSize=1, blocking=False)
-            self.__depthQueue = self.__device.getOutputQueue(name="depth", maxSize=1, blocking=False)
+            self.__leftQueue = self.__device.getOutputQueue(
+                name="left", maxSize=1, blocking=False
+            )
+            self.__rightQueue = self.__device.getOutputQueue(
+                name="right", maxSize=1, blocking=False
+            )
+            self.__depthQueue = self.__device.getOutputQueue(
+                name="depth", maxSize=1, blocking=False
+            )
         if self.__useApril:
-            self.__manipQueue = self.__device.getOutputQueue(name="aprilTagImage", maxSize=1, blocking=False)
-            self.__aprilQueue = self.__device.getOutputQueue(name="aprilTagData", maxSize=1, blocking=False)
+            self.__manipQueue = self.__device.getOutputQueue(
+                name="aprilTagImage", maxSize=1, blocking=False
+            )
+            self.__aprilQueue = self.__device.getOutputQueue(
+                name="aprilTagData", maxSize=1, blocking=False
+            )
         if self.__useNN is not None and len(self.__useNN) > 0:
-            self.__nnQueue = self.__device.getOutputQueue(name=self.__useNN, maxSize=1, blocking=False)
-            self.__nnNetworkQueue = self.__device.getOutputQueue(name=self.__useNN+" Network", maxSize=1, blocking=False)
+            self.__nnQueue = self.__device.getOutputQueue(
+                name=self.__useNN, maxSize=1, blocking=False
+            )
+            self.__nnNetworkQueue = self.__device.getOutputQueue(
+                name=self.__useNN + " Network", maxSize=1, blocking=False
+            )
         self.__device.startPipeline()
         self.__streaming = True
         return
-
 
     def read(self):
         if self.__useRGB:
@@ -284,13 +337,12 @@ class OAKPipeline:
             if depth_frame is not None:
                 depth_im = depth_frame.getFrame()
                 self.frame_dict["depth"] = depth_im
-        
+
         if self.__useApril:
             aprilTagData = self.__aprilQueue.get().aprilTags
             aprilTag_frame = self.__manipQueue.get()
             april_im = aprilTag_frame.getCvFrame()
-            self.frame_dict["april"] = {"tag_data": aprilTagData,
-                                        "april_im": april_im}
+            self.frame_dict["april"] = {"tag_data": aprilTagData, "april_im": april_im}
 
         if self.__useNN is not None and len(self.__useNN) > 0:
             nnData = self.__nnQueue.get()
@@ -314,4 +366,4 @@ if __name__ == "__main__":
         oak_cam.read()
         # print(oak_cam.frame_dict.keys())
         if len(oak_cam.frame_dict["nn"]) > 0:
-            print(oak_cam.frame_dict["nn"])#[0].spatialCoordinates.z)
+            print(oak_cam.frame_dict["nn"])  # [0].spatialCoordinates.z)
