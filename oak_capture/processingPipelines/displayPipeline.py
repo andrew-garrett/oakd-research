@@ -245,7 +245,7 @@ class DisplayPipeline(ProcessingPipeline):
 		while self.oak_cam.isOpened():
 			current_frame_dict = self.oak_cam.frame_dict
 			self.processPayload(current_frame_dict)
-			LOGGER.debug("Payload Processed")
+			self.LOGGER.debug("Payload Processed")
 			if counter % 100 == 0:
 				dt = time() - t0
 				self.LOGGER.debug(f"Average FPS: {counter / dt}")
