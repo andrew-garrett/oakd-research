@@ -11,7 +11,7 @@ class CustomFormatter(logging.Formatter):
 		self.red = '\x1b[38;5;196m'
 		self.bold_red = '\x1b[31;1m'
 		self.reset = '\x1b[0m'
-		self.fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(threadName)s - (%(filename)s:%(lineno)d)"
+		self.fmt = "%(asctime)s - %(name)s - %(levelname)s - %(threadName)s - (%(filename)s:%(lineno)d) - %(message)s"
 		self.FORMATS = {
 			logging.DEBUG: self.grey + self.fmt + self.reset,
 			logging.INFO: self.blue + self.fmt + self.reset,
