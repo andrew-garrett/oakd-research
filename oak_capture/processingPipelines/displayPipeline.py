@@ -30,8 +30,8 @@ class DisplayPipeline(ProcessingPipeline):
 	and display them.
 	"""
 
-	def __init__(self, cfg_fname):
-		super().__init__(cfg_fname)
+	def __init__(self, cfg_fname, LOGGER):
+		super().__init__(cfg_fname, LOGGER)
 		
 		availableViews = []
 		if self.useNN is not None and len(self.useNN) > 0:
@@ -102,6 +102,7 @@ class DisplayPipeline(ProcessingPipeline):
 					(0, 255, 0),
 					3,
 				)
+				self.LOGGER.debug(f"OAK AprilTag Detection Found: {tag.id}")
 			return april_im
 
 	def drawOAKDetections(self, detections, nn_im):
@@ -139,6 +140,7 @@ class DisplayPipeline(ProcessingPipeline):
 					(0, 255, 0),
 					2,
 				)
+				self.LOGGER.debug(f"OAKNN Detection Found: {label_conf}")
 		return nn_im
 
 	def processPayload(self, frame_dict):
@@ -233,8 +235,7 @@ class DisplayPipeline(ProcessingPipeline):
 
 	def start(self):
 		super().start()
-		while not self.oak_cam.isOpened():
-			continue
+		self.LOGGER.info("Starting Display Pipeline")
 		self.main()
 		
 
@@ -244,10 +245,10 @@ class DisplayPipeline(ProcessingPipeline):
 		while self.oak_cam.isOpened():
 			current_frame_dict = self.oak_cam.frame_dict
 			self.processPayload(current_frame_dict)
+			LOGGER.debug("Payload Processed")
 			if counter % 100 == 0:
 				dt = time() - t0
-				print("Time Elapsed: ", time() - t0)
-				print("Average FPS: ", counter / dt)
+				self.LOGGER.debug(f"Average FPS: {counter / dt}")
 			counter += 1
 			waitkey = cv2.waitKey(5)
 			if waitkey == ord('q'):

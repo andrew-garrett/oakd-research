@@ -34,8 +34,9 @@ class ProcessingPipeline:
 	Class to apply image processing operations with OpenCV.
 	"""
 
-	def __init__(self, cfg_fname):
+	def __init__(self, cfg_fname, LOGGER):
 		self.cfg_fname = cfg_fname
+		self.LOGGER = LOGGER
 		self.readJSON()
 
 	def readJSON(self):
@@ -77,10 +78,13 @@ class ProcessingPipeline:
 
 	def start(self):
 		# Define and start OAKPipeline Capture Thread
-		self.oak_cam = OAKPipeline(self.cfg_fname)
+		self.oak_cam = OAKPipeline(self.cfg_fname, self.LOGGER)
 		self.oak_capture_thread = Thread(target=self.oak_cam.startDevice, daemon=True)
 		self.oak_capture_thread.start()
+		self.LOGGER.info("Started OAK Capture Thread")
 		self.running = True
+		while not self.oak_cam.isOpened():
+			continue
 
 	def main(self):
 		counter = 1
@@ -88,15 +92,16 @@ class ProcessingPipeline:
 		while self.oak_cam.isOpened():		
 			current_frame_dict = self.oak_cam.frame_dict
 			self.processPayload(current_frame_dict)
+			self.LOGGER.info("Payload Processed")
 			if time() - t0 >= 60:
 				self.running = False
 				break
 			if counter % 100 == 0:
 				dt = time() - t0
-				print("Time Elapsed: ", time() - t0)
-				print("Average FPS: ", counter / dt)
+				self.LOGGER.debug(f"Average FPS: {counter / dt}")
 			counter += 1
 
 
 	def stop(self):
+		self.LOGGER.info("Stopping Pipeline")
 		self.oak_capture_thread.join()

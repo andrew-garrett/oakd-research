@@ -27,13 +27,15 @@ class OAKPipeline:
 	stereo depth images, as on-board apriltag detection data.
 	"""
 
-	def __init__(self, cfg_fname):
+	def __init__(self, cfg_fname, LOGGER):
 		self.cfg_fname = cfg_fname
+		self.LOGGER = LOGGER
 		self.__pipeline = dai.Pipeline()
 		self.readJSON()  # read config for populating parameters
 		self.frame_dict = {}
 		self.__streaming = False
 
+		self.LOGGER.debug(f"Initializing OAK Nodes according to {self.cfg_fname}")
 		if self.__useRGB:
 			self.initRGBNode()  # rgb node
 			self.frame_dict["rgb"] = None
@@ -295,6 +297,7 @@ class OAKPipeline:
 			self.yolo.passthrough.link(self.xout_rgb.input)
 
 	def startDevice(self):
+		self.LOGGER.info("Starting OAK Camera")
 		self.__device = dai.Device(self.__pipeline)
 		if self.__useRGB:
 			self.__rgbQueue = self.__device.getOutputQueue(
@@ -324,8 +327,6 @@ class OAKPipeline:
 			self.__nnNetworkQueue = self.__device.getOutputQueue(
 				name=self.__useNN + " Network", maxSize=1, blocking=False
 			)
-		# self.capture_thread = Thread(target=self.__device.startPipeline)
-		# self.capture_thread.start()
 		self.__device.startPipeline()
 		self.__streaming = True
 		while self.__streaming:
@@ -365,18 +366,3 @@ class OAKPipeline:
 		if hasattr(self, "capture_thread"):
 			self.capture_thread.join()
 			self.__streaming = False
-
-
-####################################################################
-############################## RUNNER ##############################
-####################################################################
-
-if __name__ == "__main__":
-
-	oak_cam = OAKPipeline()
-	oak_cam.startDevice()
-	while oak_cam.isOpened():
-		oak_cam.read()
-		# print(oak_cam.frame_dict.keys())
-		if len(oak_cam.frame_dict["nn"]) > 0:
-			print(oak_cam.frame_dict["nn"])  # [0].spatialCoordinates.z)
