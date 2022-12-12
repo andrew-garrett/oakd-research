@@ -4,10 +4,12 @@
 
 import json
 import os, sys
-from time import time
 import cv2
 import numpy as np
+from threading import Thread
+from time import time, sleep
 
+from oak_d.OAKPipeline import OAKPipeline
 from processingPipelines.processingPipeline import ProcessingPipeline
 
 
@@ -229,25 +231,29 @@ class DisplayPipeline(ProcessingPipeline):
 					self.currentView = b_name
 					break
 
+	def start(self):
+		super().start()
+		while not self.oak_cam.isOpened():
+			continue
+		self.main()
+		
 
-####################################################################
-############################## RUNNER ##############################
-####################################################################
-if __name__ == "__main__":
-	pass
-'''
-if __name__ == "__main__":
-	oak_cam = OAKPipeline()
-	oak_cam.startDevice()
-	print("Device Started")
-	oak_display = DisplayPipeline()
-	print("Display Started")
-	while oak_cam.isOpened():
-		oak_cam.read()
-		key = cv2.waitKey(1)
-		oak_display.chooseFrame(key)
-		oak_display.show(oak_cam.frame_dict)
-		if key == ord("q"):
-			break
-	cv2.destroyAllWindows()
-'''
+	def main(self):
+		counter = 1
+		t0 = time()
+		while self.oak_cam.isOpened():
+			current_frame_dict = self.oak_cam.frame_dict
+			self.processPayload(current_frame_dict)
+			if counter % 100 == 0:
+				dt = time() - t0
+				print("Time Elapsed: ", time() - t0)
+				print("Average FPS: ", counter / dt)
+			counter += 1
+			waitkey = cv2.waitKey(5)
+			if waitkey == ord('q'):
+				self.running = False
+				break
+
+	def stop(self):
+		cv2.destroyAllWindows()
+		super().stop()

@@ -1,8 +1,8 @@
 {
     "oakPipeline": {
-        "fps": 30,
+        "fps": 10,
         "display": {
-            "useDisplay": false,
+            "useDisplay": true,
             "resolution": [640, 360]
         },
         "rgb": {
@@ -11,7 +11,7 @@
         },
         "depth": {
             "useDepth": true,
-            "resolution": "THE_800_P"
+            "resolution": "THE_400_P"
         },
         "processing": {
             "april": {
@@ -35,12 +35,8 @@
                 }
             },
             "nn": {
-                "useNN": ""
+                "useNN": "mobilenet_ssd"
             }
         }
-    },
-    "dataset": {
-        "n_samples": 1000,
-        "name": "test000"
     }
 }

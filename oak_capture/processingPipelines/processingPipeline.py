@@ -4,9 +4,12 @@
 
 
 import json
-import os
+import os, shutil
 import cv2
-from time import time
+from threading import Thread
+from time import time, sleep
+
+from oak_d.OAKPipeline import OAKPipeline
 
 
 #################################################################################
@@ -38,14 +41,14 @@ class ProcessingPipeline:
 	def readJSON(self):
 		with open(self.cfg_fname, "r") as f:
 			params = json.load(f)
-			params = params["oakPipeline"]
+			oak_params = params["oakPipeline"]
 			self.params = params
-			self.fps = params["fps"]
-			self.useRGB = params["rgb"]["useRGB"]
-			self.useDepth = params["depth"]["useDepth"]
-			self.useApril = params["processing"]["april"]["useApril"]
-			self.useNN = params["processing"]["nn"]["useNN"]
-			self.displayResolution = tuple(params["display"]["resolution"])
+			self.fps = oak_params["fps"]
+			self.useRGB = oak_params["rgb"]["useRGB"]
+			self.useDepth = oak_params["depth"]["useDepth"]
+			self.useApril = oak_params["processing"]["april"]["useApril"]
+			self.useNN = oak_params["processing"]["nn"]["useNN"]
+			self.displayResolution = tuple(oak_params["display"]["resolution"])
 		if self.useNN is not None and len(self.useNN) > 0:
 			if (
 				self.useNN == "mobilenet_ssd"
@@ -72,25 +75,28 @@ class ProcessingPipeline:
 	def processPayload(self, frame_dict):
 		return
 
+	def start(self):
+		# Define and start OAKPipeline Capture Thread
+		self.oak_cam = OAKPipeline(self.cfg_fname)
+		self.oak_capture_thread = Thread(target=self.oak_cam.startDevice, daemon=True)
+		self.oak_capture_thread.start()
+		self.running = True
 
-####################################################################
-############################## RUNNER ##############################
-####################################################################
-'''
-if __name__ == "__main__":
-	oak_cam = OAKPipeline()
-	oak_cam.startDevice()
-	print("Device Started")
-	oak_processor = ProcessingPipeline()
-	print("Processor Started")
-	t0 = time()
-	counter = 1
-	while oak_cam.isOpened() and (time() - t0 < 10.0):
-		oak_cam.read()
-		oak_processor.processPayload(oak_cam.frame_dict)
-		if counter % 100 == 0:
-			dt = time() - t0
-			print("Time Elapsed: ", time() - t0)
-			print("Average FPS: ", counter / dt)
-		counter += 1
-'''
+	def main(self):
+		counter = 1
+		t0 = time()
+		while self.oak_cam.isOpened():		
+			current_frame_dict = self.oak_cam.frame_dict
+			self.processPayload(current_frame_dict)
+			if time() - t0 >= 60:
+				self.running = False
+				break
+			if counter % 100 == 0:
+				dt = time() - t0
+				print("Time Elapsed: ", time() - t0)
+				print("Average FPS: ", counter / dt)
+			counter += 1
+
+
+	def stop(self):
+		self.oak_capture_thread.join()

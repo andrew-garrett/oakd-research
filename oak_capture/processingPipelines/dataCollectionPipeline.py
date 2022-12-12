@@ -7,6 +7,7 @@ import json
 import os
 import cv2
 import boto3
+from time import time
 
 from processingPipelines.processingPipeline import ProcessingPipeline
 
@@ -25,10 +26,10 @@ class DataCollectionPipeline(ProcessingPipeline):
 
 	"""
 
-	def __init__(self, cfg_fname, dataset_name):
+	def __init__(self, cfg_fname):
 		super().__init__(cfg_fname)
-		self.dataset_name = dataset_name
-		self.dataset_root = os.path.join("./datasets", dataset_name) #  + ".h5"
+		self.dataset_name = self.params["dataset"]["name"]
+		self.dataset_root = os.path.join("./datasets", self.dataset_name)
 		try:
 			os.makedirs(self.dataset_root, exist_ok=False)
 			if self.useRGB:
@@ -36,14 +37,23 @@ class DataCollectionPipeline(ProcessingPipeline):
 			if self.useDepth:
 				os.mkdir(os.path.join(self.dataset_root, "depth"))
 			self.current_db_count = 0
-			self.db_num_images = self.params["fps"] * 100.0
 		except Exception as e:
 			print(e)
 			print("Dataset with this name already exists")
 			self.current_db_count = len(os.listdir(os.path.join(self.dataset_root, "rgb")))
-			self.db_num_images = self.current_db_count + self.params["fps"] * 100.0
-			
-		#self.s3_client = boto3.client("s3", region_name="us-east-2")
+		
+		self.db_num_images = self.current_db_count + self.params["dataset"]["n_samples"]
+		self.s3_client = boto3.client(
+			"s3", 
+			aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"), 
+			aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+			region_name="us-east-2",
+		)
+		self.s3_client.upload_file(
+			self.cfg_fname,
+			os.getenv("S3_BUCKET_NAME"),
+			os.path.join(self.dataset_root, "dataset_config.json")[2:],
+		)
 
 	def processPayload(self, frame_dict):
 		"""
@@ -63,40 +73,44 @@ class DataCollectionPipeline(ProcessingPipeline):
 						if not os.path.exists(sample_datum_fname):
 							return False
 						else:
-							#s3_client.upload_file(
-							#	sample_datum_fname,
-							#	os.getenv("S3_BUCKET_NAME"),
-							#	sample_datum_fname[1:]
-							#)
-							pass
+							self.s3_client.upload_file(
+								sample_datum_fname,
+								os.getenv("S3_BUCKET_NAME"),
+								sample_datum_fname[2:],
+							)
+							os.remove(sample_datum_fname)
 				# For each key, write to the corresponding current_db
 				self.current_db_count += 1
 				return True
 			except Exception as e:
 				print(e)
-		else:
-			pass		
-		return False
+				return True
+		else:		
+			return False
 			# Update the current_db for each datasource
+	
+	def start(self):
+		super().start()
+		self.processing_thread = Thread(target=self.main)
+		self.processing_thread.start()
+
+	def main(self):
+		counter = 1
+		t0 = time()
+		while self.oak_cam.isOpened():		
+			current_frame_dict = self.oak_cam.frame_dict
+			if not self.processPayload(current_frame_dict):
+				self.running = False
+				break
+			if counter % 100 == 0:
+				dt = time() - t0
+				print("Time Elapsed: ", time() - t0)
+				print("Average FPS: ", counter / dt)
+			counter += 1
 
 
-if __name__ == "__main__":
-	pass
-	'''
-	oak_cam = OAKPipeline()
-	oak_cam.startDevice()
-	print("Device Started")
-	oak_processor = DataCollectionPipeline()
-	print("Processor Started")
-	counter = 1
-	t0 = time()
-	while oak_cam.isOpened():
-		oak_cam.read()
-		if not oak_processor.processPayload(oak_cam.frame_dict):
-			break
-		if counter % 100 == 0:
-			dt = time() - t0
-			print("Time Elapsed: ", time() - t0)
-			print("Average FPS: ", counter / dt)
-		counter += 1
-	'''
+	def stop(self):
+		self.processing_thread.join()
+		super().stop()
+		shutil.rmtree(self.dataset_root)
+

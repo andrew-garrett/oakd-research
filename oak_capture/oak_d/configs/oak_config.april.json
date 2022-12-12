@@ -1,8 +1,8 @@
 {
     "oakPipeline": {
-        "fps": 30,
+        "fps": 10,
         "display": {
-            "useDisplay": false,
+            "useDisplay": true,
             "resolution": [640, 360]
         },
         "rgb": {
@@ -10,12 +10,12 @@
             "resolution": "THE_1080_P"
         },
         "depth": {
-            "useDepth": true,
-            "resolution": "THE_800_P"
+            "useDepth": false,
+            "resolution": "THE_400_P"
         },
         "processing": {
             "april": {
-                "useApril": false,
+                "useApril": true,
                 "resolution": [320, 180],
                 "tagFamily": "TAG_36H11",
                 "config": {
@@ -38,9 +38,5 @@
                 "useNN": ""
             }
         }
-    },
-    "dataset": {
-        "n_samples": 1000,
-        "name": "test000"
     }
 }

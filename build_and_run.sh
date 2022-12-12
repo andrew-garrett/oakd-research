@@ -1,5 +1,8 @@
 #! /bin/bash
 
+echo "Cleaning background images"
+sudo docker system prune -f
+
 echo "Building Image"
 cd oak_capture && sudo docker build -t oak_capture . && cd ..
 

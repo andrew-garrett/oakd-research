@@ -14,13 +14,8 @@ services:
       - type: bind
         source: /home/nvidia/projects/oakd-research/oak_capture/datasets/
         target: /app/datasets/
-      - type: bind
-        source: /home/nvidia/.aws/
-        target: /.aws/
-    environment:
-      - DISPLAY=$DISPLAY
-      - S3_BUCKET_NAME=oak-data
-      - AWS_CONFIG_FILE=/.aws/config
+    env_file:
+      - .env
     restart: on-failure
     device_cgroup_rules:
       - 'c 189:* rmw'
