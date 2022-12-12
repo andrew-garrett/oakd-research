@@ -9,7 +9,7 @@ class CustomFormatter(logging.Formatter):
     red = '\x1b[38;5;196m'
     bold_red = '\x1b[31;1m'
     reset = '\x1b[0m'
-	formatting = "%(asctime)s - %(threadName)s - %(name)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"
+	formatting = "%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(threadName)s - (%(filename)s:%(lineno)d)"
 
     def __init__(self):
         super().__init__()
