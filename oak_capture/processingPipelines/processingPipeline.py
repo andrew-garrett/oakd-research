@@ -31,30 +31,37 @@ class ProcessingPipeline:
 	Class to apply image processing operations with OpenCV.
 	"""
 
-	def __init__(self):
+	def __init__(self, cfg_fname):
+		self.cfg_fname = cfg_fname
 		self.readJSON()
 
 	def readJSON(self):
-		with open("./oak_d/configs/oak_config.json", "r") as f:
+		with open(self.cfg_fname, "r") as f:
 			params = json.load(f)
-			oak_params = params["oakPipeline"]
-			self.__params = params
-			self.__fps = oak_params["fps"]
-			self.__useRGB = oak_params["rgb"]["useRGB"]
-			self.__useDepth = oak_params["depth"]["useDepth"]
-			self.__useApril = oak_params["processing"]["april"]["useApril"]
-			self.__useNN = oak_params["processing"]["nn"]["useNN"]
-			self.__displayResolution = tuple(oak_params["display"]["resolution"])
-		if self.__useNN is not None and len(self.__useNN) > 0:
+			params = params["oakPipeline"]
+			self.params = params
+			self.fps = params["fps"]
+			self.useRGB = params["rgb"]["useRGB"]
+			self.useDepth = params["depth"]["useDepth"]
+			self.useApril = params["processing"]["april"]["useApril"]
+			self.useNN = params["processing"]["nn"]["useNN"]
+			self.displayResolution = tuple(params["display"]["resolution"])
+		if self.useNN is not None and len(self.useNN) > 0:
 			if (
-				self.__useNN == "mobilenet_ssd"
-				or self.__useNN == "mobilenet_spatial_ssd"
+				self.useNN == "mobilenet_ssd"
+				or self.useNN == "mobilenet_spatial_ssd"
 			):
 				with open("./data/label_maps/voc_20cl.txt", "r") as f:
 					self.label_mapping = f.readlines()
-			elif self.__useNN == "yolo" or self.__useNN == "tiny_yolo":
+				if self.label_mapping is None:
+					with open("../data/label_maps/voc_20cl.txt", "r") as f:
+						self.label_mapping = f.readlines()
+			elif self.useNN == "yolo" or self.useNN == "tiny_yolo":
 				with open("./data/label_maps/coco_80cl.txt", "r") as f:
 					self.label_mapping = f.readlines()
+				if self.label_mapping is None:
+					with open("../data/label_maps/coco_80cl.txt", "r") as f:
+						self.label_mapping = f.readlines()
 
 	def processDepth(self, depth_im):
 		return depth_im
@@ -64,37 +71,6 @@ class ProcessingPipeline:
 
 	def processPayload(self, frame_dict):
 		return
-
-	def saveData(self):
-		rawROOT = "./data/raw/"
-		processingROOT = "./data/processed/"
-		try:
-			os.mkdir(processingROOT)
-		except FileExistsError:
-			pass
-		raw_im_list = os.listdir(rawROOT)
-		for im_name in raw_im_list:
-			processed_im = cv2.imread(rawROOT + im_name)
-			if im_name[0] == "R":  # RGB images
-				processed_im = self.processRGB(processed_im)
-			elif im_name[0] == "D":  # DEPTH images
-				processed_im = self.processDepth(processed_im)
-			else:
-				processed_im = None
-			if processed_im is not None:
-				cv2.imwrite(processingROOT + im_name, processed_im)
-
-	def clearData(self, raw=False, processed=False):
-		if raw:
-			rawROOT = "./data/raw/"
-			rm_files = list(os.listdir(rawROOT))
-			for r_f in rm_files:
-				os.remove(rawROOT + r_f)
-		if processed:
-			processedROOT = "./data/processed/"
-			rm_files = list(os.listdir(processedROOT))
-			for r_f in rm_files:
-				os.remove(processedROOT + r_f)
 
 
 ####################################################################

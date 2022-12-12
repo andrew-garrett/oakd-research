@@ -6,8 +6,8 @@
 import json
 import os
 import cv2
+import boto3
 
-from oak_d.OAKPipeline import OAKPipeline
 from processingPipelines.processingPipeline import ProcessingPipeline
 
 
@@ -25,23 +25,25 @@ class DataCollectionPipeline(ProcessingPipeline):
 
 	"""
 
-	def __init__(self, dataset_name):
-		super().__init__(self)
+	def __init__(self, cfg_fname, dataset_name):
+		super().__init__(cfg_fname)
 		self.dataset_name = dataset_name
-		self.dataset_root = os.path.join("./datasets", dataset_name + ".h5")
+		self.dataset_root = os.path.join("./datasets", dataset_name) #  + ".h5"
 		try:
-			os.makedirs(self.dataset_root, exists_ok=False)
-			if self.__useRGB:
+			os.makedirs(self.dataset_root, exist_ok=False)
+			if self.useRGB:
 				os.mkdir(os.path.join(self.dataset_root, "rgb"))
-			if self.__useDepth:
+			if self.useDepth:
 				os.mkdir(os.path.join(self.dataset_root, "depth"))
-			# if self.__useOAKNN:
-			# 	os.mkdir(os.path.join(self.dataset_root, "oak_nn"))
-		except:
+			self.current_db_count = 0
+			self.db_num_images = self.params["fps"] * 100.0
+		except Exception as e:
+			print(e)
 			print("Dataset with this name already exists")
-			return
-		self.current_db_count = 0
-		self.db_num_images = self.__params["fps"] * 10.0
+			self.current_db_count = len(os.listdir(os.path.join(self.dataset_root, "rgb")))
+			self.db_num_images = self.current_db_count + self.params["fps"] * 100.0
+			
+		#self.s3_client = boto3.client("s3", region_name="us-east-2")
 
 	def processPayload(self, frame_dict):
 		"""
@@ -49,24 +51,38 @@ class DataCollectionPipeline(ProcessingPipeline):
 		"""
 		if self.current_db_count < self.db_num_images:
 			# Loop through the frame_dict's keys
-			for key, value in frame_dict.items():
-				if key in ("rgb", "depth"):
-					sample_datum_fname = os.path.join(
-						self.dataset_root,
-						key,
-						f"{key}-{str(self.current_db_count).zfill(4)}.png",
-					)
-					cv2.imwrite(sample_datum_fname, value)
-
-			# For each key, write to the corresponding current_db
-			self.current_db_count += 1
-			return True
+			try:
+				for key, value in frame_dict.items():
+					if key in ("rgb", "depth") and value is not None and value.shape[0] > 0:
+						sample_datum_fname = os.path.join(
+							self.dataset_root,
+							key,
+							f"{key}-{str(self.current_db_count).zfill(4)}.png",
+						)
+						cv2.imwrite(sample_datum_fname, value)
+						if not os.path.exists(sample_datum_fname):
+							return False
+						else:
+							#s3_client.upload_file(
+							#	sample_datum_fname,
+							#	os.getenv("S3_BUCKET_NAME"),
+							#	sample_datum_fname[1:]
+							#)
+							pass
+				# For each key, write to the corresponding current_db
+				self.current_db_count += 1
+				return True
+			except Exception as e:
+				print(e)
 		else:
-			return False
+			pass		
+		return False
 			# Update the current_db for each datasource
 
 
 if __name__ == "__main__":
+	pass
+	'''
 	oak_cam = OAKPipeline()
 	oak_cam.startDevice()
 	print("Device Started")
@@ -83,3 +99,4 @@ if __name__ == "__main__":
 			print("Time Elapsed: ", time() - t0)
 			print("Average FPS: ", counter / dt)
 		counter += 1
+	'''

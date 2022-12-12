@@ -5,6 +5,7 @@
 import json
 import depthai as dai
 import blobconverter
+from threading import Thread
 
 
 ##########################################################################
@@ -26,7 +27,8 @@ class OAKPipeline:
 	stereo depth images, as on-board apriltag detection data.
 	"""
 
-	def __init__(self):
+	def __init__(self, cfg_fname):
+		self.cfg_fname = cfg_fname
 		self.__pipeline = dai.Pipeline()
 		self.readJSON()  # read config for populating parameters
 		self.frame_dict = {}
@@ -52,7 +54,7 @@ class OAKPipeline:
 			self.frame_dict["nn"] = None
 
 	def readJSON(self):
-		with open("./oak_d/configs/oak_config.json", "r") as f:
+		with open(self.cfg_fname, "r") as f:
 			params = json.load(f)
 			params = params["oakPipeline"]
 			self.__params = params
@@ -78,7 +80,8 @@ class OAKPipeline:
 			dai.ColorCameraProperties.SensorResolution,
 			self.__params["rgb"]["resolution"],
 		)
-		rgbPreviewResolutionPx = (1920 // 3, 1080 // 3)  # (1920, 1080) #
+		if self.__params["rgb"]["resolution"] == "THE_1080_P":
+			rgbPreviewResolutionPx = (1920, 1080)  # (1920, 1080) #
 		# rgb camera
 		self.cam_rgb = self.__pipeline.create(dai.node.ColorCamera)
 		self.cam_rgb.setFps(self.__params["fps"])
@@ -321,37 +324,47 @@ class OAKPipeline:
 			self.__nnNetworkQueue = self.__device.getOutputQueue(
 				name=self.__useNN + " Network", maxSize=1, blocking=False
 			)
+		# self.capture_thread = Thread(target=self.__device.startPipeline)
+		# self.capture_thread.start()
 		self.__device.startPipeline()
 		self.__streaming = True
+		while self.__streaming:
+			self.read()
 		return
 
 	def read(self):
-		if self.__useRGB:
-			rgb_frame = self.__rgbQueue.get()
-			if rgb_frame is not None:
-				rgb_im = rgb_frame.getCvFrame()
-				self.frame_dict["rgb"] = rgb_im
+		if self.__streaming:
+			if self.__useRGB:
+				rgb_frame = self.__rgbQueue.get()
+				if rgb_frame is not None:
+					rgb_im = rgb_frame.getCvFrame()
+					self.frame_dict["rgb"] = rgb_im
 
-		if self.__useDepth:
-			depth_frame = self.__depthQueue.get()
-			if depth_frame is not None:
-				depth_im = depth_frame.getFrame()
-				self.frame_dict["depth"] = depth_im
+			if self.__useDepth:
+				depth_frame = self.__depthQueue.get()
+				if depth_frame is not None:
+					depth_im = depth_frame.getFrame()
+					self.frame_dict["depth"] = depth_im
 
-		if self.__useApril:
-			aprilTagData = self.__aprilQueue.get().aprilTags
-			aprilTag_frame = self.__manipQueue.get()
-			april_im = aprilTag_frame.getCvFrame()
-			self.frame_dict["april"] = {"tag_data": aprilTagData, "april_im": april_im}
+			if self.__useApril:
+				aprilTagData = self.__aprilQueue.get().aprilTags
+				aprilTag_frame = self.__manipQueue.get()
+				april_im = aprilTag_frame.getCvFrame()
+				self.frame_dict["april"] = {"tag_data": aprilTagData, "april_im": april_im}
 
-		if self.__useNN is not None and len(self.__useNN) > 0:
-			nnData = self.__nnQueue.get()
-			nnNetworkData = self.__nnNetworkQueue.tryGet()
-			detections = nnData.detections
-			self.frame_dict["nn"] = detections
+			if self.__useNN is not None and len(self.__useNN) > 0:
+				nnData = self.__nnQueue.get()
+				nnNetworkData = self.__nnNetworkQueue.tryGet()
+				detections = nnData.detections
+				self.frame_dict["nn"] = detections
 
 	def isOpened(self):
 		return self.__streaming
+
+	def close(self):
+		if hasattr(self, "capture_thread"):
+			self.capture_thread.join()
+			self.__streaming = False
 
 
 ####################################################################

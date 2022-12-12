@@ -3,12 +3,11 @@
 #####################################################################
 
 import json
-import os
+import os, sys
 from time import time
 import cv2
 import numpy as np
 
-from oak_d.OAKPipeline import OAKPipeline
 from processingPipelines.processingPipeline import ProcessingPipeline
 
 
@@ -29,46 +28,46 @@ class DisplayPipeline(ProcessingPipeline):
 	and display them.
 	"""
 
-	def __init__(self):
-		super(ProcessingPipeline, self).__init__()
+	def __init__(self, cfg_fname):
+		super().__init__(cfg_fname)
 		
 		availableViews = []
-		if self.__useNN is not None and len(self.__useNN) > 0:
+		if self.useNN is not None and len(self.useNN) > 0:
 			availableViews.append("nn")
-		if self.__useApril:
+		if self.useApril:
 			availableViews.append("aprilTag")
-		if self.__useRGB:
+		if self.useRGB:
 			availableViews.append("rgb")
-		if self.__useDepth:
+		if self.useDepth:
 			availableViews.append("depth")
 		self.availableViews = tuple(availableViews)
 		self.windowName = "Display"
-		self.currentView = ""  # any of the available views
+		self.currentView = self.availableViews[0]  # any of the available views
 		cv2.namedWindow(self.windowName, cv2.WND_PROP_FULLSCREEN)
 		cv2.setWindowProperty(
 			self.windowName, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN
 		)
-		self.buttonWidth = int(0.25 * self.__displayResolution[0])
+		self.buttonWidth = int(0.25 * self.displayResolution[0])
 		self.makeButtons()
 		cv2.setMouseCallback(self.windowName, self.mouseCallback)
-		self.__t0 = time()
-		self.__framecounter = 1
-		self.__avgFPS = 0
+		self.t0 = time()
+		self.framecounter = 1
+		self.avgFPS = 0
 
 	def makeButtons(self):
 		num_views = len(self.availableViews)
 		self.buttons = {}
 		for i, b_name in enumerate(self.availableViews):
-			ij_tl = (0, int(0.3 * ((i) / num_views) * self.__displayResolution[1]))
+			ij_tl = (0, int(0.3 * ((i) / num_views) * self.displayResolution[1]))
 			ij_br = (
 				self.buttonWidth,
-				int(0.3 * ((i + 1) / num_views) * self.__displayResolution[1]),
+				int(0.3 * ((i + 1) / num_views) * self.displayResolution[1]),
 			)
 			self.buttons[b_name] = {}
 			self.buttons[b_name]["container"] = (ij_tl, ij_br)
 			self.buttons[b_name]["text"] = (
 				ij_tl[0] + int(0.1 * self.buttonWidth),
-				ij_br[1] - int((0.1 / num_views) * self.__displayResolution[1]),
+				ij_br[1] - int((0.1 / num_views) * self.displayResolution[1]),
 			)
 
 	def drawDepthMap(self, depth_im):
@@ -140,35 +139,35 @@ class DisplayPipeline(ProcessingPipeline):
 				)
 		return nn_im
 
-	def show(self, frame_dict):
-		if self.__framecounter == int(5 * self.__fps):
-			self.__avgFPS = round(self.__framecounter / (time() - self.__t0), 2)
-			self.__framecounter = 0
-			self.__t0 = time()
+	def processPayload(self, frame_dict):
+		if self.framecounter == int(5 * self.fps):
+			self.avgFPS = round(self.framecounter / (time() - self.t0), 2)
+			self.framecounter = 0
+			self.t0 = time()
 		show_im = None
 		if (
 			self.currentView == "nn"
-			and self.__useNN is not None
-			and len(self.__useNN) > 0
+			and self.useNN is not None
+			and len(self.useNN) > 0
 		):
 			show_im = self.drawOAKDetections(frame_dict["nn"], frame_dict["rgb"])
-		if self.currentView == "aprilTag" and self.__useApril:
+		if self.currentView == "aprilTag" and self.useApril:
 			show_im = self.drawAprilTagDetection(frame_dict["april"])
-		if self.currentView == "rgb" and self.__useRGB:
+		if self.currentView == "rgb" and self.useRGB:
 			if frame_dict["rgb"] is not None:
 				show_im = frame_dict["rgb"]
-		if self.currentView == "depth" and self.__useDepth:
+		if self.currentView == "depth" and self.useDepth:
 			show_im = self.drawDepthMap(frame_dict["depth"])
 		self.drawGUI(show_im)
-		self.__framecounter += 1
+		self.framecounter += 1
 
 	def drawGUI(self, show_im):
 		if show_im is not None:
-			show_im = cv2.resize(show_im, self.__displayResolution)
-			if self.__avgFPS > 0:
+			show_im = cv2.resize(show_im, self.displayResolution)
+			if self.avgFPS > 0:
 				show_im = cv2.putText(
 					show_im,
-					"FPS: " + str(self.__avgFPS),
+					"FPS: " + str(self.avgFPS),
 					(int(0.05 * show_im.shape[1]), int(0.95 * show_im.shape[0])),
 					cv2.FONT_HERSHEY_SIMPLEX,
 					0.75,
@@ -230,30 +229,12 @@ class DisplayPipeline(ProcessingPipeline):
 					self.currentView = b_name
 					break
 
-	def collectData(self, frame_dict):
-		try:
-			os.mkdir("data")
-		except:
-			print("Directory already exists.")
-
-		im_list = list(os.listdir("./data/processed"))
-		curr_id = -1
-		for im_name in im_list:
-			im_id = int(im_name[-7:-4])
-			if im_id > curr_id:
-				curr_id = im_id
-		curr_id_str = str(curr_id + 1).zfill(3)
-		if self.__useRGB:
-			rgb_im_name = "../data/raw/RGB_" + curr_id_str + ".png"
-			cv2.imwrite(rgb_im_name, frame_dict["rgb"])
-		if self.__useDepth:
-			depth_im_name = "../data/raw/DEPTH_" + curr_id_str + ".png"
-			cv2.imwrite(depth_im_name, frame_dict["depth"])
-
 
 ####################################################################
 ############################## RUNNER ##############################
 ####################################################################
+if __name__ == "__main__":
+	pass
 '''
 if __name__ == "__main__":
 	oak_cam = OAKPipeline()
