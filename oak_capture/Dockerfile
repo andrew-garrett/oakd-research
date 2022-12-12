@@ -9,6 +9,6 @@ WORKDIR /app
 ADD ./oak_d/ /app/oak_d/
 ADD ./processingPipelines/ /app/processingPipelines/
 ADD ./data/ /app/data/
-COPY ./main.py /app/
+COPY ./main.py ./setup_logging.py /app/
 
 CMD [ "python3", "main.py" ]
