@@ -2,7 +2,7 @@
 
 ## Description
 
-This repository is to serve as a platform for plug-and-play use of the OAK-D Camera for computer vision research and applications.  Using the depthAI python package, we bring a generalizable and extensible pipeline for grabbing frames from the OAK-D Camera, as well as testing the on-board compute functionality.  With the OpenCV python package, we bring similar level of customizability to off-board image processing and deep computer vision pipelines.  This repository is open-source, so please feel free to add to it and change in any way.
+This repository is to serve as a platform for plug-and-play use of the OAK-D Camera for computer vision research and applications.  Using the depthAI python package, we bring a generalizable and extensible pipeline for grabbing frames from the OAK-D Camera, as well as testing the on-board compute functionality.  With the OpenCV python package, we bring similar level of customizability to off-board image processing and deep computer vision pipelines.  This repository is open-source, so please feel free to fork and create.
 
 ## Installation
 
@@ -10,47 +10,25 @@ Simply use git to create a local copy of this repo:
 
 `git clone https://gitlab.com/andrewgarrett/oak-d-research.git`
 
-Then install the dependencies.  We recommend using pip in a virtual environment, such as venv or conda.
-
-`pip install -r requirements.txt`
+This project uses [Docker](https://www.docker.com) and [docker-compose](https://docs.docker.com/compose/install/) to access the OAK-D Camera and perform computer vision.  The project also requires the user to install the [awscli](https://github.com/aws/aws-cli) and configure their credentials.
 
 ## Usage
 
-The `oak_config.json` file serves as the control mechanism for OAK-D parameters.  There are currently three main pipelines:
+The config files in the [oak_d/configs/](./oak_d/configs/) directory control the behavior of the application.  The config files with the prefix `oak_config` control the parameters of capture and processing, where the suffix specifies the type of pipeline to run.  The other config files are the parameterizations for the various OAK Neural Networks that are avaiable.
+
 - OAKPipeline (in `OAKPipeline.py`)
-  - Collects frames from OAK-D Camera, with the option to save intermittently ([depthai](https://docs.luxonis.com/en/latest/), [cv2](https://opencv.org/), [np](https://numpy.org/))
+  - Captures frames from OAK-D Camera data sources configured in the `oak_config.XXX.json` file. ([depthai](https://docs.luxonis.com/en/latest/), [cv2](https://opencv.org/), [np](https://numpy.org/))
 - ProcessingPipeline (in `processingPipeline.py`)
   - Applies image processing and deep computer vision operations to streamed or saved images ([cv2](https://opencv.org/), [np](https://numpy.org/))
-- DisplayPipeline (in `displayPipeline.py`)
-  - Displays frames in a simple and navigable GUI ([cv2](https://opencv.org/))
+  - DisplayPipeline (in `displayPipeline.py`)
+    - Displays frames in a simple and navigable GUI ([cv2](https://opencv.org/))
+  - DataCollectionPipeline (in `dataCollectionPipeline.py`)
+    - Saves frames locally and uploads them to S3 Bucket whose name is specified in the .env file ([boto3](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html))
 
-## Example
-
-```
-from OAKPipeline import OAKPipeline
-from processingPipelines import ProcessingPipeline
-from displayPipeline import DisplayPipeline
-
-...
-
-if __name__ == "__main__":
-    oak_cam = OAKPipeline() # initialize a camera pipeline object
-    oak_cam.startDevice() # start streaming
-    oak_processor = ProcessingPipeline() # initialize a processing pipeline object
-    oak_display = DisplayPipeline() # initialize a display pipeline object
-    while oak_cam.isOpened():
-        oak_cam.read()
-        oak_processor.processPayload(oak_cam.frame_dict)
-        oak_display.show(oak_cam.frame_dict)
-        key = cv2.waitKey(10)
-        if key == ord("q"):
-            break
-    cv2.destroyAllWindows()
-```
 
 ## Support
 
-For bugs and support, please do so on this repository or send an email to andrewgarrett@rivian.com.
+For bugs and support, please do so on this repository or send an email to andrewgarrett2@gmail.com.
 
 ## Roadmap
 
@@ -93,6 +71,7 @@ For bugs and support, please do so on this repository or send an email to andrew
     - [ ] Cropping
     - [ ] AprilTag Pose-estimation
 - [ ] Off-board
+  - [x] Dataset Curation
   - [ ] Deep Computer Vision Model Pipeline
     - [ ] Object Detection
     - [ ] Segementation

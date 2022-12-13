@@ -1,10 +1,10 @@
 # TODO
 
-- [ ] Add custom logging to all desired files
-	- [ ] OAKPipeline
-	- [ ] ProcessingPipeline
-	- [ ] DataCollectionPipeline
-	- [ ] DisplayPipeline
+- [x] Add custom logging to all desired files
+	- [x] OAKPipeline
+	- [x] ProcessingPipeline
+	- [x] DataCollectionPipeline
+	- [x] DisplayPipeline
 - [ ] Add comments to the same above files
 	- [ ] OAKPipeline
 	- [ ] ProcessingPipeline
