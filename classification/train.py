@@ -43,6 +43,7 @@ def train(net, optimizer, scheduler, criterion, train_loader, test_loader, model
 	model = net.to(device)
 	total_step = len(train_loader)
 	overall_step = 0
+	min_epoch_val_error = None
 	for epoch in range(epochs):
 		correct = 0
 		epoch_loss = 0
@@ -114,7 +115,7 @@ def train(net, optimizer, scheduler, criterion, train_loader, test_loader, model
 		)
 		print('Error of the network on the test images: {} %'.format(100 * epoch_val_error))
 		if epoch > 0.5*epochs and (epoch+1) % 3 == 0 and epoch+1 != epochs:
-			if epoch_val_error < min_epoch_val_error:
+			if min_epoch_val_error is None or epoch_val_error < min_epoch_val_error:
 				min_epoch_val_error = epoch_val_error
 				save_name = f"./classification/models/custom_models/{model_cfg['wandb']['group']}/{model_cfg['wandb']['name']}_best.h5"
 				torch.save(model.state_dict(), save_name)
