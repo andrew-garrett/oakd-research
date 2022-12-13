@@ -19,7 +19,7 @@ import wandb
 def initialize_wandb(cfg_fname):
 	wandb.login()
 	with open(cfg_fname, "r") as f:
-		model_cfg = json.dump(f)
+		model_cfg = json.load(f)
 
 	# WandB – Initialize a new run
 	wandb.init(project=model_cfg["wandb"]["project"],

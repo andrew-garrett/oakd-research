@@ -109,8 +109,8 @@ def train(net, device, optimizer, scheduler, criterion, train_loader, test_loade
 		)
 		print('Error of the network on the test images: {} %'.format(100 * epoch_val_error))
 
-		if (epoch+1) % 3 == 0 and epoch+1 != epochs:
-			checkpoint = "epoch" + str(epoch+1).zfill(4) + ".h5"
-			save_name = root_dir + "models/" + model_name + "/" + checkpoint
-			torch.save(model.state_dict(), save_name)
+		# if (epoch+1) % 3 == 0 and epoch+1 != epochs:
+		# 	checkpoint = "epoch" + str(epoch+1).zfill(4) + ".h5"
+		# 	save_name = root_dir + "models/" + model_name + "/" + checkpoint
+		# 	torch.save(model.state_dict(), save_name)
 	
