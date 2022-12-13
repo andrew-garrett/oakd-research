@@ -78,7 +78,7 @@ def train(net, device, optimizer, scheduler, criterion, train_loader, test_loade
 			optimizer.step()
 
 			if (i+1) % config.batch_size == 0:
-			print ('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'.format(epoch+1, epochs, i+1, total_step, loss.item()))
+			print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'.format(epoch+1, epochs, i+1, total_step, loss.item()))
 		# log training metrics
 		epoch_error = 1.0 - (correct / total)
 		epoch_loss = epoch_loss / total
