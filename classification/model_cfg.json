@@ -2,7 +2,7 @@
 	"hyperparameters": {
 		"batch_size": 128,
 		"test_batch_size": 100,
-		"epochs": 40,
+		"epochs": 50,
 		"lr": 0.00001,
 		"momentum": 0.9,
 		"weight_decay": 0.001,
@@ -15,6 +15,6 @@
 	"wandb": {
 		"project": "oakd-research-classification",
 		"group": "FCN",
-		"name": "fcn000"
+		"name": "fcn001"
 	}
 }
