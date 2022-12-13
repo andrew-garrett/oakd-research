@@ -17,7 +17,8 @@ from utils import prepareTorchDataset
 from classification.train import *
 from classification.test import *
 
-from models import custom_models
+from classification.models import custom_models
+from classification.models.custom_models.FCN.fcn import FCN
 
 
 #########################################################
@@ -26,7 +27,7 @@ from models import custom_models
 
 if __name__ == "__main__":
 
-	cfg_fname = "./model_cfg.json"
+	cfg_fname = "./classification/model_cfg.json"
 	cfg_dict, cfg_wandb = initialize_wandb(cfg_fname)
 
 	# Set random seeds for reproducability
@@ -36,29 +37,30 @@ if __name__ == "__main__":
 
 	trainloader, testloader = prepareTorchDataset(cfg_wandb)
 
-	# Initialize a new model
-	model = allcnn_t().to(device)
-	# Define the loss function as asked in the question
-	criterion = nn.CrossEntropyLoss()
-	criterion = getattr(nn, cfg_wandb.criterion + "()")
-	# Set optimizer and scheduler
-	# optimizer = optim.SGD(model.parameters(), lr=config.lr, momentum=config.momentum, weight_decay=config.weight_decay, nesterov=config.nesterov)
+	# Initialize model
+	model = FCN().to(cfg_dict["device"])
+	# Define loss function
+	criterion = getattr(nn, cfg_wandb.criterion)()
+	# Set optimizer
 	optimizer = getattr(
 		optim, 
-		f"{cfg_wandb.optimizer}(\
-			{model.parameters()}, \
-			lr={cfg_wandb.lr}, \
-			momentum={cfg_wandb.momentum}, \
-			weight_decay={cfg_wandb.weight_decay}, \
-			nesterov={cfg_wandb.nesterov})"
-	)
-	scheduler = optim.lr_scheduler.MultiStepLR(optimizer=optimizer, milestones=config.lr_steps)
+		cfg_wandb.optimizer
+		)(
+			model.parameters(), 
+			lr=cfg_wandb.lr, 
+			momentum=cfg_wandb.momentum, 
+			weight_decay=cfg_wandb.weight_decay, 
+			nesterov=cfg_wandb.nesterov
+	) 
+	# Set scheduler
 	scheduler = getattr(
 		optim.lr_scheduler,
-		f"{cfg_wandb.scheduler}(\
-			optimizer={optimizer}, \
-			milestones={cfg_wandb.lr_steps}"
+		cfg_wandb.scheduler
+		)(
+			optimizer=optimizer, 
+			milestones=cfg_wandb.lr_steps
 	)
+
 	# Training loop called here
 	train(
 		model, 
@@ -67,8 +69,9 @@ if __name__ == "__main__":
 		criterion, 
 		trainloader, 
 		testloader, 
-		config.epochs, 
-		config.model_name)
+		cfg_dict
+	)
 	# Save the model
-	final_model_name = root_dir + 'models/' + config.model_name + '/final.h5'
-	torch.save(model.state_dict(), final_model_name)
+	final_save_name = f"./classification/models/custom_models/{cfg_dict['wandb']['group']}/{cfg_dict['wandb']['name']}_final.h5"
+	torch.save(model.state_dict(), final_save_name)
+

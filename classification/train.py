@@ -42,6 +42,7 @@ def train(net, optimizer, scheduler, criterion, train_loader, test_loader, model
 	)
 	model = net.to(device)
 	total_step = len(train_loader)
+	T = model_cfg["hyperparameters"]["epochs"] * total_step
 	overall_step = 0
 	min_epoch_val_error = None
 	for epoch in range(epochs):
@@ -52,7 +53,7 @@ def train(net, optimizer, scheduler, criterion, train_loader, test_loader, model
 		for i, (images, labels) in enumerate(train_loader):
 			if scheduler is None:
 				# Update LR according to Cosine Annealing Warmup (discussed further down)
-				next_lr = lr_scheduler_impl(total_step, epoch, i)
+				next_lr = lr_scheduler_impl(total_step, T, model_cfg["hyperparameters"]["lr"], epoch, i)
 				for g in optimizer.param_groups:
 					g['lr'] = next_lr
 			else:

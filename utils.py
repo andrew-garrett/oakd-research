@@ -17,6 +17,16 @@ import wandb
 
 # Initialize Weights and Biases for Experiment Tracking
 def initialize_wandb(cfg_fname):
+	"""
+	Function to initialize wandb experiment, configured by the specified config file
+
+	Arguments:
+		- cfg_fname (string): specifies the file location of model_cfg.json
+
+	Returns:
+		- model_cfg (dict): dictionary storing data from model_cfg.json
+		- config (wandb.Config): config object for wandb experiment
+	"""
 	wandb.login()
 	with open(cfg_fname, "r") as f:
 		model_cfg = json.load(f)
@@ -37,8 +47,50 @@ def initialize_wandb(cfg_fname):
 	return model_cfg, config
 
 
+def lr_finder_algo(net, optimizer, scheduler, criterion, train_loader, model_cfg):
+	"""
+	Function to perform a search for the optimal initial learning rate for the
+	Cosine-Annealing w/ Warmup scheduler.
+	"""
+	device, epochs = model_cfg["device"], max(150, model_cfg["hyperparameters"]["epochs"])
+	model = net.to(device)
+	losses = []
+	lr_list = []
+	for epoch, (images, labels) in enumerate(train_loader):
+		if epoch == epochs:
+			break;
+		# Move tensors to configured device
+		images = images.to(device)
+		labels = labels.to(device)
+		# Forward Pass
+		outputs = model(images)
+		loss = criterion(outputs, labels)
+		# Backpropogation and SGD
+		optimizer.zero_grad()
+		loss.backward()
+		optimizer.step()
+		curr_lr = optimizer.param_groups[0]['lr']
+		wandb.log(
+			{
+				"Training Loss (LR Finder)": loss.item(),
+				"LR": curr_lr,
+				"Epoch": epoch
+			}
+		)
+		losses.append(loss.item())
+		lr_list.append(curr_lr)
+		scheduler.step()
+	eta_max = lr_list[min(enumerate(losses), key=lambda x: x[1])[0]] / 10.0 # losses.index(min(losses))
+	return eta_max
+
+# num_batches = len(trainloader)
+# T = config.epochs * num_batches
+# T_0 = int(T / 5)
+
 # Cosine Annealing w/ Warmup Learning Rate Schedule
-def lr_scheduler_impl(num_batches, epoch, i):
+def lr_scheduler_impl(num_batches, T, eta_max, epoch, i):
+	# fixed hyperparameters used for Cosine Annealing w/ Warmup Schedule
+	T_0 = int(T / 5)
 	t = epoch*num_batches + i
 	next_lr = 1e-5
 	if t <= T_0:
