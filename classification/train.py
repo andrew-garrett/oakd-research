@@ -34,7 +34,7 @@ def validate(model, device, test_loader):
 	return epoch_val_error, epoch_val_loss
 
 # The training loop
-def train(net, device, optimizer, scheduler, criterion, train_loader, test_loader, epochs, model_name):
+def train(net, device, optimizer, scheduler, criterion, train_loader, test_loader, epochs, batch_size):
 	model = net.to(device)
 	total_step = len(train_loader)
 	overall_step = 0
@@ -77,7 +77,7 @@ def train(net, device, optimizer, scheduler, criterion, train_loader, test_loade
 			loss.backward()
 			optimizer.step()
 
-			if (i+1) % config.batch_size == 0:
+			if (i+1) % batch_size == 0:
 				print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'.format(epoch+1, epochs, i+1, total_step, loss.item()))
 		# log training metrics
 		epoch_error = 1.0 - (correct / total)
