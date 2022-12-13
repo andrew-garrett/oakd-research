@@ -95,7 +95,7 @@ def train(net, device, optimizer, scheduler, criterion, train_loader, test_loade
 		################ Validation ################
 		model.eval()
 		with torch.no_grad():
-			epoch_val_error, epoch_val_loss = validate(model, test_loader)
+			epoch_val_error, epoch_val_loss = validate(model, device, test_loader)
 		if scheduler is not None:
 			scheduler.step()
 		# log validation metrics
