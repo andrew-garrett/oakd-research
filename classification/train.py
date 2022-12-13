@@ -114,6 +114,6 @@ def train(net, optimizer, scheduler, criterion, train_loader, test_loader, model
 		if epoch > 0.5*epochs and (epoch+1) % 3 == 0 and epoch+1 != epochs:
 			if epoch_val_error < min_epoch_val_error:
 				min_epoch_val_error = epoch_val_error
-				save_name = f"./models/custom_models/{model_cfg['wandb']['group']}/{model_cfg['wandb']['name']}_epoch{epoch}.h5"
+				save_name = f"./models/custom_models/{model_cfg['wandb']['group']}/{model_cfg['wandb']['name']}_best.h5"
 				torch.save(model.state_dict(), save_name)
 	
