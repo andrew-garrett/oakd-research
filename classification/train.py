@@ -34,7 +34,10 @@ def validate(model, device, criterion, test_loader):
 	return epoch_val_error, epoch_val_loss
 
 # The training loop
-def train(net, device, optimizer, scheduler, criterion, train_loader, test_loader, epochs, batch_size):
+def train(net, optimizer, scheduler, criterion, train_loader, test_loader, model_cfg):
+	device, epochs, batch_size = model_cfg["device"], 
+								 model_cfg["hyperparameters"]["epochs"],
+								 model_cfg["hyperparameters"]["batch_size"]
 	model = net.to(device)
 	total_step = len(train_loader)
 	overall_step = 0
@@ -108,9 +111,9 @@ def train(net, device, optimizer, scheduler, criterion, train_loader, test_loade
 			}
 		)
 		print('Error of the network on the test images: {} %'.format(100 * epoch_val_error))
-
-		# if (epoch+1) % 3 == 0 and epoch+1 != epochs:
-		# 	checkpoint = "epoch" + str(epoch+1).zfill(4) + ".h5"
-		# 	save_name = root_dir + "models/" + model_name + "/" + checkpoint
-		# 	torch.save(model.state_dict(), save_name)
+		if epoch > 0.5*epochs and (epoch+1) % 3 == 0 and epoch+1 != epochs:
+			if epoch_val_error < min_epoch_val_error:
+				min_epoch_val_error = epoch_val_error
+				save_name = f"./models/custom_models/{model_cfg['wandb']['group']}/{model_cfg['wandb']['name']}_epoch{epoch}.h5"
+				torch.save(model.state_dict(), save_name)
 	
