@@ -35,9 +35,11 @@ def validate(model, device, criterion, test_loader):
 
 # The training loop
 def train(net, optimizer, scheduler, criterion, train_loader, test_loader, model_cfg):
-	device, epochs, batch_size = model_cfg["device"], 
-								 model_cfg["hyperparameters"]["epochs"],
-								 model_cfg["hyperparameters"]["batch_size"]
+	device, epochs, batch_size = (
+		model_cfg["device"], 
+		model_cfg["hyperparameters"]["epochs"],
+		model_cfg["hyperparameters"]["batch_size"]
+	)
 	model = net.to(device)
 	total_step = len(train_loader)
 	overall_step = 0
