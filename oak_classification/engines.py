@@ -111,15 +111,19 @@ def lr_finding_engine(cfg_fname):
 	model_arch = cfg_dict['wandb']['group'].upper()
 	model_arch = model_arch.replace("_LRF", "")
 	print(dir(custom_models))
-	eval(f"model = custom_models.{model_arch.lower()}")
+	# eval(f"model = custom_models.{model_arch.lower()}")
 	model = getattr(
-		getattr(
-			getattr(
-				custom_models, 
-				model_arch,
-			), model_arch,
-		), model_arch,
-	)().to(cfg_dict["device"])
+		custom_models, 
+		model_arch,
+	)
+	# model = getattr(
+	# 	getattr(
+	# 		getattr(
+	# 			custom_models, 
+	# 			model_arch,
+	# 		), model_arch,
+	# 	), model_arch,
+	# )().to(cfg_dict["device"])
 	# model = FCN().to(cfg_dict["device"])
 	# Define loss function
 	criterion = getattr(nn, cfg_wandb.criterion)()
