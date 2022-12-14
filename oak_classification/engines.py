@@ -20,10 +20,6 @@ from oak_classification.test import *
 
 
 import oak_classification.models.custom_models as custom_models
-# from oak_classification.models import custom_models
-# from oak_classification.models.custom_models.FCN.FCN import FCN
-# for model_arch in os.listdir("./oak_classification/custom_models"):
-#	import oak_classification.models.custom_models
 
 
 #########################################################
