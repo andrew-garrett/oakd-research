@@ -90,7 +90,6 @@ def base_engine(cfg_fname):
 
 
 def lr_finding_engine(cfg_fname):
-
 	with open(cfg_fname, "r") as f:
 		tmp_cfg_dict = json.load(f)
 		tmp_cfg_dict["wandb"]["group"] += "_LRF"
@@ -111,6 +110,7 @@ def lr_finding_engine(cfg_fname):
 	# Initialize model
 	model_arch = cfg_dict['wandb']['group'].upper()
 	model_arch = model_arch.replace("_LRF", "")
+	print(dir(custom_models))
 	model = getattr(
 		getattr(
 			getattr(
