@@ -1,9 +1,13 @@
 import torch.nn as nn
-import torchvision.models
+from torchvision.models import mobilenet_v2, MobileNet_V2_Weights
 
 def MOBILENET_V2(pretrained=True, num_classes=10, feature_extracting=True):
 	# Create a model instance of the MobileNet V2 Architecture, pretrained on ImageNet
-	model = torchvision.models.mobilenet_v2(pretrained=pretrained)
+	if pretrained:
+		weights = "DEFAULT"
+	else:
+		weights = None
+	model = torchvision.models.mobilenet_v2(weights=weights)
 	# If specified, freeze the feature extractor
 	if feature_extracting:
 		for param in model.parameters():
