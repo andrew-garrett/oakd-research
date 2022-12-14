@@ -1,0 +1,7 @@
+{
+    "useNN": "facial_landmarks",
+    "resolution": [300, 300],
+    "nnBlob": "face-detection-retail-0004",
+    "threads": 2,
+    "confidenceThreshold": 0.5
+}

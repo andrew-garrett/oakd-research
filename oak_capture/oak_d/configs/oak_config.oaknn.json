@@ -2,7 +2,7 @@
     "oakPipeline": {
         "fps": 20,
         "display": {
-            "useDisplay": false,
+            "useDisplay": true,
             "resolution": [640, 360]
         },
         "rgb": {
@@ -35,7 +35,7 @@
                 }
             },
             "nn": {
-                "useNN": "mobilenet_ssd"
+                "useNN": "facial_landmarks"
             }
         }
     }

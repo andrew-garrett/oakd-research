@@ -53,6 +53,8 @@ class OAKPipeline:
 				self.initMobileNetNode()  # mobilenet detection node
 			elif self.__useNN == "yolo" or self.__useNN == "tiny_yolo":
 				self.initYOLONode()  # yolo detection node
+			elif self.__useNN == "facial_landmarks":
+				self.initFacialLandmarkNode() # facial detection node
 			self.frame_dict["nn"] = None
 
 	def readJSON(self):
@@ -214,10 +216,15 @@ class OAKPipeline:
 				self.cam_rgb.preview.link(self.manip.inputImage)
 				self.manip.out.link(self.mobilenet.input)
 			else:
-				self.cam_rgb.setPreviewSize(input_dim[0], input_dim[1])
-				# self.cam_rgb.setColorOrder(dai.ColorCameraProperties.ColorOrder.RGB)
-				self.cam_rgb.preview.link(self.mobilenet.input)
-				self.mobilenet.passthrough.link(self.xout_rgb.input)
+				# self.cam_rgb.setPreviewSize(input_dim[0], input_dim[1])
+				# # self.cam_rgb.setColorOrder(dai.ColorCameraProperties.ColorOrder.RGB)
+				# self.cam_rgb.preview.link(self.mobilenet.input)
+				# self.mobilenet.passthrough.link(self.xout_rgb.input)
+				self.manip = self.__pipeline.create(dai.node.ImageManip)
+				self.manip.initialConfig.setResize(input_dim[0], input_dim[1])
+				self.manip.initialConfig.setKeepAspectRatio(False)
+				self.cam_rgb.preview.link(self.manip.inputImage)
+				self.manip.out.link(self.mobilenet.input)
 
 	def initMobileNetSpatialNode(self):
 		"""
@@ -296,6 +303,94 @@ class OAKPipeline:
 			self.cam_rgb.preview.link(self.yolo.input)
 			self.yolo.passthrough.link(self.xout_rgb.input)
 
+	def initFacialLandmarkNode(self):
+		"""
+		Initialize Custom Neural Network Node
+		"""
+		self.__useNN = self.__useNN.replace("landmarks", "detection")
+		self.initMobileNetNode()
+		self.__useNN = self.__useNN.replace("detection", "landmarks")
+		image_manip_script = self.__pipeline.create(dai.node.Script)
+		self.mobilenet.out.link(image_manip_script.inputs['nn_in'])
+		self.cam_rgb.preview.link(image_manip_script.inputs['frame'])
+		image_manip_script.setScript("""
+		import time
+		def enlrage_roi(det): # For better face landmarks NN results
+			det.xmin -= 0.05
+			det.ymin -= 0.02
+			det.xmax += 0.05
+			det.ymax += 0.02
+		def limit_roi(det):
+			if det.xmin <= 0: det.xmin = 0.001
+			if det.ymin <= 0: det.ymin = 0.001
+			if det.xmax >= 1: det.xmax = 0.999
+			if det.ymax >= 1: det.ymax = 0.999
+		while True:
+			frame = node.io['frame'].get()
+			face_dets = node.io['nn_in'].get().detections
+			# No faces found
+			if len(face_dets) == 0: continue
+			# Take the first detected face, since this demo isn't multiple-face fatigue detection
+			det = face_dets[0]
+			enlrage_roi(det)
+			limit_roi(det)
+			# node.warn(f"Detection rect: {det.xmin}, {det.ymin}, {det.xmax}, {det.ymax}")
+			cfg = ImageManipConfig()
+			cfg.setCropRect(det.xmin, det.ymin, det.xmax, det.ymax)
+			cfg.setResize(160, 160)
+			cfg.setKeepAspectRatio(False)
+			node.io['manip_cfg'].send(cfg)
+			node.io['manip_img'].send(frame)
+			# node.warn(f"1 from nn_in: {det.xmin}, {det.ymin}, {det.xmax}, {det.ymax}")
+		""")
+
+		# This ImageManip will crop the mono frame based on the NN detections. Resulting image will be the cropped
+		# face that was detected by the face-detection NN.
+		manip_crop = self.__pipeline.create(dai.node.ImageManip)
+		image_manip_script.outputs['manip_img'].link(manip_crop.inputImage)
+		image_manip_script.outputs['manip_cfg'].link(manip_crop.inputConfig)
+		manip_crop.initialConfig.setResize(160, 160)
+		manip_crop.setWaitForConfigInput(True)
+
+		# Second NN that detcts emotions from the cropped 64x64 face
+		self.landmarks_nn = self.__pipeline.create(dai.node.NeuralNetwork)
+		self.landmarks_nn.setBlobPath(blobconverter.from_zoo(
+			name="facial_landmarks_68_160x160",
+			shaves=6,
+			zoo_type="depthai",
+			)
+		)
+		manip_crop.out.link(self.landmarks_nn.input)
+
+		self.xout_landmarks_nn = self.__pipeline.create(dai.node.XLinkOut)
+		self.xout_landmarks_nn_network = self.__pipeline.create(dai.node.XLinkOut)
+		self.xout_landmarks_nn.setStreamName(self.__useNN)
+		self.xout_landmarks_nn_network.setStreamName(self.__useNN + " Network")
+		self.landmarks_nn.out.link(self.xout_landmarks_nn.input)
+
+		# Below lines should be handled by the above lines
+		# input_dim = self.__params["processing"]["nn"]["resolution"]
+		# nnBlob = blobconverter.from_zoo(
+		# 	name=self.__params["processing"]["nn"]["nnBlob"], shaves=6
+		# )
+
+		# # Resize to the dimensions for the facial detection network
+		# face_det_manip = self.__pipeline.create(dai.node.ImageManip)
+		# face_det_manip.initialConfig.setResize(*input_dim)
+		# cam.preview.link(face_det_manip.inputImage)
+
+		# # NN that detects faces in the image
+		# face_nn = p.create(dai.node.MobileNetDetectionNetwork)
+		# face_nn.setConfidenceThreshold(0.3)
+		# face_nn.setBlobPath(blobconverter.from_zoo("face-detection-retail-0004", shaves=6))
+		# face_det_manip.out.link(face_nn.input)
+
+		# # Send ImageManipConfig to host so it can visualize the landmarks
+		# config_xout = p.create(dai.node.XLinkOut)
+		# config_xout.setStreamName("face_det")
+		# face_nn.out.link(config_xout.input)
+
+
 	def startDevice(self):
 		self.LOGGER.info("Starting OAK Camera")
 		self.__device = dai.Device(self.__pipeline)
@@ -356,6 +451,7 @@ class OAKPipeline:
 			if self.__useNN is not None and len(self.__useNN) > 0:
 				nnData = self.__nnQueue.get()
 				nnNetworkData = self.__nnNetworkQueue.tryGet()
+				print(nnData)
 				detections = nnData.detections
 				self.frame_dict["nn"] = detections
 
