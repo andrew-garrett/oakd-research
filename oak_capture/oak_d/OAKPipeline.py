@@ -216,15 +216,15 @@ class OAKPipeline:
 				self.cam_rgb.preview.link(self.manip.inputImage)
 				self.manip.out.link(self.mobilenet.input)
 			else:
-				# self.cam_rgb.setPreviewSize(input_dim[0], input_dim[1])
-				# # self.cam_rgb.setColorOrder(dai.ColorCameraProperties.ColorOrder.RGB)
-				# self.cam_rgb.preview.link(self.mobilenet.input)
-				# self.mobilenet.passthrough.link(self.xout_rgb.input)
-				self.manip = self.__pipeline.create(dai.node.ImageManip)
-				self.manip.initialConfig.setResize(input_dim[0], input_dim[1])
-				self.manip.initialConfig.setKeepAspectRatio(False)
-				self.cam_rgb.preview.link(self.manip.inputImage)
-				self.manip.out.link(self.mobilenet.input)
+				self.cam_rgb.setPreviewSize(input_dim[0], input_dim[1])
+				# self.cam_rgb.setColorOrder(dai.ColorCameraProperties.ColorOrder.RGB)
+				self.cam_rgb.preview.link(self.mobilenet.input)
+				self.mobilenet.passthrough.link(self.xout_rgb.input)
+				# self.manip = self.__pipeline.create(dai.node.ImageManip)
+				# self.manip.initialConfig.setResize(input_dim[0], input_dim[1])
+				# self.manip.initialConfig.setKeepAspectRatio(False)
+				# self.cam_rgb.preview.link(self.manip.inputImage)
+				# self.manip.out.link(self.mobilenet.input)
 
 	def initMobileNetSpatialNode(self):
 		"""
