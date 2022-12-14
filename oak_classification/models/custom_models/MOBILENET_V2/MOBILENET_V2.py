@@ -1,4 +1,5 @@
 import torch.nn as nn
+import torchvision
 from torchvision.models import mobilenet_v2, MobileNet_V2_Weights
 
 def MOBILENET_V2(pretrained=True, num_classes=10, feature_extracting=True):
