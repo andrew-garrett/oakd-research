@@ -115,9 +115,9 @@ def lr_finding_engine(cfg_fname):
 		getattr(
 			getattr(
 				custom_models, 
-				model_arch
-			), model_arch
-		), model_arch
+				model_arch,
+			), model_arch,
+		), model_arch,
 	)().to(cfg_dict["device"])
 	# model = FCN().to(cfg_dict["device"])
 	# Define loss function
