@@ -19,7 +19,7 @@ from classification.train import *
 from classification.test import *
 
 import models.custom_models as custom_models
-from classification.models import custom_models
+# from classification.models import custom_models
 from classification.models.custom_models.FCN.FCN import FCN
 # for model_arch in os.listdir("./classification/custom_models"):
 #	import classification.models.custom_models
