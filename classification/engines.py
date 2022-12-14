@@ -18,7 +18,7 @@ from classification.train import *
 from classification.test import *
 
 from classification.models import custom_models
-from classification.models.custom_models.FCN.fcn import FCN
+# from classification.models.custom_models.FCN.fcn import FCN
 
 
 #########################################################
