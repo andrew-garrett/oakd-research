@@ -3,6 +3,7 @@
 #################################################
 
 import json
+import random
 import torch
 import torch.nn as nn
 import wandb
@@ -18,6 +19,7 @@ def validate(model, device, criterion, test_loader):
 	val_correct = 0
 	epoch_val_loss = 0
 	val_total = 0
+	batch_num_log = random.randint(0, len(test_loader) - 1)
 	for i, (images, labels) in enumerate(test_loader):
 		images = images.to(device)
 		labels = labels.to(device)
@@ -28,6 +30,15 @@ def validate(model, device, criterion, test_loader):
 		val_correct += (predicted == labels).sum().item()
 		epoch_val_loss += loss.item()
 		val_total += labels.size(0)
+		if i == batch_num_log:
+			validation_log_samples = []
+			for i in range(min(8, labels.size(0) - 1));
+				validation_log_samples.append(wandb.Image(
+					images[i]
+					caption=f"Ground Truth: {labels[i]}; \n Predicted: {predicted[i]}"
+				))
+			wandb.log({"Validation Samples": validation_log_samples})
+
 
 	epoch_val_error = 1.0 - (val_correct / val_total)
 	epoch_val_loss = epoch_val_loss / val_total
