@@ -43,9 +43,9 @@ def base_engine(cfg_fname):
 
 	# Initialize model
 	model_arch = cfg_dict['wandb']['group'].upper()
-	import getattr(classification.models.custom_models, 
-		f"{model_arch}.{model_arch}.{model_arch}"
-	)
+	# import getattr(classification.models.custom_models, 
+	# 	f"{model_arch}.{model_arch}.{model_arch}"
+	# )
 	model = getattr(
 		classification.models.custom_models, 
 		f"{model_arch}.{model_arch}.{model_arch}"
