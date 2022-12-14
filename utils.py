@@ -32,7 +32,7 @@ def initialize_wandb(cfg_fname):
 		model_cfg = json.load(f)
 
 	# WandB – Initialize a new run
-	wandb.init(project=f"oakd-research-{model_cfg['task'].replace("_", "-")}",
+	wandb.init(project=f"oakd-research-{model_cfg['task'].replace('_', '-')}",
 			group=model_cfg["model_arch"],
 			name=model_cfg["name"])
 	wandb.watch_called = False # Re-run the model without restarting the runtime, unnecessary after our next release
