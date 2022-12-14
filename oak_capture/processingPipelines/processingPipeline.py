@@ -74,6 +74,7 @@ class ProcessingPipeline:
 		return rgb_im
 
 	def processPayload(self, frame_dict):
+		self.LOGGER.debug(", ".join(frame_dict.keys()))
 		return
 
 	def start(self):
@@ -85,6 +86,7 @@ class ProcessingPipeline:
 		self.running = True
 		while not self.oak_cam.isOpened():
 			continue
+			sleep(0.5)
 
 	def main(self):
 		counter = 1
@@ -93,14 +95,13 @@ class ProcessingPipeline:
 			current_frame_dict = self.oak_cam.frame_dict
 			self.processPayload(current_frame_dict)
 			self.LOGGER.info("Payload Processed")
-			if time() - t0 >= 60:
+			if time() - t0 >= 30:
 				self.running = False
 				break
 			if counter % 100 == 0:
 				dt = time() - t0
 				self.LOGGER.debug(f"Average FPS: {counter / dt}")
 			counter += 1
-
 
 	def stop(self):
 		self.LOGGER.info("Stopping Pipeline")

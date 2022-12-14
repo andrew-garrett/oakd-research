@@ -37,17 +37,32 @@ if __name__ == "__main__":
 	LOGGER.info(f"Starting {pipeline_type} pipeline, sourcing params from {cfg_fname}")
 	if pipeline_type == "demo":
 		pipeline = displayPipeline.DisplayPipeline(cfg_fname, LOGGER=LOGGER)
+		LOGGER.info(f"Created {pipeline_type} pipeline.")
+		pipeline.start()
+		LOGGER.info(f"Started {pipeline_type} pipeline.")
 	elif pipeline_type == "data_collection":
 		pipeline = dataCollectionPipeline.DataCollectionPipeline(cfg_fname, LOGGER=LOGGER)
+		LOGGER.info(f"Created {pipeline_type} pipeline.")
+		pipeline.start()
+		LOGGER.info(f"Started {pipeline_type} pipeline.")
 	elif pipeline_type == "oaknn":
 		pipeline = processingPipeline.ProcessingPipeline(cfg_fname, LOGGER=LOGGER)
+		LOGGER.info(f"Created {pipeline_type} pipeline.")
+		pipeline.start()
+		LOGGER.info(f"Started {pipeline_type} pipeline.")
+		pipeline.main()
 	elif pipeline_type == "april":
 		pipeline = processingPipeline.ProcessingPipeline(cfg_fname, LOGGER=LOGGER)
+		LOGGER.info(f"Created {pipeline_type} pipeline.")
+		pipeline.start()
+		LOGGER.info(f"Started {pipeline_type} pipeline.")
+		pipeline.main()
 	else:
 		pipeline = processingPipeline.ProcessingPipeline(cfg_fname, LOGGER=LOGGER)
-	LOGGER.info(f"Created {pipeline_type} pipeline.")
-	pipeline.start()
-	LOGGER.info(f"Started {pipeline_type} pipeline.")
+		LOGGER.info(f"Created {pipeline_type} pipeline.")
+		pipeline.start()
+		LOGGER.info(f"Started {pipeline_type} pipeline.")
+		pipeline.main()
 
 	while pipeline.running:
 		continue

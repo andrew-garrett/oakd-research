@@ -307,9 +307,10 @@ class OAKPipeline:
 		"""
 		Initialize Custom Neural Network Node
 		"""
+		lnd__useNN = self.__useNN
 		self.__useNN = self.__useNN.replace("landmarks", "detection")
 		self.initMobileNetNode()
-		self.__useNN = self.__useNN.replace("detection", "landmarks")
+		self.__useNN = lnd__useNN
 		image_manip_script = self.__pipeline.create(dai.node.Script)
 		self.mobilenet.out.link(image_manip_script.inputs['nn_in'])
 		self.cam_rgb.preview.link(image_manip_script.inputs['frame'])
@@ -367,6 +368,7 @@ class OAKPipeline:
 		self.xout_landmarks_nn.setStreamName(self.__useNN)
 		self.xout_landmarks_nn_network.setStreamName(self.__useNN + " Network")
 		self.landmarks_nn.out.link(self.xout_landmarks_nn.input)
+		
 
 		# Below lines should be handled by the above lines
 		# input_dim = self.__params["processing"]["nn"]["resolution"]
@@ -416,6 +418,13 @@ class OAKPipeline:
 				name="aprilTagData", maxSize=1, blocking=False
 			)
 		if self.__useNN is not None and len(self.__useNN) > 0:
+			if "landmark" in self.__useNN:
+				self.__sub_nnQueue = self.__device.getOutputQueue(
+					name=self.__useNN.replace("landmark", "detection"), maxSize=1, blocking=False
+				)
+				self.__sub_nnNetworkQueue = self.__device.getOutputQueue(
+					name=self.__useNN.replace("landmark", "detection") + " Network", maxSize=1, blocking=False
+				)			
 			self.__nnQueue = self.__device.getOutputQueue(
 				name=self.__useNN, maxSize=1, blocking=False
 			)
@@ -449,11 +458,14 @@ class OAKPipeline:
 				self.frame_dict["april"] = {"tag_data": aprilTagData, "april_im": april_im}
 
 			if self.__useNN is not None and len(self.__useNN) > 0:
-				nnData = self.__nnQueue.get()
-				nnNetworkData = self.__nnNetworkQueue.tryGet()
-				print(nnData)
-				detections = nnData.detections
-				self.frame_dict["nn"] = detections
+				if self.__nnQueue.has():
+					nnData = self.__nnQueue.get()
+					detections = nnData.detections
+					self.frame_dict["nn"] = detections
+					nnNetworkData = self.__nnNetworkQueue.tryGet()
+					self.LOGGER.debug(nnData)
+					if nnNetworkData is not None:
+						self.LOGGER.debug(nnNetworkData.getFirstLayerFp16())
 
 	def isOpened(self):
 		return self.__streaming
