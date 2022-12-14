@@ -1,6 +1,6 @@
 {
     "oakPipeline": {
-        "fps": 10,
+        "fps": 5,
         "display": {
             "useDisplay": true,
             "resolution": [640, 360]
