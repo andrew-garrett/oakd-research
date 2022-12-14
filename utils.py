@@ -82,9 +82,6 @@ def lr_finder_algo(net, optimizer, scheduler, criterion, train_loader, model_cfg
 	eta_max = lr_list[min(enumerate(losses), key=lambda x: x[1])[0]] / 10.0 # losses.index(min(losses))
 	return eta_max
 
-# num_batches = len(trainloader)
-# T = config.epochs * num_batches
-# T_0 = int(T / 5)
 
 # Cosine Annealing w/ Warmup Learning Rate Schedule
 def lr_scheduler_impl(num_batches, T, eta_max, epoch, i):

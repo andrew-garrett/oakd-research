@@ -1,7 +1,7 @@
 {
 	"task": "classification",
-	"model_arch": "FCN",
-	"name": "fcn002",
+	"model_arch": "MOBILENET_V2",
+	"name": "mobilenet_v2_000",
 	"batch_size": 128,
 	"test_batch_size": 100,
 	"epochs": 50,
