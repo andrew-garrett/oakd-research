@@ -1,5 +1,5 @@
 import torch.nn as nn
-import torchvision.models.mobilenet_v2
+import torchvision.models
 
 def MOBILENET_V2(pretrained=True, num_classes=10, feature_extracting=True):
 	# Create a model instance of the MobileNet V2 Architecture, pretrained on ImageNet
