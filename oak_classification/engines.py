@@ -38,7 +38,7 @@ def base_engine(cfg_fname):
 	trainloader, testloader = prepareTorchDataset(cfg_wandb)
 
 	# Initialize model
-	model_arch = cfg_dict["name"].upper()
+	model_arch = cfg_dict["model_arch"]
 	try:
 		model = getattr(
 			getattr(
