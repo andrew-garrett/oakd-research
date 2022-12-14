@@ -116,7 +116,10 @@ def lr_finding_engine(cfg_fname):
 		custom_models, 
 		model_arch,
 	)
-	lol = model().to(cfg_dict["device"])
+	lol = getattr(
+		model,
+		model_arch
+	)().to(cfg_dict["device"])
 	# model = getattr(
 	# 	getattr(
 	# 		getattr(
