@@ -1,3 +1,3 @@
 import torch
 import torch.nn as nn
-from FCN.FCN import FCN
+from custom_models.FCN.FCN import FCN
