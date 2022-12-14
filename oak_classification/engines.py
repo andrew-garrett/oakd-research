@@ -111,6 +111,7 @@ def lr_finding_engine(cfg_fname):
 	model_arch = cfg_dict['wandb']['group'].upper()
 	model_arch = model_arch.replace("_LRF", "")
 	print(dir(custom_models))
+	eval(f"model = custom_models.{model_arch}")
 	model = getattr(
 		getattr(
 			getattr(
