@@ -49,3 +49,7 @@ class FCN(nn.Module):
 
     def forward(self, x):
         return self.m(x)
+
+
+if __name__ == "__main__":
+    FCN()

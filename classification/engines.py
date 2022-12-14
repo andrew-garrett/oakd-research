@@ -18,7 +18,8 @@ from utils import prepareTorchDataset
 from classification.train import *
 from classification.test import *
 
-import classification.models.custom_models as custom_models
+
+# import classification.models.custom_models as custom_models
 # from classification.models import custom_models
 # from classification.models.custom_models.FCN.FCN import FCN
 # for model_arch in os.listdir("./classification/custom_models"):
@@ -43,7 +44,7 @@ def base_engine(cfg_fname):
 	# Initialize model
 	model_arch = cfg_dict['wandb']['group'].upper()
 	model = getattr(
-		custom_models, 
+		classification.models.custom_models, 
 		f"{model_arch}.{model_arch}.{model_arch}"
 	)().to(cfg_dict["device"])
 
