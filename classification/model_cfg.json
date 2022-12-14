@@ -15,6 +15,6 @@
 	"wandb": {
 		"project": "oakd-research-classification",
 		"group": "FCN",
-		"name": "fcn001"
+		"name": "fcn002"
 	}
 }
