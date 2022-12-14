@@ -14,7 +14,7 @@ import torch.optim as optim
 import torchvision.transforms as transforms
 import wandb
 
-from utils import prepareTorchDataset
+from utils import prepareTorchDataset, lr_finder_algo
 from oak_classification.train import *
 from oak_classification.test import *
 
@@ -43,12 +43,19 @@ def base_engine(cfg_fname):
 
 	# Initialize model
 	model_arch = cfg_dict['wandb']['group'].upper()
-	model = getattr(
-		custom_models, 
-		f"{model_arch}.{model_arch}.{model_arch}"
-	)().to(cfg_dict["device"])
-
-	# model = FCN().to(cfg_dict["device"])
+	try:
+		model = getattr(
+			getattr(
+				getattr(
+					custom_models, 
+					model_arch,
+				),
+				model_arch
+			), model_arch
+		)().to(cfg_dict["device"])
+	except Exception as e:
+		print(e)
+		return
 	# Define loss function
 	criterion = getattr(nn, cfg_wandb.criterion)()
 	# Set optimizer
@@ -110,34 +117,19 @@ def lr_finding_engine(cfg_fname):
 	# Initialize model
 	model_arch = cfg_dict['wandb']['group'].upper()
 	model_arch = model_arch.replace("_LRF", "")
-	print(dir(custom_models))
-	# eval(f"model = custom_models.{model_arch.lower()}")
-	model = getattr(
-		custom_models, 
-		model_arch,
-	)
-	lol = getattr(
-		model,
-		model_arch
-	)
-	model = getattr(
-		getattr(
+	try:
+		model = getattr(
 			getattr(
-				custom_models, 
-				model_arch,
-			),
-			model_arch
-		), model_arch
-	)().to(cfg_dict["device"])
-	# model = getattr(
-	# 	getattr(
-	# 		getattr(
-	# 			custom_models, 
-	# 			model_arch,
-	# 		), model_arch,
-	# 	), model_arch,
-	# )().to(cfg_dict["device"])
-	# model = FCN().to(cfg_dict["device"])
+				getattr(
+					custom_models, 
+					model_arch,
+				),
+				model_arch
+			), model_arch
+		)().to(cfg_dict["device"])
+	except Exception as e:
+		print(e)
+		return
 	# Define loss function
 	criterion = getattr(nn, cfg_wandb.criterion)()
 
