@@ -37,12 +37,12 @@ def validate(model, device, criterion, test_loader):
 def train(net, optimizer, scheduler, criterion, train_loader, test_loader, model_cfg):
 	device, epochs, batch_size = (
 		model_cfg["device"], 
-		model_cfg["hyperparameters"]["epochs"],
-		model_cfg["hyperparameters"]["batch_size"]
+		model_cfg["epochs"],
+		model_cfg["batch_size"]
 	)
 	model = net.to(device)
 	total_step = len(train_loader)
-	T = model_cfg["hyperparameters"]["epochs"] * total_step
+	T = model_cfg["epochs"] * total_step
 	overall_step = 0
 	min_epoch_val_error = None
 	for epoch in range(epochs):
@@ -53,7 +53,7 @@ def train(net, optimizer, scheduler, criterion, train_loader, test_loader, model
 		for i, (images, labels) in enumerate(train_loader):
 			if scheduler is None:
 				# Update LR according to Cosine Annealing Warmup (discussed further down)
-				next_lr = lr_scheduler_impl(total_step, T, model_cfg["hyperparameters"]["lr"], epoch, i)
+				next_lr = lr_scheduler_impl(total_step, T, model_cfg["lr"], epoch, i)
 				for g in optimizer.param_groups:
 					g['lr'] = next_lr
 			else:
@@ -118,6 +118,6 @@ def train(net, optimizer, scheduler, criterion, train_loader, test_loader, model
 		if epoch > 0.5*epochs and (epoch+1) % 3 == 0 and epoch+1 != epochs:
 			if min_epoch_val_error is None or epoch_val_error < min_epoch_val_error:
 				min_epoch_val_error = epoch_val_error
-				save_name = f"./oak_classification/models/custom_models/{model_cfg['wandb']['group']}/{model_cfg['wandb']['name']}_best.h5"
+				save_name = f"./oak_{model_cfg['task']}/models/custom_models/{model_cfg['model_arch']}/{model_cfg['name']}_best.h5"
 				torch.save(model.state_dict(), save_name)
 	

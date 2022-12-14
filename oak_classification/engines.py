@@ -38,7 +38,7 @@ def base_engine(cfg_fname):
 	trainloader, testloader = prepareTorchDataset(cfg_wandb)
 
 	# Initialize model
-	model_arch = cfg_dict['wandb']['group'].upper()
+	model_arch = cfg_dict["name"].upper()
 	try:
 		model = getattr(
 			getattr(
@@ -87,7 +87,7 @@ def base_engine(cfg_fname):
 		cfg_dict
 	)
 	# Save the model
-	final_save_name = f"./oak_classification/models/custom_models/{cfg_dict['wandb']['group']}/{cfg_dict['wandb']['name']}_final.h5"
+	final_save_name = f"./oak_{cfg_dict['task']}/models/custom_models/{cfg_dict['model_arch']}/{cfg_dict['name']}_final.h5"
 	torch.save(model.state_dict(), final_save_name)
 
 
@@ -95,8 +95,7 @@ def base_engine(cfg_fname):
 def lr_finding_engine(cfg_fname):
 	with open(cfg_fname, "r") as f:
 		tmp_cfg_dict = json.load(f)
-		tmp_cfg_dict["wandb"]["group"] += "_LRF"
-		tmp_cfg_dict["wandb"]["name"] += "_LRF"
+		tmp_cfg_dict["model_arch"] += "_LRF"
 	with open(cfg_fname, "w") as f:
 		json.dump(tmp_cfg_dict, f, indent="\t")
 
@@ -111,7 +110,7 @@ def lr_finding_engine(cfg_fname):
 	trainloader, testloader = prepareTorchDataset(cfg_wandb)
 
 	# Initialize model
-	model_arch = cfg_dict['wandb']['group'].upper()
+	model_arch = cfg_dict["model_arch"].upper()
 	model_arch = model_arch.replace("_LRF", "")
 	try:
 		model = getattr(
@@ -162,9 +161,8 @@ def lr_finding_engine(cfg_fname):
 	# Write it to the config
 	with open(cfg_fname, "r") as f:
 		tmp_cfg_dict = json.load(f)
-		tmp_cfg_dict["wandb"]["group"] = tmp_cfg_dict["wandb"]["group"][:-len("_LRF")]
-		tmp_cfg_dict["wandb"]["name"] = tmp_cfg_dict["wandb"]["name"][:-len("_LRF")]
-		tmp_cfg_dict["hyperparameters"]["lr"] = eta_max
+		tmp_cfg_dict["model_arch"] = tmp_cfg_dict["model_arch"][:-len("_LRF")]
+		tmp_cfg_dict["lr"] = eta_max
 	with open(cfg_fname, "w") as f:
 		json.dump(tmp_cfg_dict, f, indent="\t")
 

@@ -32,16 +32,16 @@ def initialize_wandb(cfg_fname):
 		model_cfg = json.load(f)
 
 	# WandB – Initialize a new run
-	wandb.init(project=model_cfg["wandb"]["project"],
-			group=model_cfg["wandb"]["group"],
-			name=model_cfg["wandb"]["name"])
+	wandb.init(project=f"oakd-research-{model_cfg['task'].replace("_", "-")}",
+			group=model_cfg["model_arch"],
+			name=model_cfg["name"])
 	wandb.watch_called = False # Re-run the model without restarting the runtime, unnecessary after our next release
 
 	# WandB – Config is a variable that holds and saves hyperparameters and inputs
 	config = wandb.config
-	for k, v in model_cfg["hyperparameters"].items():
+	for k, v in model_cfg.items():
 		setattr(config, k, v)
-	config.model_name = model_cfg["wandb"]["group"] # Save folder for model checkpoints
+	config.model_name = model_cfg["model_arch"] # Save folder for model checkpoints
 	config.lr_steps = [int(0.4*config.epochs), int(0.8*config.epochs)]
 	model_cfg["device"] = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 	return model_cfg, config
@@ -52,7 +52,7 @@ def lr_finder_algo(net, optimizer, scheduler, criterion, train_loader, model_cfg
 	Function to perform a search for the optimal initial learning rate for the
 	Cosine-Annealing w/ Warmup scheduler.
 	"""
-	device, epochs = model_cfg["device"], max(150, model_cfg["hyperparameters"]["epochs"])
+	device, epochs = model_cfg["device"], max(150, model_cfg["epochs"])
 	model = net.to(device)
 	losses = []
 	lr_list = []
