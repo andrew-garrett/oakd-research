@@ -13,6 +13,7 @@ from torchvision.models import mobilenet_v2, MobileNet_V2_Weights
 ############################################################
 
 class MOBILENET_V2(nn.Module):
+
 	def __init__(self, pretrained=True, num_classes=10, feature_extracting=False):
 		super().__init__()
 		# Create a model instance of the MobileNet V2 Architecture, pretrained on ImageNet
@@ -35,6 +36,8 @@ class MOBILENET_V2(nn.Module):
 	def forward(self, x):
 		return self.m(x)
 
+if __name__ == "__main__":
+	MOBILENET_V2()
 
 
 # def MOBILENET_V2(pretrained=True, num_classes=10, feature_extracting=False):
