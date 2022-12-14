@@ -17,6 +17,7 @@ from utils import prepareTorchDataset
 from classification.train import *
 from classification.test import *
 
+from classification.models import custom_models
 from classification.models.custom_models.FCN.fcn import FCN
 
 
@@ -36,7 +37,13 @@ def base_engine(cfg_fname):
 	trainloader, testloader = prepareTorchDataset(cfg_wandb)
 
 	# Initialize model
-	model = FCN().to(cfg_dict["device"])
+	model_arch = cfg_dict['wandb']['group'].upper()
+	model = getattr(
+		custom_models, 
+		f"{model_arch}.{model_arch}.{model_arch}"
+	)().to(cfg_dict["device"])
+
+	# model = FCN().to(cfg_dict["device"])
 	# Define loss function
 	criterion = getattr(nn, cfg_wandb.criterion)()
 	# Set optimizer
@@ -97,7 +104,12 @@ def lr_finding_engine(cfg_fname):
 	trainloader, testloader = prepareTorchDataset(cfg_wandb)
 
 	# Initialize model
-	model = FCN().to(cfg_dict["device"])
+	model_arch = cfg_dict['wandb']['group'].upper()
+	model = getattr(
+		custom_models, 
+		f"{model_arch}.{model_arch}.{model_arch}"
+	)().to(cfg_dict["device"])
+	# model = FCN().to(cfg_dict["device"])
 	# Define loss function
 	criterion = getattr(nn, cfg_wandb.criterion)()
 
