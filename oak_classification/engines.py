@@ -166,7 +166,7 @@ def lr_finding_engine(cfg_fname):
 	with open(cfg_fname, "w") as f:
 		json.dump(tmp_cfg_dict, f, indent="\t")
 
-	engine(cfg_fname)
+	base_engine(cfg_fname)
 
 
 if __name__ == "__main__":

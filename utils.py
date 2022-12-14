@@ -41,7 +41,6 @@ def initialize_wandb(cfg_fname):
 	config = wandb.config
 	for k, v in model_cfg.items():
 		setattr(config, k, v)
-	config.model_name = model_cfg["model_arch"] # Save folder for model checkpoints
 	config.lr_steps = [int(0.4*config.epochs), int(0.8*config.epochs)]
 	model_cfg["device"] = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 	return model_cfg, config
