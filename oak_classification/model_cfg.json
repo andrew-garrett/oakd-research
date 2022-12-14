@@ -1,7 +1,7 @@
 {
 	"task": "classification",
 	"model_arch": "FCN",
-	"name": "fcn_001",
+	"name": "fcn_002",
 	"batch_size": 128,
 	"test_batch_size": 100,
 	"epochs": 40,
