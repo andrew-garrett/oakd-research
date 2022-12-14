@@ -2,7 +2,7 @@ import torch.nn as nn
 import torchvision
 from torchvision.models import mobilenet_v2, MobileNet_V2_Weights
 
-def MOBILENET_V2(pretrained=True, num_classes=10, feature_extracting=True):
+def MOBILENET_V2(pretrained=True, num_classes=10, feature_extracting=False):
 	# Create a model instance of the MobileNet V2 Architecture, pretrained on ImageNet
 	if pretrained:
 		weights = "DEFAULT"
