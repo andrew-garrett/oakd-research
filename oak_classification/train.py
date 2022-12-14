@@ -32,10 +32,10 @@ def validate(model, device, criterion, test_loader, epoch):
 		val_total += labels.size(0)
 		if i == batch_num_log:
 			validation_log_samples = []
-			for i in range(min(8, labels.size(0) - 1)):
+			for j in range(min(8, labels.size(0) - 1)):
 				validation_log_samples.append(wandb.Image(
-					images[i],
-					caption=f"Ground Truth: {labels[i]}; \n Predicted: {predicted[i]}"
+					images[j],
+					caption=f"Ground Truth: {labels[j]}; \n Predicted: {predicted[j]}"
 				))
 			wandb.log({"Validation Samples": validation_log_samples, "Epoch": epoch})
 
