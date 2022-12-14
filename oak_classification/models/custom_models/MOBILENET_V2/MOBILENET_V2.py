@@ -27,7 +27,7 @@ class MOBILENET_V2(nn.Module):
 				param.requires_grad = False
 		# Replace the classifier (which outputs 1000 classes for ImageNet) with a classifier which outputs 10 classes for CIFAR-10
 		custom_classifier = nn.Sequential(
-			nn.Linear(in_features=model.last_channel, out_features=4*num_classes),
+			nn.Linear(in_features=self.model.last_channel, out_features=4*num_classes),
 			nn.Linear(in_features=4*num_classes, out_features=num_classes)
 		)
 		self.model.classifier[1] = custom_classifier
