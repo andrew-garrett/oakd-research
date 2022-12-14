@@ -3,6 +3,7 @@
 #################################################
 
 import json
+import os
 import random
 import numpy as np
 
@@ -19,6 +20,8 @@ from classification.test import *
 
 from classification.models import custom_models
 # from classification.models.custom_models.FCN.fcn import FCN
+# for model_arch in os.listdir("./classification/custom_models"):
+#	import classification.models.custom_models
 
 
 #########################################################
