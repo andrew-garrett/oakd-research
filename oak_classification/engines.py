@@ -14,7 +14,6 @@ import torch.optim as optim
 import torchvision.transforms as transforms
 import wandb
 
-import 
 from utils import prepareTorchDataset
 from oak_classification.train import *
 from oak_classification.test import *
@@ -44,9 +43,6 @@ def base_engine(cfg_fname):
 
 	# Initialize model
 	model_arch = cfg_dict['wandb']['group'].upper()
-	# import getattr(oak_classification.models.custom_models, 
-	# 	f"{model_arch}.{model_arch}.{model_arch}"
-	# )
 	model = getattr(
 		custom_models, 
 		f"{model_arch}.{model_arch}.{model_arch}"
