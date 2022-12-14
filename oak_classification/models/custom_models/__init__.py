@@ -1,3 +1,3 @@
 import torch
 import torch.nn as nn
-from custom_models.FCN.FCN import FCN
+import oak_classification.models.custom_models.FCN.FCN.FCN as fcn
