@@ -15,7 +15,7 @@ from utils import lr_scheduler_impl, initialize_wandb
 #################### CUSTOM TRAINING FUNCTIONS ####################
 ###################################################################
 
-def validate(model, device, criterion, test_loader):
+def validate(model, device, criterion, test_loader, epoch):
 	val_correct = 0
 	epoch_val_loss = 0
 	val_total = 0
@@ -37,7 +37,7 @@ def validate(model, device, criterion, test_loader):
 					images[i],
 					caption=f"Ground Truth: {labels[i]}; \n Predicted: {predicted[i]}"
 				))
-			wandb.log({"Validation Samples": validation_log_samples})
+			wandb.log({"Validation Samples": validation_log_samples, "Epoch": epoch})
 
 
 	epoch_val_error = 1.0 - (val_correct / val_total)
@@ -113,7 +113,7 @@ def train(net, optimizer, scheduler, criterion, train_loader, test_loader, model
 		################ Validation ################
 		model.eval()
 		with torch.no_grad():
-			epoch_val_error, epoch_val_loss = validate(model, device, criterion, test_loader)
+			epoch_val_error, epoch_val_loss = validate(model, device, criterion, test_loader, epoch)
 		if scheduler is not None:
 			scheduler.step()
 		# log validation metrics
