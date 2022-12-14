@@ -38,7 +38,7 @@ def base_engine(cfg_fname):
 	trainloader, testloader = prepareTorchDataset(cfg_wandb)
 
 	# Initialize model
-	model_arch = cfg_dict["model_arch"]
+	model_arch = cfg_dict["model_arch"].upper()
 	try:
 		model = getattr(
 			getattr(
@@ -95,7 +95,7 @@ def base_engine(cfg_fname):
 def lr_finding_engine(cfg_fname):
 	with open(cfg_fname, "r") as f:
 		tmp_cfg_dict = json.load(f)
-		tmp_cfg_dict["model_arch"] += "_LRF"
+		tmp_cfg_dict["name"] += "_LRF"
 	with open(cfg_fname, "w") as f:
 		json.dump(tmp_cfg_dict, f, indent="\t")
 
@@ -111,7 +111,6 @@ def lr_finding_engine(cfg_fname):
 
 	# Initialize model
 	model_arch = cfg_dict["model_arch"].upper()
-	model_arch = model_arch.replace("_LRF", "")
 	try:
 		model = getattr(
 			getattr(
@@ -161,7 +160,7 @@ def lr_finding_engine(cfg_fname):
 	# Write it to the config
 	with open(cfg_fname, "r") as f:
 		tmp_cfg_dict = json.load(f)
-		tmp_cfg_dict["model_arch"] = tmp_cfg_dict["model_arch"][:-len("_LRF")]
+		tmp_cfg_dict["name"] = tmp_cfg_dict["name"][:-len("_LRF")]
 		tmp_cfg_dict["lr"] = eta_max
 	with open(cfg_fname, "w") as f:
 		json.dump(tmp_cfg_dict, f, indent="\t")
