@@ -14,16 +14,17 @@ import torch.optim as optim
 import torchvision.transforms as transforms
 import wandb
 
+import 
 from utils import prepareTorchDataset
-from classification.train import *
-from classification.test import *
+from oak_classification.train import *
+from oak_classification.test import *
 
 
-# import classification.models.custom_models as custom_models
-# from classification.models import custom_models
-# from classification.models.custom_models.FCN.FCN import FCN
-# for model_arch in os.listdir("./classification/custom_models"):
-#	import classification.models.custom_models
+import oak_classification.models.custom_models as custom_models
+# from oak_classification.models import custom_models
+# from oak_classification.models.custom_models.FCN.FCN import FCN
+# for model_arch in os.listdir("./oak_classification/custom_models"):
+#	import oak_classification.models.custom_models
 
 
 #########################################################
@@ -43,11 +44,11 @@ def base_engine(cfg_fname):
 
 	# Initialize model
 	model_arch = cfg_dict['wandb']['group'].upper()
-	# import getattr(classification.models.custom_models, 
+	# import getattr(oak_classification.models.custom_models, 
 	# 	f"{model_arch}.{model_arch}.{model_arch}"
 	# )
 	model = getattr(
-		classification.models.custom_models, 
+		custom_models, 
 		f"{model_arch}.{model_arch}.{model_arch}"
 	)().to(cfg_dict["device"])
 
@@ -87,7 +88,7 @@ def base_engine(cfg_fname):
 		cfg_dict
 	)
 	# Save the model
-	final_save_name = f"./classification/models/custom_models/{cfg_dict['wandb']['group']}/{cfg_dict['wandb']['name']}_final.h5"
+	final_save_name = f"./oak_classification/models/custom_models/{cfg_dict['wandb']['group']}/{cfg_dict['wandb']['name']}_final.h5"
 	torch.save(model.state_dict(), final_save_name)
 
 
@@ -115,7 +116,7 @@ def lr_finding_engine(cfg_fname):
 	model_arch = cfg_dict['wandb']['group'].upper()
 	model_arch = model_arch.replace("_LRF", "")
 	model = getattr(
-		classification.models.custom_models, 
+		custom_models, 
 		f"{model_arch}.{model_arch}.{model_arch}"
 	)().to(cfg_dict["device"])
 	# model = FCN().to(cfg_dict["device"])
@@ -166,6 +167,6 @@ def lr_finding_engine(cfg_fname):
 
 if __name__ == "__main__":
 
-	cfg_fname = "./classification/model_cfg.json"
+	cfg_fname = "./oak_classification/model_cfg.json"
 	# engine(cfg_fname)
 	# lr_finding_engine(cfg_fname)
