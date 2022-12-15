@@ -19,11 +19,16 @@ The config files in the [oak_d/configs/](./oak_d/configs/) directory control the
 - OAKPipeline (in `OAKPipeline.py`)
   - Captures frames from OAK-D Camera data sources configured in the `oak_config.XXX.json` file. ([depthai](https://docs.luxonis.com/en/latest/), [cv2](https://opencv.org/), [np](https://numpy.org/))
 - ProcessingPipeline (in `processingPipeline.py`)
-  - Applies image processing and deep computer vision operations to streamed or saved images ([cv2](https://opencv.org/), [np](https://numpy.org/))
+  - Pipeline Architecture which applies image processing and deep computer vision operations to streamed or saved images ([cv2](https://opencv.org/), [np](https://numpy.org/))
   - DisplayPipeline (in `displayPipeline.py`)
     - Displays frames in a simple and navigable GUI ([cv2](https://opencv.org/))
+      - In the `.env` file, set `PIPELINE"demo"`, then run `sudo ./build_and_run.sh`
+  - FacialLandmarkPipeline (in `facialLandmarkPipeline.py`)
+    - Displays frames with Facial Landmark Detection outputs overlaid
+      - In the `.env` file, set `PIPELINE="facial_landmarks"`, then run `sudo ./build_and_run.sh`
   - DataCollectionPipeline (in `dataCollectionPipeline.py`)
     - Saves frames locally and uploads them to S3 Bucket whose name is specified in the .env file ([boto3](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html))
+      - In the `.env` file, set `PIPELINE="data_collection"`, then run `sudo ./build_and_run.sh`
 
 
 ## Support

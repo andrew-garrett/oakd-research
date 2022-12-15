@@ -66,6 +66,8 @@ class ProcessingPipeline:
 				if self.label_mapping is None:
 					with open("../data/label_maps/coco_80cl.txt", "r") as f:
 						self.label_mapping = f.readlines()
+			elif self.useNN == "facial_landmarks":
+				self.label_mapping = ["", "Person"]
 
 	def processDepth(self, depth_im):
 		return depth_im
@@ -74,7 +76,7 @@ class ProcessingPipeline:
 		return rgb_im
 
 	def processPayload(self, frame_dict):
-		self.LOGGER.debug(", ".join(frame_dict.keys()))
+		# self.LOGGER.debug(", ".join(frame_dict.keys()))
 		return
 
 	def start(self):
@@ -94,13 +96,13 @@ class ProcessingPipeline:
 		while self.oak_cam.isOpened():		
 			current_frame_dict = self.oak_cam.frame_dict
 			self.processPayload(current_frame_dict)
-			self.LOGGER.info("Payload Processed")
+			# self.LOGGER.info("Payload Processed")
 			if time() - t0 >= 30:
 				self.running = False
 				break
 			if counter % 100 == 0:
 				dt = time() - t0
-				self.LOGGER.debug(f"Average FPS: {counter / dt}")
+				# self.LOGGER.debug(f"Average FPS: {counter / dt}")
 			counter += 1
 
 	def stop(self):

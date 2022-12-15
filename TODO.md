@@ -11,3 +11,7 @@
 	- [ ] DataCollectionPipeline
 	- [ ] DisplayPipeline
 - [ ] Update README.md
+
+- [ ] Add custom Pipeline modules to library
+	- [x] FacialLandmarkPipeline
+	- [ ] StreamPipeline

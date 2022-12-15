@@ -3,6 +3,7 @@
 #####################################################################
 
 import json
+import numpy as np
 import depthai as dai
 import blobconverter
 from threading import Thread
@@ -307,10 +308,11 @@ class OAKPipeline:
 		"""
 		Initialize Custom Neural Network Node
 		"""
-		lnd__useNN = self.__useNN
-		self.__useNN = self.__useNN.replace("landmarks", "detection")
+		# lnd__useNN = self.__useNN
+		self.__useNN = self.__useNN.replace("landmark", "detection")
 		self.initMobileNetNode()
-		self.__useNN = lnd__useNN
+		# self.__useNN = lnd__useNN
+		self.__useNN = self.__useNN.replace("detection", "landmark")
 		image_manip_script = self.__pipeline.create(dai.node.Script)
 		self.mobilenet.out.link(image_manip_script.inputs['nn_in'])
 		self.cam_rgb.preview.link(image_manip_script.inputs['frame'])
@@ -351,12 +353,12 @@ class OAKPipeline:
 		image_manip_script.outputs['manip_img'].link(manip_crop.inputImage)
 		image_manip_script.outputs['manip_cfg'].link(manip_crop.inputConfig)
 		manip_crop.initialConfig.setResize(160, 160)
-		manip_crop.setWaitForConfigInput(True)
+		manip_crop.setWaitForConfigInput(False)
 
 		# Second NN that detcts emotions from the cropped 64x64 face
 		self.landmarks_nn = self.__pipeline.create(dai.node.NeuralNetwork)
 		self.landmarks_nn.setBlobPath(blobconverter.from_zoo(
-			name="facial_landmarks_68_160x160",
+			name="facial_landmarks_68_160x160", #"facial-landmarks-35-adas-0002", # 
 			shaves=6,
 			zoo_type="depthai",
 			)
@@ -367,30 +369,8 @@ class OAKPipeline:
 		self.xout_landmarks_nn_network = self.__pipeline.create(dai.node.XLinkOut)
 		self.xout_landmarks_nn.setStreamName(self.__useNN)
 		self.xout_landmarks_nn_network.setStreamName(self.__useNN + " Network")
+		self.landmarks_nn.input.setBlocking(False)
 		self.landmarks_nn.out.link(self.xout_landmarks_nn.input)
-		
-
-		# Below lines should be handled by the above lines
-		# input_dim = self.__params["processing"]["nn"]["resolution"]
-		# nnBlob = blobconverter.from_zoo(
-		# 	name=self.__params["processing"]["nn"]["nnBlob"], shaves=6
-		# )
-
-		# # Resize to the dimensions for the facial detection network
-		# face_det_manip = self.__pipeline.create(dai.node.ImageManip)
-		# face_det_manip.initialConfig.setResize(*input_dim)
-		# cam.preview.link(face_det_manip.inputImage)
-
-		# # NN that detects faces in the image
-		# face_nn = p.create(dai.node.MobileNetDetectionNetwork)
-		# face_nn.setConfidenceThreshold(0.3)
-		# face_nn.setBlobPath(blobconverter.from_zoo("face-detection-retail-0004", shaves=6))
-		# face_det_manip.out.link(face_nn.input)
-
-		# # Send ImageManipConfig to host so it can visualize the landmarks
-		# config_xout = p.create(dai.node.XLinkOut)
-		# config_xout.setStreamName("face_det")
-		# face_nn.out.link(config_xout.input)
 
 
 	def startDevice(self):
@@ -426,7 +406,7 @@ class OAKPipeline:
 					name=self.__useNN.replace("landmark", "detection") + " Network", maxSize=1, blocking=False
 				)			
 			self.__nnQueue = self.__device.getOutputQueue(
-				name=self.__useNN, maxSize=1, blocking=False
+				name=self.__useNN, maxSize=4, blocking=False
 			)
 			self.__nnNetworkQueue = self.__device.getOutputQueue(
 				name=self.__useNN + " Network", maxSize=1, blocking=False
@@ -458,14 +438,20 @@ class OAKPipeline:
 				self.frame_dict["april"] = {"tag_data": aprilTagData, "april_im": april_im}
 
 			if self.__useNN is not None and len(self.__useNN) > 0:
-				if self.__nnQueue.has():
+				try:
+					if self.__sub_nnQueue.has():
+						sub_nnData = self.__sub_nnQueue.get()
+						detections = sub_nnData.detections
+						self.frame_dict["nn"] = {"detections": detections}
+						nnData = self.__nnQueue.get()
+						# self.LOGGER.debug(detections)
+						self.frame_dict["nn"][self.__useNN] = nnData.getFirstLayerFp16()
+						#if nnData is not None:
+						#	self.LOGGER.debug(np.array(nnData.getFirstLayerFp16()))
+				except:				
 					nnData = self.__nnQueue.get()
 					detections = nnData.detections
-					self.frame_dict["nn"] = detections
-					nnNetworkData = self.__nnNetworkQueue.tryGet()
-					self.LOGGER.debug(nnData)
-					if nnNetworkData is not None:
-						self.LOGGER.debug(nnNetworkData.getFirstLayerFp16())
+					self.frame_dict["nn"] = {"detections": detections}
 
 	def isOpened(self):
 		return self.__streaming

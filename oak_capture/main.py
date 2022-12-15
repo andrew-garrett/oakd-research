@@ -9,7 +9,7 @@ from threading import Thread
 import logging
 
 from setup_logging import CustomFormatter
-from processingPipelines import processingPipeline, displayPipeline, dataCollectionPipeline
+from processingPipelines import processingPipeline, displayPipeline, dataCollectionPipeline, facialLandmarkPipeline
 
 
 #####################################################################
@@ -37,6 +37,12 @@ if __name__ == "__main__":
 	LOGGER.info(f"Starting {pipeline_type} pipeline, sourcing params from {cfg_fname}")
 	if pipeline_type == "demo":
 		pipeline = displayPipeline.DisplayPipeline(cfg_fname, LOGGER=LOGGER)
+		#pipeline = facialLandmarkPipeline.FacialLandmarkPipeline(cfg_fname, LOGGER=LOGGER)
+		LOGGER.info(f"Created {pipeline_type} pipeline.")
+		pipeline.start()
+		LOGGER.info(f"Started {pipeline_type} pipeline.")
+	elif "facial_landmark" in pipeline_type:
+		pipeline = facialLandmarkPipeline.FacialLandmarkPipeline(cfg_fname, LOGGER=LOGGER)
 		LOGGER.info(f"Created {pipeline_type} pipeline.")
 		pipeline.start()
 		LOGGER.info(f"Started {pipeline_type} pipeline.")

@@ -8,6 +8,7 @@ import os
 import cv2
 import boto3
 from time import time
+from threading import Thread
 
 from processingPipelines.processingPipeline import ProcessingPipeline
 
@@ -64,6 +65,7 @@ class DataCollectionPipeline(ProcessingPipeline):
 		if self.current_db_count < self.db_num_images:
 			# Loop through the frame_dict's keys
 			try:
+				collected_flag = False
 				for key, value in frame_dict.items():
 					if key in ("rgb", "depth") and value is not None and value.shape[0] > 0:
 						sample_datum_fname = os.path.join(
@@ -83,8 +85,11 @@ class DataCollectionPipeline(ProcessingPipeline):
 							)
 							self.LOGGER.debug(f"Sample successfully saved and uploaded to S3")
 							os.remove(sample_datum_fname)
+							collected_flag = True
+
+				if collected_flag:
+					self.current_db_count += 1
 				# For each key, write to the corresponding current_db
-				self.current_db_count += 1
 				return True
 			except Exception as e:
 				self.LOGGER.warning(e)
@@ -110,7 +115,7 @@ class DataCollectionPipeline(ProcessingPipeline):
 				break
 			if counter % 100 == 0:
 				dt = time() - t0
-				self.LOGGER.debug("Average FPS: ", counter / dt)
+				self.LOGGER.debug(f"Average FPS: {counter / dt}")
 			counter += 1
 
 

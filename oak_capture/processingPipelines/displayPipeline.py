@@ -105,7 +105,11 @@ class DisplayPipeline(ProcessingPipeline):
 				self.LOGGER.debug(f"OAK AprilTag Detection Found: {tag.id}")
 			return april_im
 
-	def drawOAKDetections(self, detections, nn_im):
+	def drawOAKDetections(self, inference_payload, nn_im):
+		if "detections" in inference_payload.keys():
+			detections = inference_payload["detections"]
+		else:
+			detections = None
 		if detections is not None and len(detections) > 0 and nn_im is not None:
 			n, m, _ = nn_im.shape
 			for detection in detections:
@@ -141,7 +145,31 @@ class DisplayPipeline(ProcessingPipeline):
 					2,
 				)
 				self.LOGGER.debug(f"OAKNN Detection Found: {label_conf}")
+				if self.useNN in inference_payload.keys():
+					ij_center = ij_tl[0] + int((ij_br[0] - ij_tl[0])/2), ij_tl[1] + int((ij_br[1] - ij_tl[1])/2)
+					#det_w, det_h = 1.1*
+					landmarks = np.array(inference_payload[self.useNN])
+					for i in range(0, landmarks.shape[0], 2):
+						nn_im = cv2.circle(
+							nn_im, 
+							(
+								ij_center[0] + int((1.1*(landmarks[i]-0.5))*abs(ij_br[0] - ij_tl[0])), 
+								ij_center[1] + int((1.04*(landmarks[i+1]-0.5))*abs(ij_br[1] - ij_tl[1])),
+							),
+							radius=1, 
+							color=(255, 0, 0), 
+							thickness=-1,
+						)
 		return nn_im
+	
+	def drawOAKInferences(self, inference_payload, nn_im):
+		show_im = nn_im
+		if inference_payload is not None:
+			keys = inference_payload.keys()
+			if "detections" in keys:
+				show_im = self.drawOAKDetections(inference_payload, show_im)
+		
+		return show_im
 
 	def processPayload(self, frame_dict):
 		if self.framecounter == int(5 * self.fps):
@@ -154,7 +182,7 @@ class DisplayPipeline(ProcessingPipeline):
 			and self.useNN is not None
 			and len(self.useNN) > 0
 		):
-			show_im = self.drawOAKDetections(frame_dict["nn"], frame_dict["rgb"])
+			show_im = self.drawOAKInferences(frame_dict["nn"], frame_dict["rgb"])
 		if self.currentView == "aprilTag" and self.useApril:
 			show_im = self.drawAprilTagDetection(frame_dict["april"])
 		if self.currentView == "rgb" and self.useRGB:
@@ -250,7 +278,7 @@ class DisplayPipeline(ProcessingPipeline):
 				dt = time() - t0
 				self.LOGGER.debug(f"Average FPS: {counter / dt}")
 			counter += 1
-			waitkey = cv2.waitKey(5)
+			waitkey = cv2.waitKey(1)
 			if waitkey == ord('q'):
 				self.running = False
 				break
