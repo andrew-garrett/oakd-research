@@ -1,3 +1,5 @@
+numpy>=1.22.4
+opencv-python==4.5.1.48
+PyGObject==3.38.0
 depthai>=2.16.0.0
 blobconverter
-numpy>=1.22.4
