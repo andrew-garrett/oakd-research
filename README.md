@@ -12,3 +12,23 @@ Some of the topics I will explore include:
 - Scene Understanding
 - SLAM and Pose Estimation
 - 3D Reconstruction
+
+# Usage
+
+```
+python main.py
+```
+
+```
+usage: main.py [-h] [--task {cls,objdet,semseg,instseg}]
+
+Runner for various training and logging vision pipelines
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --task {cls,objdet,semseg,instseg}
+                        type of training task for network selection (default: instseg)
+```
+
+The model_cfg.json in the "./oak_{task}" dictates the behavior of main.py, where user can select different models, 
+training hyperparameters, and datasets

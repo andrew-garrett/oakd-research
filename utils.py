@@ -2,13 +2,19 @@
 #################### IMPORTS ####################
 #################################################
 
+import glob
 import math
 import json
+import os
+import ssl
+import cv2
 import torch
 import torchvision
 import torch.nn as nn
 import torchvision.transforms as transforms
+from tqdm import tqdm
 import wandb
+from roboflow import Roboflow
 
 
 ###########################################################
@@ -30,21 +36,18 @@ def initialize_wandb(cfg_fname):
 	wandb.login()
 	with open(cfg_fname, "r") as f:
 		model_cfg = json.load(f)
-
+	model_cfg["device"] = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 	# WandB – Initialize a new run
 	wandb.init(
 		project=f"oakd-research-{model_cfg['task'].replace('_', '-')}",
 		group=model_cfg["model_arch"],
 		name=model_cfg["name"],
 	)
-	wandb.watch_called = False # Re-run the model without restarting the runtime, unnecessary after our next release
-
 	# WandB – Config is a variable that holds and saves hyperparameters and inputs
 	config = wandb.config
 	for k, v in model_cfg.items():
 		setattr(config, k, v)
 	config.lr_steps = [int(0.4*config.epochs), int(0.8*config.epochs)]
-	model_cfg["device"] = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 	return model_cfg, config
 
 
@@ -99,6 +102,9 @@ def lr_scheduler_impl(num_batches, T, eta_max, epoch, i):
 
 
 def prepareTorchDataset(model_cfg):
+	# Hacky fix for turning off SSL verification to handle URLError
+	ssl._create_default_https_context = ssl._create_unverified_context
+
 	#  Define classes in the CIFAR dataset
 	classes = (
 		'plane', 'car', 'bird', 'cat', 'deer', 
@@ -156,3 +162,84 @@ def prepareTorchDataset(model_cfg):
 	)
 
 	return trainloader, testloader
+
+def prepareRoboFlowDataset(model_cfg):
+
+	rf_key = os.getenv("ROBOFLOW_API_KEY")
+	if rf_key is None:
+		rf_key = input("Roboflow API Key: ")
+		os.environ["ROBOFLOW_API_KEY"] = rf_key
+	rf = Roboflow(api_key=rf_key)
+
+	ws, pr = model_cfg["dataset_name"].split("/")
+	project = rf.workspace(ws).project(pr)
+	dataset = project.version(1).download(model_format="yolov8", location=f"./datasets/{model_cfg['task']}/{model_cfg['dataset_name']}/", overwrite=False)
+
+
+def prepareDetectionDataset(model_cfg):
+
+	dataset_path = f"./datasets/{model_cfg['task']}/{model_cfg['dataset_name']}/"
+	if not os.path.exists(dataset_path):
+		try:
+			prepareRoboFlowDataset(model_cfg)
+		except Exception as e:
+			print(e)
+			return
+	
+	# We've now ensured we have a data.yaml file, let's ensure that the image size is accounted for
+	# import yaml
+	# with open(os.path.join(dataset_path, "data.yaml"), "r") as f:
+	# 	dataset_yaml = yaml.safe_load(f)
+	# 	if str(model_cfg['imgsz']) not in dataset_yaml["train"]:
+	# 		# training data
+	# 		train_dir = dataset_yaml["train"].replace("train", f"train_{model_cfg['imgsz']}").replace("/images", "")
+	# 		dataset_yaml["train"] = train_dir + "/images"
+	# 		train_dir = os.path.join(dataset_path, train_dir)
+	# 	else:
+	# 		train_dir = os.path.join(dataset_path, dataset_yaml["train"].replace("/images", ""))
+	# 	if str(model_cfg['imgsz']) not in dataset_yaml["val"]:
+	# 		# validation data
+	# 		val_dir = dataset_yaml["val"].replace("valid", f"valid_{model_cfg['imgsz']}").replace("/images", "")
+	# 		dataset_yaml["val"] = val_dir + "/images"
+	# 		val_dir = os.path.join(dataset_path, val_dir)
+	# 	else:
+	# 		val_dir = os.path.join(dataset_path, dataset_yaml["val"].replace("/images", ""))
+	# 	if str(model_cfg['imgsz']) not in dataset_yaml["test"]:
+	# 		# testing data
+	# 		test_dir = dataset_yaml["test"].replace("test", f"test_{model_cfg['imgsz']}").replace("/images", "")
+	# 		dataset_yaml["test"] = test_dir + "/images"
+	# 		test_dir = os.path.join(dataset_path, test_dir)
+	# 	else:
+	# 		test_dir = os.path.join(dataset_path, dataset_yaml["test"].replace("/images", ""))
+
+	# with open(os.path.join(dataset_path, "data.yaml"), "w") as f:
+	# 	yaml.dump(dataset_yaml, f)
+	
+	# try:
+	# 	os.mkdir(train_dir)
+	# 	os.mkdir(val_dir)
+	# 	os.mkdir(test_dir)
+	# 	# Resize images in the dataset
+	# 	num_files = glob.glob(dataset_path + "train/**/*.png") + glob.glob(dataset_path + "valid/**/*.png") + glob.glob(dataset_path + "test/**/*.png")
+	# 	num_files += glob.glob(dataset_path + "train/**/*.jpg") + glob.glob(dataset_path + "valid/**/*.jpg") + glob.glob(dataset_path + "test/**/*.jpg")
+	# 	with tqdm(iterable=num_files) as tq:
+	# 		for filename in num_files:
+	# 			try:
+	# 				cv2_im = cv2.imread(filename=filename)
+	# 				cv2_im = cv2.resize(cv2_im, (model_cfg['imgsz'], model_cfg['imgsz']), interpolation=cv2.INTER_AREA)
+	# 				if "train" in filename:
+	# 					new_savename = filename.replace("train", f"train_{model_cfg['imgsz']}")
+	# 				elif "val" in filename:
+	# 					new_savename = filename.replace("valid", f"valid_{model_cfg['imgsz']}")
+	# 				elif "test" in filename:
+	# 					new_savename = filename.replace("test", f"test_{model_cfg['imgsz']}")
+	# 				else:
+	# 					continue
+	# 				os.makedirs(os.path.dirname(new_savename), exist_ok=True)
+	# 				cv2.imwrite(filename=new_savename, img=cv2_im)
+	# 				tq.update()
+	# 			except:
+	# 				continue
+	# except:
+	# 	print("Resized dataset already exists, no preprocessing necessary")
+	# 	return

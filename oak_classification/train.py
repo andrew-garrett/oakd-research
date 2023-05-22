@@ -131,4 +131,3 @@ def train(net, optimizer, scheduler, criterion, train_loader, test_loader, model
 				min_epoch_val_error = epoch_val_error
 				save_name = f"./oak_{model_cfg['task']}/models/custom_models/{model_cfg['model_arch']}/{model_cfg['name']}_best.h5"
 				torch.save(model.state_dict(), save_name)
-	

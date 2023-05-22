@@ -1,0 +1,4 @@
+trained_models/
+datasets/
+wandb/
+__pycache__/
