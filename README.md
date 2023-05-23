@@ -20,15 +20,22 @@ python main.py
 ```
 
 ```
-usage: main.py [-h] [--task {cls,objdet,semseg,instseg}]
+usage: main.py [-h] [--task {cls,objdet,instseg}]
 
 Runner for various training and logging vision pipelines
 
 optional arguments:
   -h, --help            show this help message and exit
-  --task {cls,objdet,semseg,instseg}
+  --task {cls,objdet,instseg}
                         type of training task for network selection (default: instseg)
 ```
 
 The model_cfg.json in the "./oak_{task}" dictates the behavior of main.py, where user can select different models, 
-training hyperparameters, and datasets
+training hyperparameters, and datasets.
+
+Datasets can either be sourced from local directories or from roboflow.  To specify a different dataset, edit the appropriate model_cfg.json in the
+directory for your task (i.e. for detection tasks, edit  [`oak_detection/model_cfg.json`](./oak_detection/model_cfg.json) ).  The format of the `dataset_name` parameter for pulling roboflow datasets is `[WORKSPACE]/[PROJECT]/[VERSION]`.
+
+Datasets are stored in the `datasets` directory, which are stored by task, `[WORKSPACE]/[PROJECT]/[VERSION]`, and potentially the label format.
+
+Runs are stored in the `runs` directory, which are stored by task, training dataset, and model architecture.

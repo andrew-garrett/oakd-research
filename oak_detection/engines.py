@@ -18,7 +18,7 @@ from utils import prepareTorchDataset, lr_finder_algo, initialize_wandb, prepare
 # from oak_classification.train import *
 # from oak_classification.test import *
 
-import oak_object_detection.models.custom_models as custom_models
+import oak_detection.models.custom_models as custom_models
 
 
 #########################################################
@@ -26,7 +26,7 @@ import oak_object_detection.models.custom_models as custom_models
 #########################################################
 
 def base_engine(cfg_fname):
-	
+
     cfg_dict, cfg_wandb = initialize_wandb(cfg_fname)
 
     prepareDetectionDataset(cfg_wandb)
@@ -51,5 +51,16 @@ def base_engine(cfg_fname):
     except Exception as e:
         print(e)
         return
-	
+
     model.train()
+
+    run_dir = f"{os.getcwd()}/runs/{cfg_wandb['task']}/{cfg_wandb['dataset_name']}/{cfg_wandb['model_arch']}/{cfg_wandb['name'].split('_')[0]}/{cfg_wandb['name']}/"
+    eval_ims = []
+    for val_data in os.listdir(run_dir):
+        if "val_batch" in val_data:
+            eval_im = wandb.Image(os.path.join(run_dir, val_data))
+            wandb.log(
+                {
+                    val_data.split(".")[0]: eval_im
+                }
+            )

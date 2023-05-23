@@ -1,4 +1,7 @@
-trained_models/
+runs/
 datasets/
 wandb/
 __pycache__/
+
+/testing.ipynb
+/*.pt

@@ -13,6 +13,6 @@
 	"criterion": "CrossEntropyLoss",
 	"optimizer": "SGD",
 	"scheduler": "custom_cos_annealing_warmup",
-	"dataset_name": "amazon_science/armbench-segmentation-0.1/mix-object-tote/yolo",
+	"dataset_name": "amazon_science/armbench-segmentation/0.1/mix-object-tote/yolo",
 	"imgsz": 416
 }

@@ -171,9 +171,9 @@ def prepareRoboFlowDataset(model_cfg):
 		os.environ["ROBOFLOW_API_KEY"] = rf_key
 	rf = Roboflow(api_key=rf_key)
 
-	ws, pr = model_cfg["dataset_name"].split("/")
+	ws, pr, vs = model_cfg["dataset_name"].split("/")
 	project = rf.workspace(ws).project(pr)
-	dataset = project.version(1).download(model_format="yolov8", location=f"./datasets/{model_cfg['task']}/{model_cfg['dataset_name']}/", overwrite=False)
+	dataset = project.version(vs).download(model_format="yolov8", location=f"./datasets/{model_cfg['task']}/{model_cfg['dataset_name']}/", overwrite=False)
 
 
 def prepareDetectionDataset(model_cfg):
@@ -185,61 +185,71 @@ def prepareDetectionDataset(model_cfg):
 		except Exception as e:
 			print(e)
 			return
-	
-	# We've now ensured we have a data.yaml file, let's ensure that the image size is accounted for
-	# import yaml
-	# with open(os.path.join(dataset_path, "data.yaml"), "r") as f:
-	# 	dataset_yaml = yaml.safe_load(f)
-	# 	if str(model_cfg['imgsz']) not in dataset_yaml["train"]:
-	# 		# training data
-	# 		train_dir = dataset_yaml["train"].replace("train", f"train_{model_cfg['imgsz']}").replace("/images", "")
-	# 		dataset_yaml["train"] = train_dir + "/images"
-	# 		train_dir = os.path.join(dataset_path, train_dir)
-	# 	else:
-	# 		train_dir = os.path.join(dataset_path, dataset_yaml["train"].replace("/images", ""))
-	# 	if str(model_cfg['imgsz']) not in dataset_yaml["val"]:
-	# 		# validation data
-	# 		val_dir = dataset_yaml["val"].replace("valid", f"valid_{model_cfg['imgsz']}").replace("/images", "")
-	# 		dataset_yaml["val"] = val_dir + "/images"
-	# 		val_dir = os.path.join(dataset_path, val_dir)
-	# 	else:
-	# 		val_dir = os.path.join(dataset_path, dataset_yaml["val"].replace("/images", ""))
-	# 	if str(model_cfg['imgsz']) not in dataset_yaml["test"]:
-	# 		# testing data
-	# 		test_dir = dataset_yaml["test"].replace("test", f"test_{model_cfg['imgsz']}").replace("/images", "")
-	# 		dataset_yaml["test"] = test_dir + "/images"
-	# 		test_dir = os.path.join(dataset_path, test_dir)
-	# 	else:
-	# 		test_dir = os.path.join(dataset_path, dataset_yaml["test"].replace("/images", ""))
 
-	# with open(os.path.join(dataset_path, "data.yaml"), "w") as f:
-	# 	yaml.dump(dataset_yaml, f)
-	
-	# try:
-	# 	os.mkdir(train_dir)
-	# 	os.mkdir(val_dir)
-	# 	os.mkdir(test_dir)
-	# 	# Resize images in the dataset
-	# 	num_files = glob.glob(dataset_path + "train/**/*.png") + glob.glob(dataset_path + "valid/**/*.png") + glob.glob(dataset_path + "test/**/*.png")
-	# 	num_files += glob.glob(dataset_path + "train/**/*.jpg") + glob.glob(dataset_path + "valid/**/*.jpg") + glob.glob(dataset_path + "test/**/*.jpg")
-	# 	with tqdm(iterable=num_files) as tq:
-	# 		for filename in num_files:
-	# 			try:
-	# 				cv2_im = cv2.imread(filename=filename)
-	# 				cv2_im = cv2.resize(cv2_im, (model_cfg['imgsz'], model_cfg['imgsz']), interpolation=cv2.INTER_AREA)
-	# 				if "train" in filename:
-	# 					new_savename = filename.replace("train", f"train_{model_cfg['imgsz']}")
-	# 				elif "val" in filename:
-	# 					new_savename = filename.replace("valid", f"valid_{model_cfg['imgsz']}")
-	# 				elif "test" in filename:
-	# 					new_savename = filename.replace("test", f"test_{model_cfg['imgsz']}")
-	# 				else:
-	# 					continue
-	# 				os.makedirs(os.path.dirname(new_savename), exist_ok=True)
-	# 				cv2.imwrite(filename=new_savename, img=cv2_im)
-	# 				tq.update()
-	# 			except:
-	# 				continue
-	# except:
-	# 	print("Resized dataset already exists, no preprocessing necessary")
-	# 	return
+
+# Convert between coco json and yolo format
+def coco2json(model_cfg):
+    data_root = f"./datasets/{model_cfg['task']}/{model_cfg['dataset_name']}/"
+    for root, folders, files in os.walk(data_root):
+        if "coco" in root:
+            if "train.json" in files:
+                nc_list = [] # Collect list of classes
+                yolo_dir = root.replace("coco", "yolo")
+                os.makedirs(os.path.join(yolo_dir, "train", "images"), exist_ok=True)
+                os.makedirs(os.path.join(yolo_dir, "train", "labels"), exist_ok=True)
+                os.makedirs(os.path.join(yolo_dir, "valid", "images"), exist_ok=True)
+                os.makedirs(os.path.join(yolo_dir, "valid", "labels"), exist_ok=True)
+                os.makedirs(os.path.join(yolo_dir, "test", "images"), exist_ok=True)
+                os.makedirs(os.path.join(yolo_dir, "test", "labels"), exist_ok=True)
+
+                ##### Go through train.json, val.json, test.json
+                for dataset_json in ["train", "val", "test"]:
+                    dataset_json_fpath = os.path.join(root, dataset_json)
+                    with open(dataset_json_fpath + ".json", "r") as f:
+                        dataset_json_dict = json.load(f)
+                        id_sorted_ims = sorted(dataset_json_dict["images"], key=lambda im: im["id"])
+                    if dataset_json == "val":
+                        dataset_json = "valid"
+                    ##### Go though the "images" and "annotations" keys
+                    with tqdm(iterable=id_sorted_ims) as tq:
+                        for im in id_sorted_ims:
+                            coco_image_fpath = os.path.join(root, "images", im["file_name"])
+                            yolo_image_fpath = os.path.join(yolo_dir, dataset_json, "images", im["file_name"])
+                            coco_label_fpath = os.path.join(root, "annotations", im["file_name"].replace("jpg", "json"))
+                            yolo_label_fpath = os.path.join(yolo_dir, dataset_json, "labels", im["file_name"].replace("jpg", "txt"))
+
+                            ##### Copy image to corresponding images folder
+                            try:
+                                shutil.copy(coco_image_fpath, yolo_image_fpath)
+                            except Exception as e:
+                                print(e)
+                                continue
+
+                            ##### Create txt file of same name in a labels folder
+                            with open(coco_label_fpath, "r") as coco_f:
+                                coco_label_dict = json.load(coco_f)
+                            
+                            img_wh = [coco_label_dict["imageWidth"], coco_label_dict["imageHeight"]] # Use this to normalize labels
+                            yolo_label_list = []
+                            for shape in coco_label_dict["shapes"]: # for each instance
+                                if shape["label"] not in nc_list:
+                                    nc_list.append(shape["label"]) # add the class to our list if we haven't seen it before
+                                label_ind = nc_list.index(shape["label"])
+                                points = [str(label_ind)]
+                                for pt in shape["points"]:
+                                    points.extend([str(pt[0] / img_wh[0]), str(pt[1] / img_wh[1])])
+                                yolo_label_list.append(" ".join(points))
+                            with open(yolo_label_fpath, "w") as yolo_f:
+                                yolo_f.write("\n".join(yolo_label_list))
+                            tq.update()
+                # Create data.yaml file
+                dataset_yaml = {
+                    "nc": len(nc_list),
+                    "names": nc_list,
+                    "path": yolo_dir.replace("./datasets/", "./"),
+                    "train": "train/images",
+                    "val": "valid/images",
+                    "test": "test/images"
+                }
+                with open(os.path.join(yolo_dir, "data.yaml"), "w") as yolo_f:
+                    yaml.dump(dataset_yaml, yolo_f)

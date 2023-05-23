@@ -13,5 +13,6 @@
 	"criterion": "CrossEntropyLoss",
 	"optimizer": "SGD",
 	"scheduler": "custom_cos_annealing_warmup",
-	"dataset_name": "augmented-startups/weeds-nxe1w"
+	"dataset_name": "roboflow-100/leaf-disease-nsdsr/2",
+	"imgsz": 416
 }
