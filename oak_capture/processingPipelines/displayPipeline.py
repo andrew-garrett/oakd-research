@@ -3,15 +3,15 @@
 #####################################################################
 
 import json
-import os, sys
+import os
+import sys
+from threading import Thread
+from time import sleep, time
+
 import cv2
 import numpy as np
-from threading import Thread
-from time import time, sleep
-
 from oak_d.OAKPipeline import OAKPipeline
 from processingPipelines.processingPipeline import ProcessingPipeline
-
 
 ##############################################################################
 ############################## DISPLAY PIPELINE ##############################

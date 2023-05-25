@@ -2,15 +2,19 @@
 ############################## IMPORTS ##############################
 #####################################################################
 
-import os
-from time import time, sleep
-import cv2
-from threading import Thread
 import logging
+import os
+from threading import Thread
+from time import sleep, time
 
+import cv2
+from processingPipelines import (
+    dataCollectionPipeline,
+    displayPipeline,
+    facialLandmarkPipeline,
+    processingPipeline,
+)
 from setup_logging import CustomFormatter
-from processingPipelines import processingPipeline, displayPipeline, dataCollectionPipeline, facialLandmarkPipeline
-
 
 #####################################################################
 ############################## LOGGING ##############################

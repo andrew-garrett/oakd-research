@@ -3,11 +3,11 @@
 #####################################################################
 
 import json
-import numpy as np
-import depthai as dai
-import blobconverter
 from threading import Thread
 
+import blobconverter
+import depthai as dai
+import numpy as np
 
 ##########################################################################
 ############################## OAK PIPELINE ##############################

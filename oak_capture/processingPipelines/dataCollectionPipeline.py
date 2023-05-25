@@ -5,13 +5,12 @@
 
 import json
 import os
-import cv2
-import boto3
-from time import time
 from threading import Thread
+from time import time
 
+import boto3
+import cv2
 from processingPipelines.processingPipeline import ProcessingPipeline
-
 
 ######################################################################################
 ############################## DATA COLLECTION PIPELINE ##############################

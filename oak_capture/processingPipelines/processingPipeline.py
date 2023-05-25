@@ -4,13 +4,13 @@
 
 
 import json
-import os, shutil
-import cv2
+import os
+import shutil
 from threading import Thread
-from time import time, sleep
+from time import sleep, time
 
+import cv2
 from oak_d.OAKPipeline import OAKPipeline
-
 
 #################################################################################
 ############################## PROCESSING PIPELINE ##############################
