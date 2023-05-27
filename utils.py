@@ -92,8 +92,8 @@ def prepareTorchDataset(model_cfg):
     # Resize Tensors
     if not isinstance(model_cfg["imgsz"], list):
         model_cfg["imgsz"] = [model_cfg["imgsz"]]
-    transform_train_list.append(transforms.Resize(model_cfg["imgsz"][-1]))
-    transform_test_list.append(transforms.Resize(model_cfg["imgsz"][-1]))
+    transform_train_list.append(transforms.Resize(model_cfg["imgsz"][-1], antialias=True))
+    transform_test_list.append(transforms.Resize(model_cfg["imgsz"][-1], antialias=True))
 
     # Normalize Tensors
     transform_train_list.append(
