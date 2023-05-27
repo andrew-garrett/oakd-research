@@ -5,7 +5,6 @@
 
 import lightning.pytorch as pl
 import numpy as np
-import PIL.Image
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -179,19 +178,6 @@ class GAN(pl.LightningModule):
 
 
     def configure_optimizers(self):
-        """
-        optimizer = optimizers[self.optimizer_name](self.model.parameters(), lr=self.lr, weight_decay=self.weight_decay)
-        opts = {"optimizer": optimizer}
-        if self.use_scheduler:
-            scheduler_config = {
-                "scheduler": torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode="min", factor=0.25, patience=3, threshold=1e-4, threshold_mode="rel"),
-                "interval": "epoch",
-                "frequency": 1,
-                "monitor": "val/loss_epoch"
-            }
-            opts["lr_scheduler"] = scheduler_config
-        return opts
-        """
 
         optimizer = self.hparams.model_cfg["optimizer"]
         lr = self.hparams.model_cfg["lr"]
@@ -207,19 +193,20 @@ class GAN(pl.LightningModule):
         opts = [opt_g, opt_d]
 
         if self.hparams.model_cfg["scheduler"]:
+            patience = max(int(0.1*self.hparams.model_cfg["epochs"]), 10)
             scheduler_config_g = {
-                "scheduler": torch.optim.lr_scheduler.ReduceLROnPlateau(opt_g, mode="min", factor=0.25, patience=3, threshold=1e-4, threshold_mode="rel"),
+                "scheduler": torch.optim.lr_scheduler.ReduceLROnPlateau(opt_g, mode="max", factor=0.25, patience=patience, threshold=1e-1, threshold_mode="rel", cooldown=patience),
                 "interval": "epoch",
                 "frequency": 1,
-                "monitor": "val/g_loss",
-                "name": "G Scheduler",
+                "monitor": "train/g_loss_epoch",
+                "name": "Scheduler-1",
             }
             scheduler_config_d = {
-                "scheduler": torch.optim.lr_scheduler.ReduceLROnPlateau(opt_d, mode="min", factor=0.25, patience=3, threshold=1e-4, threshold_mode="rel"),
+                "scheduler": torch.optim.lr_scheduler.ReduceLROnPlateau(opt_d, mode="min", factor=0.25, patience=patience, threshold=1e-3, threshold_mode="rel", cooldown=patience),
                 "interval": "epoch",
                 "frequency": 1,
-                "monitor": "val/d_loss",
-                "name": "D Scheduler",
+                "monitor": "train/d_loss_epoch",
+                "name": "Scheduler-2",
             }
 
             schedulers = [scheduler_config_g, scheduler_config_d]
@@ -247,6 +234,22 @@ class GAN(pl.LightningModule):
         wandb.log(
             {"generated_images": wandb.Image(self.tensor2PIL(grid))}
         )
+
+        sch = self.lr_schedulers()
+        if sch is not None:
+            if not isinstance(sch, list):
+                sch = [sch]
+            for i, scheduler in enumerate(sch):
+                if i == 0:
+                    # Generator
+                    metric = "train/g_loss_epoch"
+                else:
+                    # Discriminator
+                    metric = "train/d_loss_epoch"
+                if isinstance(scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
+                    scheduler.step(self.trainer.callback_metrics[metric])
+                else:
+                    scheduler.step()
         
 
     # def on_validation_epoch_end(self):

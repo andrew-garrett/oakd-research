@@ -74,42 +74,42 @@ def prepareTorchDataset(model_cfg):
     ssl._create_default_https_context = ssl._create_unverified_context
 
     # Define transforms
-    # transform_train = transforms.Compose(
-    #     [
-    #         transforms.AutoAugment(
-    #             policy=transforms.autoaugment.AutoAugmentPolicy.CIFAR10, 
-    #             interpolation=transforms.functional.InterpolationMode.BILINEAR
-    #         ),
-    #         transforms.ToTensor(),
-    #         transforms.Normalize(
-    #             (0.5, 0.5, 0.5), 
-    #             (0.5, 0.5, 0.5)
-    #         )
-    #     ]
-    # )
-    # transform_test = transforms.Compose(
-    #     [
-    #         transforms.ToTensor(),
-    #         transforms.Normalize(
-    #             (0.5, 0.5, 0.5), 
-    #             (0.5, 0.5, 0.5)
-    #         )
-    #     ]
-    # )
-
-    ############ Temp for MNIST ############
     transform_train = transforms.Compose(
         [
+            transforms.AutoAugment(
+                policy=transforms.autoaugment.AutoAugmentPolicy.CIFAR10, 
+                interpolation=transforms.functional.InterpolationMode.BILINEAR
+            ),
             transforms.ToTensor(),
-            transforms.Normalize((0.1307,), (0.3081,)),
+            transforms.Normalize(
+                (0.5, 0.5, 0.5), 
+                (0.5, 0.5, 0.5)
+            )
         ]
     )
     transform_test = transforms.Compose(
         [
             transforms.ToTensor(),
-            transforms.Normalize((0.1307,), (0.3081,)),
+            transforms.Normalize(
+                (0.5, 0.5, 0.5), 
+                (0.5, 0.5, 0.5)
+            )
         ]
     )
+
+    # ############ Temp for MNIST ############
+    # transform_train = transforms.Compose(
+    #     [
+    #         transforms.ToTensor(),
+    #         transforms.Normalize((0.1307,), (0.3081,)),
+    #     ]
+    # )
+    # transform_test = transforms.Compose(
+    #     [
+    #         transforms.ToTensor(),
+    #         transforms.Normalize((0.1307,), (0.3081,)),
+    #     ]
+    # )
     
     # Read the datasets for training and testing
     try:

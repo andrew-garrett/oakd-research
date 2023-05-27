@@ -12,7 +12,7 @@
 	"seed": 42,
 	"criterion": "",
 	"optimizer": "Adam",
-	"scheduler": false,
-	"dataset_name": "torchvision/MNIST",
-	"imgsz": [1, 28, 28]
+	"scheduler": true,
+	"dataset_name": "torchvision/CIFAR10",
+	"imgsz": [3, 32, 32]
 }
