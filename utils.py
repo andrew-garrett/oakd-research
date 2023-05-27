@@ -143,7 +143,7 @@ def prepareTorchDataset(model_cfg):
             download=True, 
             transform=transform_test
         )
-    except:
+    except Exception as e1:
         try:
             trainset = getattr(torchvision.datasets, dataset_name)(
                 root=data_root, 
@@ -153,12 +153,14 @@ def prepareTorchDataset(model_cfg):
             )
             testset = getattr(torchvision.datasets, dataset_name)(
                 root=data_root, 
-                split="val",
+                split="valid",
                 download=True, 
                 transform=transform_test
             )
-        except:
+        except Exception as e2:
             print("Error Loading Torch Dataset, dataset does not have argument train or split")
+            print(e1)
+            print(e2)
             sys.exit(1)
 
     # Create the corresponding dataloaders
