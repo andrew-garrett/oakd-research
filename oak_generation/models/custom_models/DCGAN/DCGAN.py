@@ -113,11 +113,16 @@ class DCGAN(pl.LightningModule):
         # Subnetworks
         self.generator = Generator(latent_dim=self.hparams.latent_dim, img_shape=tuple(self.hparams.model_cfg["imgsz"]))
         self.discriminator = Discriminator(img_shape=tuple(self.hparams.model_cfg["imgsz"]))
+        
+        # Weight Initialization According to DCGAN Paper
+        self.generator.apply(self.weights_init)
+        self.discriminator.apply(self.weights_init)
 
         # Setup data structures for 
         self.validation_z = torch.randn(8, self.hparams.latent_dim)
         self.example_input_array = torch.zeros(2, self.hparams.latent_dim, 1, 1)
 
+        # Used to Log Images
         self.tensor2PIL = ToPILImage()
 
     def forward(self, z):
@@ -125,6 +130,14 @@ class DCGAN(pl.LightningModule):
     
     def adversarial_loss(self, y_hat, y):
         return F.binary_cross_entropy(y_hat, y)
+
+    def weights_init(self, m):
+        classname = m.__class__.__name__
+        if classname.find('Conv') != -1:
+            nn.init.normal_(m.weight.data, 0.0, 0.02)
+        elif classname.find('BatchNorm') != -1:
+            nn.init.normal_(m.weight.data, 1.0, 0.02)
+            nn.init.constant_(m.bias.data, 0)
 
     def training_step(self, batch):
         imgs, _ = batch
@@ -144,6 +157,10 @@ class DCGAN(pl.LightningModule):
         if len(self.sample_imgs) < 6:
             sample_imgs = self.generated_imgs[:6]
             self.sample_imgs.append(sample_imgs)
+        # log training images
+        if len(self.train_imgs) < 6:
+            train_imgs = imgs[:6]
+            self.train_imgs.append(train_imgs)
 
         # ground truth result (ie: all fake)
         # put on GPU because we created this tensor inside training_loop
@@ -236,6 +253,7 @@ class DCGAN(pl.LightningModule):
             "train/d_loss_epoch": [],
         }
         self.sample_imgs = []
+        self.train_imgs = []
 
     def on_train_epoch_end(self):
 
@@ -245,9 +263,13 @@ class DCGAN(pl.LightningModule):
             dictionary=self.loss_dict,
             on_epoch=True,
         )
-        grid = make_grid(torch.vstack(self.sample_imgs), nrow=6)
+        sample_grid = make_grid(torch.vstack(self.sample_imgs), nrow=6, normalize=True)
+        train_grid = make_grid(torch.vstack(self.train_imgs), nrow=6, normalize=True)
         wandb.log(
-            {"generated_images": wandb.Image(self.tensor2PIL(grid))}
+            {
+                "generated_images": wandb.Image(self.tensor2PIL(sample_grid)),
+                "training_images": wandb.Image(self.tensor2PIL(train_grid))
+            }
         )
 
         sch = self.lr_schedulers()
