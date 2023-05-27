@@ -12,7 +12,7 @@
 	"seed": 42,
 	"criterion": "",
 	"optimizer": "Adam",
-	"scheduler": true,
+	"scheduler": false,
 	"dataset_name": "torchvision/CelebA",
 	"imgsz": [3, 64, 64]
 }
