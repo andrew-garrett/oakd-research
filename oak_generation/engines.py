@@ -6,11 +6,7 @@
 import sys
 
 import lightning.pytorch as pl
-from lightning.pytorch.callbacks import (
-    LearningRateMonitor,
-    ModelCheckpoint,
-    ModelSummary,
-)
+from lightning.pytorch.callbacks import LearningRateMonitor, ModelCheckpoint
 from lightning.pytorch.loggers import WandbLogger
 
 from oak_generation.models import custom_models
@@ -48,7 +44,6 @@ def base_engine(cfg_fname):
     callbacks = [
         LearningRateMonitor(),
         ModelCheckpoint(dirpath=run_dir, monitor="train/g_loss_epoch", mode="max"),
-        ModelSummary(max_depth=3),
     ]
 
     trainer = pl.Trainer(

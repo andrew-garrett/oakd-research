@@ -1,7 +1,7 @@
 {
 	"task": "generation",
-	"model_arch": "GAN",
-	"name": "gan_000",
+	"model_arch": "DCGAN",
+	"name": "dcgan_000",
 	"batch_size": 256,
 	"test_batch_size": 100,
 	"epochs": 10,
@@ -14,5 +14,5 @@
 	"optimizer": "Adam",
 	"scheduler": true,
 	"dataset_name": "torchvision/CIFAR10",
-	"imgsz": [3, 32, 32]
+	"imgsz": [3, 64, 64]
 }

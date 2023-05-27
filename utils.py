@@ -74,28 +74,42 @@ def prepareTorchDataset(model_cfg):
     ssl._create_default_https_context = ssl._create_unverified_context
 
     # Define transforms
-    transform_train = transforms.Compose(
-        [
-            transforms.AutoAugment(
+    transform_train_list = []
+    transform_test_list = []
+
+    # AutoAugmentation Policy for all tasks except generative ones
+    if "gan" not in model_cfg["name"]:
+        transform_train.append(transforms.AutoAugment(
                 policy=transforms.autoaugment.AutoAugmentPolicy.CIFAR10, 
                 interpolation=transforms.functional.InterpolationMode.BILINEAR
-            ),
-            transforms.ToTensor(),
-            transforms.Normalize(
-                (0.5, 0.5, 0.5), 
-                (0.5, 0.5, 0.5)
             )
-        ]
+        )
+    
+    # Ensure Tensors
+    transform_train_list.append(transforms.ToTensor())
+    transform_test_list.append(transforms.ToTensor())
+
+    # Resize Tensors
+    if not isinstance(model_cfg["imgsz"], list):
+        model_cfg["imgsz"] = [model_cfg["imgsz"]]
+    transform_train_list.append(transforms.Resize(model_cfg["imgsz"][-1]))
+    transform_test_list.append(transforms.Resize(model_cfg["imgsz"][-1]))
+
+    # Normalize Tensors
+    transform_train_list.append(
+        transforms.Normalize(
+            (0.5, 0.5, 0.5), 
+            (0.5, 0.5, 0.5)
+        )
     )
-    transform_test = transforms.Compose(
-        [
-            transforms.ToTensor(),
-            transforms.Normalize(
-                (0.5, 0.5, 0.5), 
-                (0.5, 0.5, 0.5)
-            )
-        ]
+    transform_test_list.append(
+        transforms.Normalize(
+            (0.5, 0.5, 0.5), 
+            (0.5, 0.5, 0.5)
+        )
     )
+    transform_train = transforms.Compose(transform_train_list)
+    transform_test = transforms.Compose(transform_test_list)
 
     # ############ Temp for MNIST ############
     # transform_train = transforms.Compose(
