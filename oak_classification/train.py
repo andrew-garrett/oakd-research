@@ -2,14 +2,12 @@
 #################### IMPORTS ####################
 #################################################
 
-import json
 import random
+
 import torch
-import torch.nn as nn
 import wandb
 
-from utils import lr_scheduler_impl, initialize_wandb
-
+from utils import custom_cos_annealing_warmup
 
 ###################################################################
 #################### CUSTOM TRAINING FUNCTIONS ####################
@@ -64,7 +62,7 @@ def train(net, optimizer, scheduler, criterion, train_loader, test_loader, model
 		for i, (images, labels) in enumerate(train_loader):
 			if scheduler is None:
 				# Update LR according to Cosine Annealing Warmup (discussed further down)
-				next_lr = lr_scheduler_impl(total_step, T, model_cfg["lr"], epoch, i)
+				next_lr = custom_cos_annealing_warmup(total_step, T, model_cfg["lr"], epoch, i)
 				for g in optimizer.param_groups:
 					g['lr'] = next_lr
 			else:

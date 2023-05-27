@@ -1,7 +1,7 @@
 {
 	"task": "segmentation",
 	"model_arch": "YOLOV8",
-	"name": "yolov8s-seg_000",
+	"name": "yolov8n-seg_000",
 	"batch_size": 16,
 	"test_batch_size": 16,
 	"epochs": 100,
@@ -13,6 +13,6 @@
 	"criterion": "CrossEntropyLoss",
 	"optimizer": "SGD",
 	"scheduler": "custom_cos_annealing_warmup",
-	"dataset_name": "amazon_science/armbench-segmentation/0.1/mix-object-tote/yolo",
+	"dataset_name": "iot-inatel/braintumor-spfys/2",
 	"imgsz": 416
 }

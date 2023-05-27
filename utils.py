@@ -2,193 +2,208 @@
 #################### IMPORTS ####################
 #################################################
 
-import glob
-import math
+
 import json
+import math
 import os
+import shutil
 import ssl
-import cv2
+import sys
+
 import torch
 import torchvision
-import torch.nn as nn
 import torchvision.transforms as transforms
-from tqdm import tqdm
-import wandb
+import yaml
 from roboflow import Roboflow
+from tqdm import tqdm
 
+import wandb
 
 ###########################################################
-#################### UTILITY FUNCTIONS ####################
+#################### GENERAL UTILITIES ####################
 ###########################################################
 
-# Initialize Weights and Biases for Experiment Tracking
+
 def initialize_wandb(cfg_fname):
-	"""
-	Function to initialize wandb experiment, configured by the specified config file
+    """
+    Function to initialize wandb experiment, configured by the specified config file
 
-	Arguments:
-		- cfg_fname (string): specifies the file location of model_cfg.json
+    Arguments
+    - cfg_fname (string): specifies the file location of model_cfg.json
 
-	Returns:
-		- model_cfg (dict): dictionary storing data from model_cfg.json
-		- config (wandb.Config): config object for wandb experiment
-	"""
-	wandb.login()
-	with open(cfg_fname, "r") as f:
-		model_cfg = json.load(f)
-	model_cfg["device"] = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-	# WandB – Initialize a new run
-	wandb.init(
-		project=f"oakd-research-{model_cfg['task'].replace('_', '-')}",
-		group=model_cfg["model_arch"],
-		name=model_cfg["name"],
-	)
-	# WandB – Config is a variable that holds and saves hyperparameters and inputs
-	config = wandb.config
-	for k, v in model_cfg.items():
-		setattr(config, k, v)
-	config.lr_steps = [int(0.4*config.epochs), int(0.8*config.epochs)]
-	return model_cfg, config
+    Returns:
+    - model_cfg (dict): dictionary storing data from model_cfg.json
+    - config (wandb.Config): config object for wandb experiment
+    """
+    with open(cfg_fname, "r") as f:
+        model_cfg = json.load(f)
+    model_cfg["device"] = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model_cfg["project"] = f"oakd-research-{model_cfg['task'].replace('_', '-')}"
+    model_cfg["lr_steps"] = [int(0.4*model_cfg["epochs"]), int(0.8*model_cfg["epochs"])]
 
+    # WandB – Initialize a new run
+    wandb.login()
+    wandb.init(
+        project=model_cfg["project"],
+        group=model_cfg["model_arch"],
+        name=model_cfg["name"],
+    )
+    # WandB – Config is a variable that holds and saves hyperparameters and inputs
+    config = wandb.config
+    for k, v in model_cfg.items():
+        setattr(config, k, v)
+    return model_cfg, config
 
-def lr_finder_algo(net, optimizer, scheduler, criterion, train_loader, model_cfg):
-	"""
-	Function to perform a search for the optimal initial learning rate for the
-	Cosine-Annealing w/ Warmup scheduler.
-	"""
-	device, epochs = model_cfg["device"], max(150, model_cfg["epochs"])
-	model = net.to(device)
-	losses = []
-	lr_list = []
-	for epoch, (images, labels) in enumerate(train_loader):
-		if epoch == epochs:
-			break;
-		# Move tensors to configured device
-		images = images.to(device)
-		labels = labels.to(device)
-		# Forward Pass
-		outputs = model(images)
-		loss = criterion(outputs, labels)
-		# Backpropogation and SGD
-		optimizer.zero_grad()
-		loss.backward()
-		optimizer.step()
-		curr_lr = optimizer.param_groups[0]['lr']
-		wandb.log(
-			{
-				"Training Loss (LR Finder)": loss.item(),
-				"LR": curr_lr,
-				"Epoch": epoch
-			}
-		)
-		losses.append(loss.item())
-		lr_list.append(curr_lr)
-		scheduler.step()
-	eta_max = lr_list[min(enumerate(losses), key=lambda x: x[1])[0]] / 10.0 # losses.index(min(losses))
-	return eta_max
-
-
-# Cosine Annealing w/ Warmup Learning Rate Schedule
-def lr_scheduler_impl(num_batches, T, eta_max, epoch, i):
-	# fixed hyperparameters used for Cosine Annealing w/ Warmup Schedule
-	T_0 = int(T / 5)
-	t = epoch*num_batches + i
-	next_lr = 1e-5
-	if t <= T_0:
-		next_lr += (t / T_0)*eta_max
-	else:
-		next_lr += eta_max*math.cos((math.pi/2.0)*((t - T_0)/(T - T_0)))
-	return next_lr
+########################################################
+#################### DATA UTILITIES ####################
+########################################################
 
 
 def prepareTorchDataset(model_cfg):
-	# Hacky fix for turning off SSL verification to handle URLError
-	ssl._create_default_https_context = ssl._create_unverified_context
+    """
+    Prepare a torch dataset, parameterized by the model config
 
-	#  Define classes in the CIFAR dataset
-	classes = (
-		'plane', 'car', 'bird', 'cat', 'deer', 
-		'dog', 'frog', 'horse', 'ship', 'truck'
-	)
+    Arguments:
+    - model_cfg (wandb.Config): the wandb Config object
 
-	# Define transforms, Read the datasets for training and testing, and Create the corresponding dataloaders
-	transform_train = transforms.Compose(
-		[
-			transforms.AutoAugment(
-				policy=transforms.autoaugment.AutoAugmentPolicy.CIFAR10, 
-				interpolation=transforms.functional.InterpolationMode.BILINEAR
-			),
-			transforms.ToTensor(),
-			transforms.Normalize(
-				(0.5, 0.5, 0.5), 
-				(0.5, 0.5, 0.5)
-			)
-		]
-	)
-	trainset = torchvision.datasets.CIFAR10(
-		root='./data', 
-		train=True,
-		download=True, 
-		transform=transform_train
-	)
-	trainloader = torch.utils.data.DataLoader(
-		trainset, 
-		batch_size=model_cfg.batch_size,
-		shuffle=True, 
-		pin_memory=True
-	)
+    Returns:
+    - trainloader (torch.utils.data.DataLoader): training torch DataLoader
+    - testloader (torch.utils.data.DataLoader): testing torch DataLoader
+    """
+    # Hacky fix for turning off SSL verification to handle URLError
+    ssl._create_default_https_context = ssl._create_unverified_context
 
-	# Define transforms, Read the datasets for training and testing, and Create the corresponding dataloaders
-	transform_test = transforms.Compose(
-		[
-			transforms.ToTensor(),
-			transforms.Normalize(
-				(0.5, 0.5, 0.5), 
-				(0.5, 0.5, 0.5)
-			)
-		]
-	)
-	testset = torchvision.datasets.CIFAR10(
-		root='./data', 
-		train=False,
-		download=True, 
-		transform=transform_test
-	)
-	testloader = torch.utils.data.DataLoader(
-		testset, 
-		batch_size=model_cfg.test_batch_size,
-		shuffle=False, 
-		pin_memory=True
-	)
+    # Define transforms
+    # transform_train = transforms.Compose(
+    #     [
+    #         transforms.AutoAugment(
+    #             policy=transforms.autoaugment.AutoAugmentPolicy.CIFAR10, 
+    #             interpolation=transforms.functional.InterpolationMode.BILINEAR
+    #         ),
+    #         transforms.ToTensor(),
+    #         transforms.Normalize(
+    #             (0.5, 0.5, 0.5), 
+    #             (0.5, 0.5, 0.5)
+    #         )
+    #     ]
+    # )
+    # transform_test = transforms.Compose(
+    #     [
+    #         transforms.ToTensor(),
+    #         transforms.Normalize(
+    #             (0.5, 0.5, 0.5), 
+    #             (0.5, 0.5, 0.5)
+    #         )
+    #     ]
+    # )
 
-	return trainloader, testloader
+    ############ Temp for MNIST ############
+    transform_train = transforms.Compose(
+        [
+            transforms.ToTensor(),
+            transforms.Normalize((0.1307,), (0.3081,)),
+        ]
+    )
+    transform_test = transforms.Compose(
+        [
+            transforms.ToTensor(),
+            transforms.Normalize((0.1307,), (0.3081,)),
+        ]
+    )
+    
+    # Read the datasets for training and testing
+    try:
+        dataset_name_split = model_cfg["dataset_name"].split("/")
+        dataset_source = str(dataset_name_split[0])
+        dataset_name = str(dataset_name_split[1])
+        data_root = f"./datasets/{model_cfg['task']}/{dataset_source}"
+        trainset = getattr(torchvision.datasets, dataset_name)(
+            root=data_root, 
+            train=True,
+            download=True, 
+            transform=transform_train
+        )
+        testset = getattr(torchvision.datasets, dataset_name)(
+            root=data_root, 
+            train=False,
+            download=True, 
+            transform=transform_test
+        )
+    except:
+        try:
+            trainset = getattr(torchvision.datasets, dataset_name)(
+                root=data_root, 
+                split="train",
+                download=True, 
+                transform=transform_train
+            )
+            testset = getattr(torchvision.datasets, dataset_name)(
+                root=data_root, 
+                split="val",
+                download=True, 
+                transform=transform_test
+            )
+        except:
+            print("Error Loading Torch Dataset, dataset does not have argument train or split")
+            sys.exit(1)
+
+    # Create the corresponding dataloaders
+    trainloader = torch.utils.data.DataLoader(
+        trainset, 
+        batch_size=model_cfg.batch_size,
+        shuffle=True, 
+        pin_memory=True,
+        num_workers=int((os.cpu_count()) / 2)
+    )
+    testloader = torch.utils.data.DataLoader(
+        testset, 
+        batch_size=model_cfg.test_batch_size,
+        shuffle=False, 
+        pin_memory=True,
+        num_workers=int((os.cpu_count()) / 2)
+    )
+
+    return trainloader, testloader
+
 
 def prepareRoboFlowDataset(model_cfg):
+    """
+    Prepare a RoboFlow Dataset in the yolov8 annotation format
 
-	rf_key = os.getenv("ROBOFLOW_API_KEY")
-	if rf_key is None:
-		rf_key = input("Roboflow API Key: ")
-		os.environ["ROBOFLOW_API_KEY"] = rf_key
-	rf = Roboflow(api_key=rf_key)
+    Arguments:
+    - model_cfg (wandb.Config): the wandb Config object
+    """
+    rf_key = os.getenv("ROBOFLOW_API_KEY")
+    if rf_key is None:
+        rf_key = input("Roboflow API Key: ")
+        os.environ["ROBOFLOW_API_KEY"] = rf_key
+    rf = Roboflow(api_key=rf_key)
 
-	ws, pr, vs = model_cfg["dataset_name"].split("/")
-	project = rf.workspace(ws).project(pr)
-	dataset = project.version(vs).download(model_format="yolov8", location=f"./datasets/{model_cfg['task']}/{model_cfg['dataset_name']}/", overwrite=False)
+    try:
+        ws, pr, vs = model_cfg["dataset_name"].split("/")
+        project = rf.workspace(ws).project(pr)
+        dataset = project.version(vs).download(model_format="yolov8", location=f"./datasets/{model_cfg['task']}/{model_cfg['dataset_name']}/", overwrite=False)
+    except:
+        print("For roboflow datasets, you must specify the workspace, project, and version in the model_cfg.json field=dataset_name")
+        sys.exit(1)
 
 
 def prepareDetectionDataset(model_cfg):
+    """
+    Simple Function for ensuring that dataset exists and is saved locally
 
-	dataset_path = f"./datasets/{model_cfg['task']}/{model_cfg['dataset_name']}/"
-	if not os.path.exists(dataset_path):
-		try:
-			prepareRoboFlowDataset(model_cfg)
-		except Exception as e:
-			print(e)
-			return
+    Arguments:
+    - model_cfg (wandb.Config): the wandb Config object
+    """
+    dataset_path = f"./datasets/{model_cfg['task']}/{model_cfg['dataset_name']}/"
+    if not os.path.exists(dataset_path):
+        prepareRoboFlowDataset(model_cfg)
 
 
-# Convert between coco json and yolo format
-def coco2json(model_cfg):
+def coco2yolo(model_cfg):
+    """
+    Function to convert MS-COCO Labels to YOLOv8 format
+    """
     data_root = f"./datasets/{model_cfg['task']}/{model_cfg['dataset_name']}/"
     for root, folders, files in os.walk(data_root):
         if "coco" in root:
@@ -253,3 +268,80 @@ def coco2json(model_cfg):
                 }
                 with open(os.path.join(yolo_dir, "data.yaml"), "w") as yolo_f:
                     yaml.dump(dataset_yaml, yolo_f)
+
+###############################################################
+#################### ALGORITHMIC UTILITIES ####################
+###############################################################
+
+
+def lr_finder_algo(net, optimizer, scheduler, criterion, train_loader, model_cfg):
+	"""
+    Function to perform a search for the optimal initial learning rate for the Cosine-Annealing with Warmup scheduler.
+    Algorithm is implemented according to https://arxiv.org/abs/1506.01186
+    
+    Arguments:
+    - model (torch.nn.Module): the torch model to be trained
+    - optimizer (torch.optim): the torch optimizer to use
+    - scheduler (torch.optim.lr_scheduler)
+    - criterion (torch.nn.Loss): the torch loss function
+    - train_loader (torch.utils.data.DataLoader): the torch Dataloader
+    - model_cfg (wandb.Config): the wandb Config object
+    
+    Returns:
+    - eta_max (float): the maximized initial learning rate
+	"""
+	device, epochs = model_cfg["device"], max(150, model_cfg["epochs"])
+	model = net.to(device)
+	losses = []
+	lr_list = []
+	for epoch, (images, labels) in enumerate(train_loader):
+		if epoch == epochs:
+			break
+		# Move tensors to configured device
+		images = images.to(device)
+		labels = labels.to(device)
+		# Forward Pass
+		outputs = model(images)
+		loss = criterion(outputs, labels)
+		# Backpropogation and SGD
+		optimizer.zero_grad()
+		loss.backward()
+		optimizer.step()
+		curr_lr = optimizer.param_groups[0]['lr']
+		wandb.log(
+			{
+				"Training Loss (LR Finder)": loss.item(),
+				"LR": curr_lr,
+				"Epoch": epoch
+			}
+		)
+		losses.append(loss.item())
+		lr_list.append(curr_lr)
+		scheduler.step()
+	eta_max = lr_list[min(enumerate(losses), key=lambda x: x[1])[0]] / 10.0
+	return eta_max
+
+
+def custom_cos_annealing_warmup(num_batches, T, eta_max, epoch, batch):
+    """
+    Custom Implementation of a cosine annealing learning rate scheduler with warmup
+    
+    Arguments:
+    - num_batches (int): number of batches in the dataset
+    - T (int): num_batches*epochs
+    - eta_max (float): the maximized initial learning rate
+    - epoch (int): the current epoch
+    - batch (int): the current batch number/id
+    
+    Returns:
+    - next_lr (float): the next scheduled learning rate
+	"""
+	# fixed hyperparameters used for Cosine Annealing w/ Warmup Schedule
+    T_0 = int(T / 5)
+    t = epoch*num_batches + batch
+    next_lr = 1e-5
+    if t <= T_0:
+        next_lr += (t / T_0)*eta_max
+    else:
+        next_lr += eta_max*math.cos((math.pi/2.0)*((t - T_0)/(T - T_0)))
+    return next_lr

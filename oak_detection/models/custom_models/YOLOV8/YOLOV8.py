@@ -1,5 +1,16 @@
+#################################################
+#################### IMPORTS ####################
+#################################################
+
 import os
+
 from ultralytics import YOLO
+
+import wandb
+
+############################################################
+#################### CUSTOM MODEL CLASS ####################
+############################################################
 
 
 class YOLOV8:
@@ -74,27 +85,13 @@ class YOLOV8:
             rect=False,                                         # rectangular val with each batch collated for minimum padding
             split="val"                                        # dataset split to use for validation, i.e. 'val', 'test' or 'train'
         )
-        # test_data_root = f"{os.getcwd()}/datasets/{self.model_cfg['task']}/{self.model_cfg['dataset_name']}/test/images/"
-        # self.model.predict(
-        #     source=test_data_root,                              # source directory for images or videos
-        #     conf=0.25,                                          # object confidence threshold for detection
-        #     iou=0.7,                                            # intersection over union (IoU) threshold for NMS
-        #     half=True,                                          # use half precision (FP16)
-        #     device=None,                                        # device to run on, i.e. cuda device=0/1/2/3 or device=cpu
-        #     show=True,                                          # show results if possible
-        #     save=True,                                          # save images with results
-        #     save_txt=False,                                     # save results as .txt file
-        #     save_conf=False,                                    # save results with confidence scores
-        #     save_crop=False,                                    # save cropped images with results
-        #     hide_labels=False,                                  # hide labels
-        #     hide_conf=False,                                    # hide confidence scores
-        #     max_det=300,                                        # maximum number of detections per image
-        #     vid_stride=False,                                   # video frame-rate stride
-        #     line_width=None,                                    # The line width of the bounding boxes. If None, it is scaled to the image size.
-        #     visualize=True,                                     # visualize model features
-        #     augment=False,                                      # apply image augmentation to prediction sources
-        #     agnostic_nms=False,                                 # class-agnostic NMS
-        #     retina_masks=False,                                 # use high-resolution segmentation masks
-        #     classes=None,                                       # filter results by class, i.e. class=0, or class=[0,2,3]
-        #     boxes=True,                                         # Show boxes in segmentation predictions
-        # )
+        # Log validation data
+        run_dir = f"{os.getcwd()}/runs/{self.model_cfg['task']}/{self.model_cfg['dataset_name']}/{self.model_cfg['model_arch']}/{cfg_wandb['name'].split('_')[0]}/{cfg_wandb['name']}/"
+        for val_data in os.listdir(run_dir):
+            if "val_batch" in val_data:
+                eval_im = wandb.Image(os.path.join(run_dir, val_data))
+                wandb.log(
+                    {
+                        val_data.split(".")[0]: eval_im
+                    }
+                )

@@ -1,13 +1,18 @@
-import numpy as np
-import os
-import json
-import argparse
-import wandb
-import pytorch_lightning as pl
-from pytorch_lightning.loggers import WandbLogger
-from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor
+####################################################
+#################### DEPRECATED ####################
+####################################################
 
-from training.lightning import DynamicsLightningModule
+
+import argparse
+import json
+import os
+
+import lightning.pytorch as pl
+import numpy as np
+from lightning.pytorch.callbacks import LearningRateMonitor, ModelCheckpoint
+from lightning.pytorch.loggers import WandbLogger
+
+import wandb
 
 
 def load_config(config_path, root, dataset_name):
