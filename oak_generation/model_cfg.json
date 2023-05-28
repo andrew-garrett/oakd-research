@@ -14,5 +14,5 @@
 	"optimizer": "Adam",
 	"scheduler": false,
 	"dataset_name": "torchvision/MNIST",
-	"imgsz": [1, 28, 28]
+	"imgsz": [1, 64, 64]
 }
