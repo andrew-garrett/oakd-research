@@ -1,18 +1,23 @@
 {
-	"task": "generation",
-	"model_arch": "DCGAN",
-	"name": "dcgan_000",
-	"batch_size": 128,
-	"test_batch_size": 100,
-	"epochs": 200,
-	"lr": 0.0002,
-	"momentum": 0.5,
-	"weight_decay": 0.0,
-	"nesterov": true,
-	"seed": 42,
+	"batch_size": 71,
 	"criterion": "",
+	"dataset_name": "torchvision/MNIST",
+	"epochs": 5,
+	"imgsz": [
+		1,
+		64,
+		64
+	],
+	"latent_dim": 112,
+	"lr": 0.004995437839741955,
+	"model_arch": "DCGAN",
+	"momentum": 0.9254550325818648,
+	"name": "dcgan_000",
+	"nesterov": true,
 	"optimizer": "Adam",
 	"scheduler": false,
-	"dataset_name": "torchvision/CelebA",
-	"imgsz": [3, 64, 64]
+	"seed": 42,
+	"task": "generation",
+	"test_batch_size": 100,
+	"weight_decay": 8.665669625100044e-05
 }

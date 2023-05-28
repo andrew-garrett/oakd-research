@@ -8,9 +8,10 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import wandb
 from torchvision.transforms import ToPILImage
 from torchvision.utils import make_grid
+
+import wandb
 
 ############################################################
 #################### CUSTOM MODEL CLASS ####################
@@ -97,8 +98,7 @@ class DCGAN(pl.LightningModule):
     """
 
     def __init__(self, 
-                 model_cfg, 
-                 latent_dim: int = 100,
+                 model_cfg,
                  **kwargs,
     ):
         super(DCGAN, self).__init__(**kwargs)
@@ -110,7 +110,7 @@ class DCGAN(pl.LightningModule):
         self.automatic_optimization = False
 
         # Subnetworks
-        self.generator = Generator(latent_dim=self.hparams.latent_dim, img_shape=tuple(self.hparams.model_cfg["imgsz"]))
+        self.generator = Generator(latent_dim=self.hparams.model_cfg["latent_dim"], img_shape=tuple(self.hparams.model_cfg["imgsz"]))
         self.discriminator = Discriminator(img_shape=tuple(self.hparams.model_cfg["imgsz"]))
         
         # Weight Initialization According to DCGAN Paper
@@ -118,8 +118,8 @@ class DCGAN(pl.LightningModule):
         self.discriminator.apply(self.weights_init)
 
         # Setup data structures for 
-        self.validation_z = torch.randn(8, self.hparams.latent_dim)
-        self.example_input_array = torch.zeros(2, self.hparams.latent_dim, 1, 1)
+        self.validation_z = torch.randn(8, self.hparams.model_cfg["latent_dim"])
+        self.example_input_array = torch.zeros(2, self.hparams.model_cfg["latent_dim"], 1, 1)
 
         # Used to Log Images
         self.tensor2PIL = ToPILImage()
@@ -237,7 +237,7 @@ class DCGAN(pl.LightningModule):
         optimizer_g, optimizer_d = self.optimizers()
 
         # sample noise
-        z = torch.randn(imgs.shape[0], self.hparams.latent_dim, 1, 1)
+        z = torch.randn(imgs.shape[0], self.hparams.model_cfg["latent_dim"], 1, 1)
         z = z.type_as(imgs)
 
         # train generator
@@ -322,7 +322,7 @@ class DCGAN(pl.LightningModule):
         if self.hparams.model_cfg["scheduler"]:
             patience = max(int(0.1*self.hparams.model_cfg["epochs"]), 10)
             scheduler_config_g = {
-                "scheduler": torch.optim.lr_scheduler.ReduceLROnPlateau(opt_g, mode="max", factor=0.25, patience=patience, threshold=1e-1, threshold_mode="rel", cooldown=patience),
+                "scheduler": torch.optim.lr_scheduler.ReduceLROnPlateau(opt_g, mode="min", factor=0.25, patience=patience, threshold=1e-2, threshold_mode="rel", cooldown=patience),
                 "interval": "epoch",
                 "frequency": 1,
                 "monitor": "train/g_loss_epoch",
