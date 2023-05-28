@@ -2,7 +2,7 @@
 	"batch_size": 71,
 	"criterion": "",
 	"dataset_name": "torchvision/CelebA",
-	"epochs": 25,
+	"epochs": 5,
 	"imgsz": [
 		3,
 		64,
