@@ -13,11 +13,10 @@ import sys
 import torch
 import torchvision
 import torchvision.transforms as transforms
+import wandb
 import yaml
 from roboflow import Roboflow
 from tqdm import tqdm
-
-import wandb
 
 ###########################################################
 #################### GENERAL UTILITIES ####################
@@ -95,35 +94,29 @@ def prepareTorchDataset(model_cfg):
     transform_train_list.append(transforms.Resize(model_cfg["imgsz"][-1], antialias=True))
     transform_test_list.append(transforms.Resize(model_cfg["imgsz"][-1], antialias=True))
 
-    # Normalize Tensors
+    # # Normalize Tensors
+    # transform_train_list.append(
+    #     transforms.Normalize(
+    #         (0.5, 0.5, 0.5), 
+    #         (0.5, 0.5, 0.5)
+    #     )
+    # )
+    # transform_test_list.append(
+    #     transforms.Normalize(
+    #         (0.5, 0.5, 0.5), 
+    #         (0.5, 0.5, 0.5)
+    #     )
+    # )
+    
+    ############ Temp for MNIST ############
     transform_train_list.append(
-        transforms.Normalize(
-            (0.5, 0.5, 0.5), 
-            (0.5, 0.5, 0.5)
-        )
+        transforms.Normalize((0.1307,), (0.3081,))
     )
     transform_test_list.append(
-        transforms.Normalize(
-            (0.5, 0.5, 0.5), 
-            (0.5, 0.5, 0.5)
-        )
+        transforms.Normalize((0.1307,), (0.3081,))
     )
     transform_train = transforms.Compose(transform_train_list)
     transform_test = transforms.Compose(transform_test_list)
-
-    # ############ Temp for MNIST ############
-    # transform_train = transforms.Compose(
-    #     [
-    #         transforms.ToTensor(),
-    #         transforms.Normalize((0.1307,), (0.3081,)),
-    #     ]
-    # )
-    # transform_test = transforms.Compose(
-    #     [
-    #         transforms.ToTensor(),
-    #         transforms.Normalize((0.1307,), (0.3081,)),
-    #     ]
-    # )
     
     # Read the datasets for training and testing
     try:
