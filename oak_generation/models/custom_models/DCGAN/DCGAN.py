@@ -8,10 +8,9 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import wandb
 from torchvision.transforms import ToPILImage
 from torchvision.utils import make_grid
-
-import wandb
 
 ############################################################
 #################### CUSTOM MODEL CLASS ####################
@@ -139,7 +138,21 @@ class DCGAN(pl.LightningModule):
             nn.init.normal_(m.weight.data, 1.0, 0.02)
             nn.init.constant_(m.bias.data, 0)
 
-    def training_step(self, batch):
+    def _log_images(self):
+        sample_grid = make_grid(torch.vstack(self.sample_imgs), nrow=6, normalize=True)
+        train_grid = make_grid(torch.vstack(self.train_imgs), nrow=6, normalize=True)
+        wandb.log(
+            {
+                "generated_images": wandb.Image(self.tensor2PIL(sample_grid)),
+                "training_images": wandb.Image(self.tensor2PIL(train_grid))
+            }
+        )
+
+        self.sample_imgs = []
+        self.train_imgs = []
+
+
+    def training_step(self, batch, batch_idx):
 
         # imgs, _ = batch
         # optimizer_g, optimizer_d = self.optimizers()
@@ -232,14 +245,17 @@ class DCGAN(pl.LightningModule):
         self.toggle_optimizer(optimizer_g)
         self.generated_imgs = self(z)
 
-        # log sampled images
         if len(self.sample_imgs) < 6:
-            sample_imgs = self.generated_imgs[:6]
+            # log sampled images
+            sample_inds = torch.randint(self.generated_imgs.shape[0], (6,))
+            sample_imgs = self.generated_imgs[sample_inds]
             self.sample_imgs.append(sample_imgs)
-        # log training images
-        if len(self.train_imgs) < 6:
-            train_imgs = imgs[:6]
+            # log training images
+            train_imgs = imgs[sample_inds]
             self.train_imgs.append(train_imgs)
+        else:
+            if batch_idx % 100 == 0:
+                self._log_images()
 
         # ground truth result (ie: all fake)
         # put on GPU because we created this tensor inside training_loop
@@ -342,14 +358,8 @@ class DCGAN(pl.LightningModule):
             dictionary=self.loss_dict,
             on_epoch=True,
         )
-        sample_grid = make_grid(torch.vstack(self.sample_imgs), nrow=6, normalize=True)
-        train_grid = make_grid(torch.vstack(self.train_imgs), nrow=6, normalize=True)
-        wandb.log(
-            {
-                "generated_images": wandb.Image(self.tensor2PIL(sample_grid)),
-                "training_images": wandb.Image(self.tensor2PIL(train_grid))
-            }
-        )
+        
+        self._log_images()
 
         sch = self.lr_schedulers()
         if sch is not None:
