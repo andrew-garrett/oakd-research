@@ -1,7 +1,7 @@
 {
 	"batch_size": 71,
 	"criterion": "",
-	"dataset_name": "torchvision/CIFAR10",
+	"dataset_name": "torchvision/CelebA",
 	"epochs": 25,
 	"imgsz": [
 		3,
