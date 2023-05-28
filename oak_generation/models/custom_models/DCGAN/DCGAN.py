@@ -140,8 +140,87 @@ class DCGAN(pl.LightningModule):
             nn.init.constant_(m.bias.data, 0)
 
     def training_step(self, batch):
-        imgs, _ = batch
 
+        # imgs, _ = batch
+        # optimizer_g, optimizer_d = self.optimizers()
+
+        # ##### Step 1. Update Discriminator Network
+        # self.toggle_optimizer(optimizer_d)
+        # optimizer_d.zero_grad()
+
+        # ## Train with Real Labels
+        # real_label = torch.ones(imgs.size(0))
+        # real_label = real_label.type_as(imgs)
+        # # Forward Pass
+        # output_d = self.discriminator(imgs).view(-1)
+        # # Compute Loss and Backward Pass
+        # error_d_real = self.adversarial_loss(output_d, real_label)
+        # # self.manual_backward(error_d_real)
+        # d_x = output_d.mean().item()
+
+        # ## Train with Fake Labels
+        # z = torch.randn(imgs.shape[0], self.hparams.latent_dim, 1, 1)
+        # z = z.type_as(imgs)
+        # # Create Fake Images with Generator
+        # fake_imgs = self(z)
+        # fake_label = torch.zeros(imgs.size(0))
+        # fake_label = fake_label.type_as(imgs)
+        # # Forward Passs
+        # output_d = self.discriminator(self(z).detach()).view(-1)
+        # # Compute Loss and Backward Pass
+        # error_d_fake = self.adversarial_loss(output_d, fake_label)
+        # # d_g_z1 = output_d.mean().item()
+
+        # ## Perform Weight Update
+        # error_d = error_d_real + error_d_fake
+        # self.manual_backward(error_d)
+        # optimizer_d.step()
+        # self.untoggle_optimizer(optimizer_d)
+
+
+        # ##### Step 2. Update Generator Network
+        # self.toggle_optimizer(optimizer_g)
+        # optimizer_g.zero_grad()
+        # z = torch.randn(imgs.shape[0], self.hparams.latent_dim, 1, 1)
+        # z = z.type_as(imgs)
+        # real_label = torch.ones(imgs.size(0))
+        # real_label = real_label.type_as(imgs)
+
+        # # Forward Pass (Classify Generated Images)
+        # output_d2 = self.discriminator(self(z).detach()).view(-1)
+        # # Compute Loss (Fake Images are "real" for Generator Cost) and Backward Pass
+        # error_g = self.adversarial_loss(output_d2, real_label)
+        # self.manual_backward(error_g)
+        # # d_g_z2 = output_d2.mean().item()
+        # optimizer_g.step()
+        # self.untoggle_optimizer(optimizer_g)
+
+
+        # ##### Step 3. Logging
+
+        # # Generated and Training Images
+        # if len(self.sample_imgs) < 6:
+        #     # log sampled images
+        #     sample_imgs = fake_imgs[:6]
+        #     self.sample_imgs.append(sample_imgs)
+        # if len(self.train_imgs) < 6:
+        #     # log training images
+        #     train_imgs = imgs[:6]
+        #     self.train_imgs.append(train_imgs)
+
+        # # Losses
+        # self.log_dict(
+        #     {
+        #         "train/g_loss": error_g.item(),
+        #         "train/d_loss": error_d.item()
+        #     }, 
+        #     prog_bar=True
+        # )
+        # self.loss_dict["train/g_loss_epoch"].append(error_g.item())
+        # self.loss_dict["train/d_loss_epoch"].append(error_d.item())
+
+
+        imgs, _ = batch
         optimizer_g, optimizer_d = self.optimizers()
 
         # sample noise
@@ -164,11 +243,11 @@ class DCGAN(pl.LightningModule):
 
         # ground truth result (ie: all fake)
         # put on GPU because we created this tensor inside training_loop
-        valid = torch.ones(imgs.size(0), 1, 1, 1)
+        valid = torch.ones(imgs.size(0))
         valid = valid.type_as(imgs)
 
         # adversarial loss is binary cross-entropy
-        g_loss = self.adversarial_loss(self.discriminator(self(z)), valid)
+        g_loss = self.adversarial_loss(self.discriminator(self(z)).view(-1), valid)
         self.manual_backward(g_loss)
         optimizer_g.step()
         optimizer_g.zero_grad()
@@ -179,16 +258,16 @@ class DCGAN(pl.LightningModule):
         self.toggle_optimizer(optimizer_d)
 
         # how well can it label as real?
-        valid = torch.ones(imgs.size(0), 1, 1, 1)
+        valid = torch.ones(imgs.size(0))
         valid = valid.type_as(imgs)
 
-        real_loss = self.adversarial_loss(self.discriminator(imgs), valid)
+        real_loss = self.adversarial_loss(self.discriminator(imgs).view(-1), valid)
 
         # how well can it label as fake?
-        fake = torch.zeros(imgs.size(0), 1, 1, 1)
+        fake = torch.zeros(imgs.size(0))
         fake = fake.type_as(imgs)
 
-        fake_loss = self.adversarial_loss(self.discriminator(self(z).detach()), fake)
+        fake_loss = self.adversarial_loss(self.discriminator(self(z).detach()).view(-1), fake)
 
         # discriminator loss is the average of these
         d_loss = (real_loss + fake_loss) / 2
