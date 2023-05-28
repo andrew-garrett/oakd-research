@@ -4,15 +4,15 @@
 	"name": "dcgan_000",
 	"batch_size": 128,
 	"test_batch_size": 100,
-	"epochs": 25,
+	"epochs": 100,
 	"lr": 0.0002,
 	"momentum": 0.5,
-	"weight_decay": 0.00001,
+	"weight_decay": 0.0,
 	"nesterov": true,
 	"seed": 42,
 	"criterion": "",
 	"optimizer": "Adam",
 	"scheduler": false,
-	"dataset_name": "torchvision/CelebA",
-	"imgsz": [3, 64, 64]
+	"dataset_name": "torchvision/MNIST",
+	"imgsz": [1, 28, 28]
 }
