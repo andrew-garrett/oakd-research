@@ -13,6 +13,6 @@
 	"criterion": "",
 	"optimizer": "Adam",
 	"scheduler": false,
-	"dataset_name": "torchvision/MNIST",
-	"imgsz": [1, 64, 64]
+	"dataset_name": "torchvision/CelebA",
+	"imgsz": [3, 64, 64]
 }
