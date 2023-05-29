@@ -13,10 +13,11 @@ import sys
 import torch
 import torchvision
 import torchvision.transforms as transforms
-import wandb
 import yaml
 from roboflow import Roboflow
 from tqdm import tqdm
+
+import wandb
 
 ###########################################################
 #################### GENERAL UTILITIES ####################
@@ -162,14 +163,14 @@ def prepareTorchDataset(model_cfg):
         batch_size=model_cfg.batch_size,
         shuffle=True, 
         pin_memory=True,
-        num_workers=int((os.cpu_count()) / 2)
+        num_workers=8
     )
     testloader = torch.utils.data.DataLoader(
         testset, 
         batch_size=model_cfg.test_batch_size,
         shuffle=False, 
         pin_memory=True,
-        num_workers=int((os.cpu_count()) / 2)
+        num_workers=2
     )
 
     return trainloader, testloader
