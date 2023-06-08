@@ -1,0 +1,18 @@
+{
+	"task": "classification",
+	"model_arch": "FCN",
+	"name": "fcn_003",
+	"batch_size": 128,
+	"test_batch_size": 100,
+	"epochs": 40,
+	"lr": 0.00001,
+	"momentum": 0.9,
+	"weight_decay": 0.0001,
+	"nesterov": true,
+	"seed": 42,
+	"criterion": "CrossEntropyLoss",
+	"optimizer": "SGD",
+	"scheduler": "custom_cos_annealing_warmup",
+	"dataset_name": "torchvision/CIFAR10",
+	"imgsz": 416
+}

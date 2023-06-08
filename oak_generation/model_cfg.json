@@ -1,0 +1,23 @@
+{
+	"batch_size": 20,
+	"criterion": "",
+	"dataset_name": "torchvision/FashionMNIST",
+	"epochs": 15,
+	"imgsz": [
+		1,
+		64,
+		64
+	],
+	"latent_dim": 59,
+	"lr": 0.0025650083222975065,
+	"model_arch": "DCGAN",
+	"momentum": 0.5265654100485573,
+	"name": "dcgan_000",
+	"nesterov": true,
+	"optimizer": "AdamW",
+	"scheduler": true,
+	"seed": 42,
+	"task": "generation",
+	"test_batch_size": 100,
+	"weight_decay": 1.1641865507628094e-05
+}
