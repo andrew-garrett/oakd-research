@@ -1,18 +1,18 @@
 {
 	"task": "segmentation",
 	"model_arch": "YOLOV8",
-	"name": "yolov8n-seg_000",
+	"name": "yolov8m-seg_000",
 	"batch_size": 16,
 	"test_batch_size": 16,
-	"epochs": 100,
-	"lr": 0.01,
+	"epochs": 250,
+	"lr": 0.005,
 	"momentum": 0.95,
-	"weight_decay": 0.0001,
+	"weight_decay": 0.00005,
 	"nesterov": true,
 	"seed": 42,
 	"criterion": "CrossEntropyLoss",
 	"optimizer": "SGD",
 	"scheduler": "custom_cos_annealing_warmup",
-	"dataset_name": "iot-inatel/braintumor-spfys/2",
-	"imgsz": 416
+	"dataset_name": "amazon_science/armbench-segmentation/0.1/mix-object-tote/yolo",
+	"imgsz": 540 
 }

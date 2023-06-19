@@ -5,7 +5,6 @@
 import os
 
 from ultralytics import YOLO
-
 import wandb
 
 ############################################################
@@ -33,18 +32,18 @@ class YOLOV8:
             save_period=0,                                      # Save checkpoint every x epochs (disabled if < 1)
             cache=False,                                        # True/ram, disk or False. Use cache for data loading
             device=None,                                        # device to run on, i.e. cuda device=0 or device=0,1,2,3 or device=cpu
-            workers=8,                                          # number of worker threads for data loading (per RANK if DDP)
+            workers=os.cpu_count(),                             # number of worker threads for data loading (per RANK if DDP)
             project=self.project,                               # project name
             name=self.model_cfg["name"],                        # experiment name
             exist_ok=False,                                     # whether to overwrite existing experiment
             pretrained=False,                                   # whether to use a pretrained model
             optimizer=self.model_cfg["optimizer"],              # optimizer to use, choices=['SGD', 'Adam', 'AdamW', 'RMSProp']
             verbose=False,                                      # whether to print verbose output
-            seed=0,                                             # random seed for reproducibility
+            seed=self.model_cfg["seed"],                        # random seed for reproducibility
             deterministic=True,                                 # whether to enable deterministic mode
             single_cls=False,                                   # train multi-class data as single-class
             rect=False,                                         # rectangular training with each batch collated for minimum padding
-            cos_lr=False,                                       # use cosine learning rate scheduler
+            cos_lr=True,                                        # use cosine learning rate scheduler
             close_mosaic=0,                                     # (int) disable mosaic augmentation for final epochs
             resume=False,                                       # resume training from last checkpoint
             amp=True,                                           # Automatic Mixed Precision (AMP) training, choices=[True, False]
@@ -52,7 +51,7 @@ class YOLOV8:
             lrf=0.01,                                           # final learning rate (lr0 * lrf)
             momentum=self.model_cfg["momentum"],                # SGD momentum/Adam beta1
             weight_decay=self.model_cfg["weight_decay"],        # optimizer weight decay 5e-4
-            warmup_epochs=0.02*self.model_cfg["epochs"],        # warmup epochs (fractions ok)
+            warmup_epochs=0.01*self.model_cfg["epochs"],        # warmup epochs (fractions ok)
             warmup_momentum=0.9*self.model_cfg["momentum"],     # warmup initial momentum
             warmup_bias_lr=10.*self.model_cfg["lr"],            # warmup initial bias lr
             box=7.5,                                            # box loss gain
@@ -67,6 +66,17 @@ class YOLOV8:
             dropout=0.0,                                        # use dropout regularization (classify train only)
             val=True,                                           # validate/test during training,
         )
+
+        # Log validation data
+        run_dir = f"{os.getcwd()}/runs/{self.model_cfg['task']}/{self.model_cfg['dataset_name']}/{self.model_cfg['model_arch']}/{self.model_cfg['name'].split('_')[0]}/{self.model_cfg['name']}/"
+        for val_data in os.listdir(run_dir):
+            if "val_batch" in val_data:
+                eval_im = wandb.Image(os.path.join(run_dir, val_data))
+                wandb.log(
+                    {
+                        val_data.split(".")[0]: eval_im
+                    }
+                )
 
     def validate(self):
         self.model.val(
@@ -85,13 +95,4 @@ class YOLOV8:
             rect=False,                                         # rectangular val with each batch collated for minimum padding
             split="val"                                        # dataset split to use for validation, i.e. 'val', 'test' or 'train'
         )
-        # Log validation data
-        run_dir = f"{os.getcwd()}/runs/{self.model_cfg['task']}/{self.model_cfg['dataset_name']}/{self.model_cfg['model_arch']}/{cfg_wandb['name'].split('_')[0]}/{cfg_wandb['name']}/"
-        for val_data in os.listdir(run_dir):
-            if "val_batch" in val_data:
-                eval_im = wandb.Image(os.path.join(run_dir, val_data))
-                wandb.log(
-                    {
-                        val_data.split(".")[0]: eval_im
-                    }
-                )
+        

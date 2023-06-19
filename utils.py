@@ -91,90 +91,101 @@ def prepareTorchDataset(model_cfg):
 
     # Resize Tensors
     if not isinstance(model_cfg["imgsz"], list):
-        model_cfg["imgsz"] = [model_cfg["imgsz"]]
+        model_cfg["imgsz"] = [3, model_cfg["imgsz"], model_cfg["imgsz"]]
     transform_train_list.append(transforms.Resize(model_cfg["imgsz"][1:], antialias=True))
     transform_test_list.append(transforms.Resize(model_cfg["imgsz"][1:], antialias=True))
 
     # Normalize Tensors
-    # transform_train_list.append(
-    #     transforms.Normalize(
-    #         (0.5, 0.5, 0.5), 
-    #         (0.5, 0.5, 0.5)
-    #     )
-    # )
-    # transform_test_list.append(
-    #     transforms.Normalize(
-    #         (0.5, 0.5, 0.5), 
-    #         (0.5, 0.5, 0.5)
-    #     )
-    # )
-
-    ############ Temp for MNIST ############
     transform_train_list.append(
-        transforms.Normalize((0.1307,), (0.3081,))
+        transforms.Normalize(
+            (0.5,), 
+            (0.5,)
+        )
     )
     transform_test_list.append(
-        transforms.Normalize((0.1307,), (0.3081,))
+        transforms.Normalize(
+            (0.5,), 
+            (0.5,)
+        )
     )
     transform_train = transforms.Compose(transform_train_list)
     transform_test = transforms.Compose(transform_test_list)
     
     # Read the datasets for training and testing
-    try:
-        dataset_name_split = model_cfg["dataset_name"].split("/")
-        dataset_source = str(dataset_name_split[0])
-        dataset_name = str(dataset_name_split[1])
-        data_root = f"./datasets/{model_cfg['task']}/{dataset_source}"
-        trainset = getattr(torchvision.datasets, dataset_name)(
-            root=data_root, 
-            train=True,
-            download=True, 
-            transform=transform_train
-        )
-        testset = getattr(torchvision.datasets, dataset_name)(
-            root=data_root, 
-            train=False,
-            download=True, 
-            transform=transform_test
-        )
-    except Exception as e1:
+    if "torchvision" in model_cfg["dataset_name"]:
         try:
+            dataset_name_split = model_cfg["dataset_name"].split("/")
+            dataset_source = str(dataset_name_split[0])
+            dataset_name = str(dataset_name_split[1])
+            data_root = f"./datasets/{model_cfg['task']}/{dataset_source}"
             trainset = getattr(torchvision.datasets, dataset_name)(
                 root=data_root, 
-                split="train",
+                train=True,
                 download=True, 
                 transform=transform_train
             )
             testset = getattr(torchvision.datasets, dataset_name)(
                 root=data_root, 
-                split="valid",
+                train=False,
                 download=True, 
                 transform=transform_test
             )
-        except Exception as e2:
-            print("Error Loading Torch Dataset, dataset does not have argument train or split")
-            print(e1)
-            print(e2)
+        except Exception as e1:
+            try:
+                trainset = getattr(torchvision.datasets, dataset_name)(
+                    root=data_root, 
+                    split="train",
+                    download=True, 
+                    transform=transform_train
+                )
+                testset = getattr(torchvision.datasets, dataset_name)(
+                    root=data_root, 
+                    split="valid",
+                    download=True, 
+                    transform=transform_test
+                )
+            except Exception as e2:
+                print("Error Loading Torch Dataset, dataset does not have argument train or split")
+                print(e1)
+                print(e2)
+                sys.exit(1)
+    else: # if using a custom dataset source
+        trainset = torchvision.datasets.ImageFolder(
+            root=f"./datasets/{model_cfg['task']}/{model_cfg['dataset_name']}/train",
+            transform=transform_train
+        )
+        testset = torchvision.datasets.ImageFolder(
+            root=f"./datasets/{model_cfg['task']}/{model_cfg['dataset_name']}/test",
+            transform=transform_train
+        )
+
+    # To handle Conditional GAN
+    if model_cfg["model_arch"] == "CGAN":
+        try:
+            model_cfg["num_classes"] = len(trainset.classes)
+        except Exception as e:
+            print(e)
+            print("Cannot use conditional GAN without knowledge of the number of classes in the dataset")
             sys.exit(1)
 
     # Create the corresponding dataloaders
     trainloader = torch.utils.data.DataLoader(
         trainset, 
-        batch_size=model_cfg.batch_size,
+        batch_size=model_cfg["batch_size"],
         shuffle=True, 
         pin_memory=True,
         num_workers=8
     )
     testloader = torch.utils.data.DataLoader(
         testset, 
-        batch_size=model_cfg.test_batch_size,
+        batch_size=model_cfg["test_batch_size"],
         shuffle=False, 
         pin_memory=True,
         num_workers=2
     )
 
     return trainloader, testloader
-
+    
 
 def prepareRoboFlowDataset(model_cfg):
     """

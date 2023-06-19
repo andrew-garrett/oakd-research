@@ -24,7 +24,7 @@ def base_engine(cfg_fname):
 
     cfg_dict, cfg_wandb = initialize_wandb(cfg_fname)
 
-    trainloader, testloader = prepareTorchDataset(cfg_wandb)
+    trainloader, testloader = prepareTorchDataset(cfg_dict)
 
     # Set random seed for reproducability
     pl.seed_everything(cfg_wandb.seed)
@@ -54,9 +54,11 @@ def base_engine(cfg_fname):
     trainer = pl.Trainer(
         accelerator="auto",
         devices=1,
-        max_epochs=cfg_wandb.epochs,
+        max_epochs=cfg_wandb["epochs"],
         logger=logger,
-        # check_val_every_n_epoch=5,
         callbacks=callbacks,
+        # used to check whether the model is working
+        # overfit_batches=20,
+        # detect_anomaly=True
     )
-    trainer.fit(model, trainloader) #, testloader)
+    trainer.fit(model, trainloader)
