@@ -1,0 +1,24 @@
+{
+	"batch_size": 2,
+	"criterion": "BCEWithLogitsLoss",
+	"dataset_name": "custom/dummy_multilabel",
+	"epochs": 50,
+	"imgsz": [
+		3,
+		224,
+		224
+	],
+	"lr": 0.01,
+	"model_arch": "vit_b_16",
+	"num_classes": 7,
+	"pretrained": true,
+	"momentum": 0.85,
+	"nesterov": true,
+	"optimizer": "SGD",
+	"scheduler": false,
+	"seed": 1234,
+	"weight_decay": 0.00001,
+	"ignore_index": 0,
+	"precision": "16-mixed",
+	"normalize": true
+}

@@ -1,0 +1,881 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>iris.predict API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>iris.predict</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">#################### IMPORTS ####################
+#################################################
+
+import argparse
+import base64
+import json
+import logging
+import os
+import sys
+from typing import Any, List, Literal, Optional
+
+import torch
+from lightning import Trainer, seed_everything
+from lightning.pytorch.callbacks import BasePredictionWriter
+from torch.utils.data import DataLoader
+from torchvision.utils import save_image
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
+
+from iris.data import IrisLitDataModule, IrisUnlabeledDataset
+from iris.litmodules import IrisLitModule, get_model
+
+#################### CUSTOM INFERENCE UTILITIES ####################
+####################################################################
+
+
+class IrisPredictionWriter(BasePredictionWriter):
+    &#34;&#34;&#34;
+    Pytorch Lightning PredictionWriter Callback
+
+
+    write_interval = &#34;batch&#34;:
+        - (Experimental) Online-Inference Functionality
+        - writes preprocessed samples to .jpg and (optionally) model predictions to .png files in the output_root directory
+
+    write_interval = &#34;epoch&#34;:
+        - Batch-Inference Functionality
+        - writes model predictions and batch indices to .pt files in the output_root directory
+        - files are numbered by the device-rank, mainly used for distributed setting
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+        output_root: str = &#34;./&#34;,
+        write_interval: Literal[
+            &#34;batch&#34;, &#34;epoch&#34;, &#34;batch_and_epoch&#34;
+        ] = &#34;batch_and_epoch&#34;,
+    ):
+        &#34;&#34;&#34;
+        Constructor
+
+        Arguments:
+            - output_root: the directory to write predictions to disk.
+            - write_interval: events on which to write predictions, one of [&#34;batch&#34;, &#34;epoch&#34;, &#34;batch_and_epoch&#34;]
+        &#34;&#34;&#34;
+        super().__init__(write_interval)
+        self.output_root = output_root
+        # ensure that the output location exists
+        if not os.path.exists(self.output_root):
+            os.makedirs(self.output_root)
+
+    def write_on_batch_end(
+        self,
+        trainer,
+        pl_module,
+        prediction,
+        batch_indices,
+        batch,
+        batch_idx: int,
+        dataloader_idx: int,
+    ) -&gt; None:
+        &#34;&#34;&#34;
+        Write predictions to disk after passing a single batch.  Saves
+        preprocessed image and predictions.
+        &#34;&#34;&#34;
+        samples = batch[0]
+        for sample, sample_fname, ind, pred in zip(
+            samples, batch[2], batch_indices, prediction  # type: ignore
+        ):
+            # save the preprocessed sample
+            preprocessed_sample_fname = os.path.join(
+                self.output_root, os.path.basename(sample_fname)
+            )
+            save_image(sample, preprocessed_sample_fname)
+
+            # save a mask if applicable
+            if pl_module.hparams.task == &#34;segmentation&#34;:  # type: ignore
+                _mask = torch.nn.functional.softmax(pred, dim=0).argmax(dim=0) / 3
+                save_image(_mask, preprocessed_sample_fname.replace(&#34;.jpg&#34;, &#34;.png&#34;))
+
+    def write_on_epoch_end(
+        self,
+        trainer,
+        pl_module,
+        predictions,
+        batch_indices,
+    ) -&gt; None:
+        &#34;&#34;&#34;
+        Write predictions to disk after passing through an entire dataset.  Saves
+        predictions and corresponding batch indices for each GPU.
+        &#34;&#34;&#34;
+        # this will create N (num processes) files in `output_root` each containing
+        # the predictions of it&#39;s respective rank
+        torch.save(
+            predictions,
+            os.path.join(self.output_root, f&#34;predictions_{trainer.global_rank}.pt&#34;),
+        )
+
+        # optionally, you can also save `batch_indices` to get the information about the data index
+        # from your prediction data
+        torch.save(
+            batch_indices,
+            os.path.join(self.output_root, f&#34;batch_indices_{trainer.global_rank}.pt&#34;),
+        )
+
+
+def get_predictor(output_root: str = &#34;./&#34;, n_gpus: int = 0) -&gt; Trainer:
+    &#34;&#34;&#34;
+    Creates a trainer and optionally a checkpoint directory
+
+    Arguments:
+        - output_root: the directory to write predictions to disk.
+        - n_gpus: the number of gpus to train on (generally for distributed training)
+
+    Returns:
+        - predictor: a lightning trainer instance, used for prediction
+    &#34;&#34;&#34;
+    # callbacks
+    callbacks = IrisPredictionWriter(output_root=output_root)
+
+    # lightning trainer configuration
+    strategy = &#34;auto&#34;
+    accelerator = &#34;gpu&#34;
+    devices = &#34;auto&#34;
+    if n_gpus &gt; 0:
+        if n_gpus &gt; 1:
+            devices = n_gpus
+            strategy = &#34;ddp&#34;
+    else:
+        accelerator = &#34;cpu&#34;
+
+    return Trainer(
+        accelerator=accelerator,
+        devices=devices,
+        strategy=strategy,
+        logger=False,
+        callbacks=callbacks,
+        # precision=&#34;16-mixed&#34;,
+    )
+
+
+#################### CUSTOM INFERENCE ENGINE ####################
+#################################################################
+
+
+def predict(
+    lit_module: IrisLitModule,
+    root: str = &#34;./datasets/&#34;,
+    n_gpus: int = 0,
+) -&gt; Optional[List[Any]]:
+    &#34;&#34;&#34;
+    Predict/Inference Function
+
+    1. Create a config and unlabeled dataset
+    2. Load lightning module from checkpoint
+    3. Setup lightning callbacks, wandb logger, and profiler
+    4. Create predictor and predict on a unlabeled dataset
+
+    Arguments:
+        - lit_module: a IrisLightningModule to perform prediction
+        - root: the root where the dataset folder is located
+        - n_gpus: the number of gpus to train on (generally for distributed training)
+    &#34;&#34;&#34;
+
+    # config, dataset, and lit modules
+    seed_everything(cfg[&#34;seed&#34;])
+    unlabeled_dataset = IrisUnlabeledDataset(cfg, root=root, stage=&#34;predict&#34;)
+    unlabeled_dataloader = DataLoader(unlabeled_dataset, num_workers=8)
+    # set number of batches
+    cfg[&#34;num_batches&#34;] = len(unlabeled_dataloader) // cfg[&#34;batch_size&#34;]
+    predictor = get_predictor(
+        output_root=os.path.join(unlabeled_dataset.root, &#34;preds&#34;), n_gpus=n_gpus
+    )
+
+    # inferencing with the best model
+    preds = predictor.predict(lit_module, dataloaders=unlabeled_dataloader)
+    if preds is not None:
+        preds = [pred.tolist() for pred in preds]  # type: ignore
+        return preds
+
+
+####################  AZURE INFERENCE ONLINE ENDPOINT UTILITIES ####################
+####################################################################################
+
+
+def init(
+    model_root: Optional[str] = f&#34;{os.getenv(&#39;AZUREML_MODEL_DIR&#39;)}&#34;,
+    model_arch: Optional[str] = None,
+    model_id: Optional[str] = None,
+    model_alias: Optional[str] = &#34;best&#34;,
+    data_root: str = &#34;/var/azureml-app/iris/datasets/&#34;,
+    config_fname: str = &#34;iris.json&#34;,
+):
+    &#34;&#34;&#34;
+    Initializes Model for Inference, called when an Azure Endpoint is activated.
+
+    Arguments:
+        - model_root: (optional) the directory where a checkpoint (model.ckpt) is stored
+        - model_arch: (optional) the model architecture
+        - model_id: (optional) the wandb model id
+        - model_alias: (optional) the wandb model alias,
+        - data_root: the directory where a dataset is stored or the path to a json file,
+        - config_fname: the path to the desired config file,
+    &#34;&#34;&#34;
+    global model
+    global cfg
+    cfg = IrisLitDataModule.parse_config(config_fname)
+    # update the number of classes using ignore indices
+    if &#34;num_classes&#34; in cfg.keys() and &#34;ignore_index&#34; in cfg.keys():
+        ignore_index = cfg[&#34;ignore_index&#34;]
+        if type(ignore_index) != list:
+            ignore_index = [ignore_index]
+        ignore_index = [i for i in ignore_index if (i &gt;= 0 and i &lt;= cfg[&#34;num_classes&#34;])]
+        cfg[&#34;num_classes&#34;] -= len(ignore_index)
+    # if the model_root arg is not provided, we build the path
+    if model_root is None:
+        # if either the model_arch or model_id arg&#39;s are not provided, we use the default model for the task
+        if None in [model_arch, model_id]:
+            default_model_paths = {
+                &#34;segmentation&#34;: &#34;fcn_resnet50/qixnu203/best&#34;,
+                &#34;classification&#34;: &#34;resnet50/f172idjz/best&#34;,
+                &#34;multilabel&#34;: &#34;resnet50/ytm89y60/best&#34;,
+            }
+            model_root = f&#34;../../models/{default_model_paths[cfg[&#39;task&#39;]]}&#34;
+        else:
+            model_root = f&#34;../../models/{model_arch}/{model_id}/{model_alias}&#34;
+    model = get_model(cfg, model_root)
+    if data_root is not None:
+        if not os.path.exists(f&#34;{data_root}{cfg[&#39;dataset_name&#39;]}/images/&#34;):
+            os.makedirs(f&#34;{data_root}{cfg[&#39;dataset_name&#39;]}/images/&#34;)
+
+    return model
+
+
+def process_request(raw_data: str, data_root: str):
+    &#34;&#34;&#34;
+    Process a request, given as a json string, by saving its content&#39;s as images in a folder
+
+    Arguments:
+        - raw_data: the json-formatted string payload
+        - data_root: the directory to save images stored on the payload
+    &#34;&#34;&#34;
+    data = json.loads(raw_data)[&#34;data&#34;]
+    for i, imstr in enumerate(data):
+        filename = f&#34;{data_root}iris-inference/images/sample-{str(i).zfill(3)}.jpg&#34;
+        imgdata = base64.b64decode(imstr)
+
+        with open(filename, &#34;wb&#34;) as f:
+            f.write(imgdata)
+
+
+def run(
+    raw_data: str,
+    data_root: str = &#34;/var/azureml-app/iris/datasets/&#34;,
+    n_gpus: int = torch.cuda.device_count(),
+):
+    &#34;&#34;&#34;
+    This function is called for every invocation of the endpoint to perform the actual scoring/prediction.
+
+    Arguments:
+        - raw_data: the json-formatted string payload
+        - data_root: the directory to save images stored on the payload
+        - n_gpus: the number of GPUs to use
+    &#34;&#34;&#34;
+    logging.info(&#34;request received&#34;)
+    process_request(raw_data, data_root)
+    if model is not None:
+        preds = predict(model, root=data_root, n_gpus=n_gpus)
+        logging.info(&#34;Request processed&#34;)
+        return preds
+
+
+if __name__ == &#34;__main__&#34;:
+    parser = argparse.ArgumentParser(
+        prog=&#34;predict.py&#34;,
+        description=&#34;Inference script for iris&#34;,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument(
+        &#34;--model-root&#34;,
+        type=str,
+        help=&#34;The directory for the model checkpoint, expected to be model.ckpt. \
+            if not specifed, must provide a valid pairing of [--model-arch, --model-id] arguments&#34;,
+    )
+    parser.add_argument(
+        &#34;--model-arch&#34;,
+        type=str,
+        help=&#34;The desired model architecture&#34;,
+    )
+    parser.add_argument(
+        &#34;--model-id&#34;,
+        type=str,
+        help=&#34;The wandb run ID for the model checkpoint&#34;,
+    )
+    parser.add_argument(
+        &#34;--model-alias&#34;,
+        default=&#34;best&#34;,
+        type=str,
+        choices=[&#34;best&#34;, &#34;latest&#34;, &#34;v0&#34;],
+        help=&#34;The wandb artifact alias for the model checkpoint&#34;,
+    )
+    parser.add_argument(
+        &#34;--data-root&#34;,
+        default=&#34;./tmp/&#34;,
+        type=str,
+        help=&#34;The root where the dataset folder is located&#34;,
+    )
+    parser.add_argument(
+        &#34;--n-gpus&#34;,
+        default=torch.cuda.device_count(),
+        type=int,
+        help=&#34;Number of GPUs, 0 means cpu, 1 means single gpu, &gt;1 means distributed&#34;,
+    )
+    ARGS = parser.parse_args()
+
+    # if the data_root arg is provided as a json file, we assume that it is a request
+    if &#34;.json&#34; in os.path.basename(ARGS.data_root):
+        # get the model and create write directory
+        model = init(
+            model_root=ARGS.model_root,
+            model_arch=ARGS.model_arch,
+            model_id=ARGS.model_id,
+            model_alias=ARGS.model_alias,
+            data_root=&#34;./tmp/&#34;,
+        )
+        # run inference
+        with open(ARGS.data_root, &#34;r&#34;) as f:
+            run(
+                json.dumps(json.load(f)),
+                data_root=&#34;./tmp/&#34;,
+                n_gpus=ARGS.n_gpus,
+            )
+    else:
+        # get the model and create write directory
+        model = init(
+            model_root=ARGS.model_root,
+            model_arch=ARGS.model_arch,
+            model_id=ARGS.model_id,
+            model_alias=ARGS.model_alias,
+            data_root=ARGS.data_root,
+        )
+        # run inference
+        predict(model, root=ARGS.data_root, n_gpus=ARGS.n_gpus)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="iris.predict.get_predictor"><code class="name flex">
+<span>def <span class="ident">get_predictor</span></span>(<span>output_root: str = './', n_gpus: int = 0) ‑> lightning.pytorch.trainer.trainer.Trainer</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creates a trainer and optionally a checkpoint directory</p>
+<h2 id="arguments">Arguments</h2>
+<ul>
+<li>output_root: the directory to write predictions to disk.</li>
+<li>n_gpus: the number of gpus to train on (generally for distributed training)</li>
+</ul>
+<h2 id="returns">Returns</h2>
+<ul>
+<li>predictor: a lightning trainer instance, used for prediction</li>
+</ul></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_predictor(output_root: str = &#34;./&#34;, n_gpus: int = 0) -&gt; Trainer:
+    &#34;&#34;&#34;
+    Creates a trainer and optionally a checkpoint directory
+
+    Arguments:
+        - output_root: the directory to write predictions to disk.
+        - n_gpus: the number of gpus to train on (generally for distributed training)
+
+    Returns:
+        - predictor: a lightning trainer instance, used for prediction
+    &#34;&#34;&#34;
+    # callbacks
+    callbacks = IrisPredictionWriter(output_root=output_root)
+
+    # lightning trainer configuration
+    strategy = &#34;auto&#34;
+    accelerator = &#34;gpu&#34;
+    devices = &#34;auto&#34;
+    if n_gpus &gt; 0:
+        if n_gpus &gt; 1:
+            devices = n_gpus
+            strategy = &#34;ddp&#34;
+    else:
+        accelerator = &#34;cpu&#34;
+
+    return Trainer(
+        accelerator=accelerator,
+        devices=devices,
+        strategy=strategy,
+        logger=False,
+        callbacks=callbacks,
+        # precision=&#34;16-mixed&#34;,
+    )</code></pre>
+</details>
+</dd>
+<dt id="iris.predict.init"><code class="name flex">
+<span>def <span class="ident">init</span></span>(<span>model_root: Optional[str] = 'None', model_arch: Optional[str] = None, model_id: Optional[str] = None, model_alias: Optional[str] = 'best', data_root: str = '/var/azureml-app/iris/datasets/', config_fname: str = 'iris.json')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Initializes Model for Inference, called when an Azure Endpoint is activated.</p>
+<h2 id="arguments">Arguments</h2>
+<ul>
+<li>model_root: (optional) the directory where a checkpoint (model.ckpt) is stored</li>
+<li>model_arch: (optional) the model architecture</li>
+<li>model_id: (optional) the wandb model id</li>
+<li>model_alias: (optional) the wandb model alias,</li>
+<li>data_root: the directory where a dataset is stored or the path to a json file,</li>
+<li>config_fname: the path to the desired config file,</li>
+</ul></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def init(
+    model_root: Optional[str] = f&#34;{os.getenv(&#39;AZUREML_MODEL_DIR&#39;)}&#34;,
+    model_arch: Optional[str] = None,
+    model_id: Optional[str] = None,
+    model_alias: Optional[str] = &#34;best&#34;,
+    data_root: str = &#34;/var/azureml-app/iris/datasets/&#34;,
+    config_fname: str = &#34;iris.json&#34;,
+):
+    &#34;&#34;&#34;
+    Initializes Model for Inference, called when an Azure Endpoint is activated.
+
+    Arguments:
+        - model_root: (optional) the directory where a checkpoint (model.ckpt) is stored
+        - model_arch: (optional) the model architecture
+        - model_id: (optional) the wandb model id
+        - model_alias: (optional) the wandb model alias,
+        - data_root: the directory where a dataset is stored or the path to a json file,
+        - config_fname: the path to the desired config file,
+    &#34;&#34;&#34;
+    global model
+    global cfg
+    cfg = IrisLitDataModule.parse_config(config_fname)
+    # update the number of classes using ignore indices
+    if &#34;num_classes&#34; in cfg.keys() and &#34;ignore_index&#34; in cfg.keys():
+        ignore_index = cfg[&#34;ignore_index&#34;]
+        if type(ignore_index) != list:
+            ignore_index = [ignore_index]
+        ignore_index = [i for i in ignore_index if (i &gt;= 0 and i &lt;= cfg[&#34;num_classes&#34;])]
+        cfg[&#34;num_classes&#34;] -= len(ignore_index)
+    # if the model_root arg is not provided, we build the path
+    if model_root is None:
+        # if either the model_arch or model_id arg&#39;s are not provided, we use the default model for the task
+        if None in [model_arch, model_id]:
+            default_model_paths = {
+                &#34;segmentation&#34;: &#34;fcn_resnet50/qixnu203/best&#34;,
+                &#34;classification&#34;: &#34;resnet50/f172idjz/best&#34;,
+                &#34;multilabel&#34;: &#34;resnet50/ytm89y60/best&#34;,
+            }
+            model_root = f&#34;../../models/{default_model_paths[cfg[&#39;task&#39;]]}&#34;
+        else:
+            model_root = f&#34;../../models/{model_arch}/{model_id}/{model_alias}&#34;
+    model = get_model(cfg, model_root)
+    if data_root is not None:
+        if not os.path.exists(f&#34;{data_root}{cfg[&#39;dataset_name&#39;]}/images/&#34;):
+            os.makedirs(f&#34;{data_root}{cfg[&#39;dataset_name&#39;]}/images/&#34;)
+
+    return model</code></pre>
+</details>
+</dd>
+<dt id="iris.predict.predict"><code class="name flex">
+<span>def <span class="ident">predict</span></span>(<span>lit_module: <a title="iris.litmodules.IrisLitModule" href="litmodules.html#iris.litmodules.IrisLitModule">IrisLitModule</a>, root: str = './datasets/', n_gpus: int = 0) ‑> Optional[List[Any]]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Predict/Inference Function</p>
+<ol>
+<li>Create a config and unlabeled dataset</li>
+<li>Load lightning module from checkpoint</li>
+<li>Setup lightning callbacks, wandb logger, and profiler</li>
+<li>Create predictor and predict on a unlabeled dataset</li>
+</ol>
+<h2 id="arguments">Arguments</h2>
+<ul>
+<li>lit_module: a IrisLightningModule to perform prediction</li>
+<li>root: the root where the dataset folder is located</li>
+<li>n_gpus: the number of gpus to train on (generally for distributed training)</li>
+</ul></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def predict(
+    lit_module: IrisLitModule,
+    root: str = &#34;./datasets/&#34;,
+    n_gpus: int = 0,
+) -&gt; Optional[List[Any]]:
+    &#34;&#34;&#34;
+    Predict/Inference Function
+
+    1. Create a config and unlabeled dataset
+    2. Load lightning module from checkpoint
+    3. Setup lightning callbacks, wandb logger, and profiler
+    4. Create predictor and predict on a unlabeled dataset
+
+    Arguments:
+        - lit_module: a IrisLightningModule to perform prediction
+        - root: the root where the dataset folder is located
+        - n_gpus: the number of gpus to train on (generally for distributed training)
+    &#34;&#34;&#34;
+
+    # config, dataset, and lit modules
+    seed_everything(cfg[&#34;seed&#34;])
+    unlabeled_dataset = IrisUnlabeledDataset(cfg, root=root, stage=&#34;predict&#34;)
+    unlabeled_dataloader = DataLoader(unlabeled_dataset, num_workers=8)
+    # set number of batches
+    cfg[&#34;num_batches&#34;] = len(unlabeled_dataloader) // cfg[&#34;batch_size&#34;]
+    predictor = get_predictor(
+        output_root=os.path.join(unlabeled_dataset.root, &#34;preds&#34;), n_gpus=n_gpus
+    )
+
+    # inferencing with the best model
+    preds = predictor.predict(lit_module, dataloaders=unlabeled_dataloader)
+    if preds is not None:
+        preds = [pred.tolist() for pred in preds]  # type: ignore
+        return preds</code></pre>
+</details>
+</dd>
+<dt id="iris.predict.process_request"><code class="name flex">
+<span>def <span class="ident">process_request</span></span>(<span>raw_data: str, data_root: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Process a request, given as a json string, by saving its content's as images in a folder</p>
+<h2 id="arguments">Arguments</h2>
+<ul>
+<li>raw_data: the json-formatted string payload</li>
+<li>data_root: the directory to save images stored on the payload</li>
+</ul></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process_request(raw_data: str, data_root: str):
+    &#34;&#34;&#34;
+    Process a request, given as a json string, by saving its content&#39;s as images in a folder
+
+    Arguments:
+        - raw_data: the json-formatted string payload
+        - data_root: the directory to save images stored on the payload
+    &#34;&#34;&#34;
+    data = json.loads(raw_data)[&#34;data&#34;]
+    for i, imstr in enumerate(data):
+        filename = f&#34;{data_root}iris-inference/images/sample-{str(i).zfill(3)}.jpg&#34;
+        imgdata = base64.b64decode(imstr)
+
+        with open(filename, &#34;wb&#34;) as f:
+            f.write(imgdata)</code></pre>
+</details>
+</dd>
+<dt id="iris.predict.run"><code class="name flex">
+<span>def <span class="ident">run</span></span>(<span>raw_data: str, data_root: str = '/var/azureml-app/iris/datasets/', n_gpus: int = 0)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>This function is called for every invocation of the endpoint to perform the actual scoring/prediction.</p>
+<h2 id="arguments">Arguments</h2>
+<ul>
+<li>raw_data: the json-formatted string payload</li>
+<li>data_root: the directory to save images stored on the payload</li>
+<li>n_gpus: the number of GPUs to use</li>
+</ul></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run(
+    raw_data: str,
+    data_root: str = &#34;/var/azureml-app/iris/datasets/&#34;,
+    n_gpus: int = torch.cuda.device_count(),
+):
+    &#34;&#34;&#34;
+    This function is called for every invocation of the endpoint to perform the actual scoring/prediction.
+
+    Arguments:
+        - raw_data: the json-formatted string payload
+        - data_root: the directory to save images stored on the payload
+        - n_gpus: the number of GPUs to use
+    &#34;&#34;&#34;
+    logging.info(&#34;request received&#34;)
+    process_request(raw_data, data_root)
+    if model is not None:
+        preds = predict(model, root=data_root, n_gpus=n_gpus)
+        logging.info(&#34;Request processed&#34;)
+        return preds</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="iris.predict.IrisPredictionWriter"><code class="flex name class">
+<span>class <span class="ident">IrisPredictionWriter</span></span>
+<span>(</span><span>output_root: str = './', write_interval: Literal['batch', 'epoch', 'batch_and_epoch'] = 'batch_and_epoch')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Pytorch Lightning PredictionWriter Callback</p>
+<p>write_interval = "batch":
+- (Experimental) Online-Inference Functionality
+- writes preprocessed samples to .jpg and (optionally) model predictions to .png files in the output_root directory</p>
+<p>write_interval = "epoch":
+- Batch-Inference Functionality
+- writes model predictions and batch indices to .pt files in the output_root directory
+- files are numbered by the device-rank, mainly used for distributed setting</p>
+<p>Constructor</p>
+<h2 id="arguments">Arguments</h2>
+<ul>
+<li>output_root: the directory to write predictions to disk.</li>
+<li>write_interval: events on which to write predictions, one of ["batch", "epoch", "batch_and_epoch"]</li>
+</ul></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class IrisPredictionWriter(BasePredictionWriter):
+    &#34;&#34;&#34;
+    Pytorch Lightning PredictionWriter Callback
+
+
+    write_interval = &#34;batch&#34;:
+        - (Experimental) Online-Inference Functionality
+        - writes preprocessed samples to .jpg and (optionally) model predictions to .png files in the output_root directory
+
+    write_interval = &#34;epoch&#34;:
+        - Batch-Inference Functionality
+        - writes model predictions and batch indices to .pt files in the output_root directory
+        - files are numbered by the device-rank, mainly used for distributed setting
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+        output_root: str = &#34;./&#34;,
+        write_interval: Literal[
+            &#34;batch&#34;, &#34;epoch&#34;, &#34;batch_and_epoch&#34;
+        ] = &#34;batch_and_epoch&#34;,
+    ):
+        &#34;&#34;&#34;
+        Constructor
+
+        Arguments:
+            - output_root: the directory to write predictions to disk.
+            - write_interval: events on which to write predictions, one of [&#34;batch&#34;, &#34;epoch&#34;, &#34;batch_and_epoch&#34;]
+        &#34;&#34;&#34;
+        super().__init__(write_interval)
+        self.output_root = output_root
+        # ensure that the output location exists
+        if not os.path.exists(self.output_root):
+            os.makedirs(self.output_root)
+
+    def write_on_batch_end(
+        self,
+        trainer,
+        pl_module,
+        prediction,
+        batch_indices,
+        batch,
+        batch_idx: int,
+        dataloader_idx: int,
+    ) -&gt; None:
+        &#34;&#34;&#34;
+        Write predictions to disk after passing a single batch.  Saves
+        preprocessed image and predictions.
+        &#34;&#34;&#34;
+        samples = batch[0]
+        for sample, sample_fname, ind, pred in zip(
+            samples, batch[2], batch_indices, prediction  # type: ignore
+        ):
+            # save the preprocessed sample
+            preprocessed_sample_fname = os.path.join(
+                self.output_root, os.path.basename(sample_fname)
+            )
+            save_image(sample, preprocessed_sample_fname)
+
+            # save a mask if applicable
+            if pl_module.hparams.task == &#34;segmentation&#34;:  # type: ignore
+                _mask = torch.nn.functional.softmax(pred, dim=0).argmax(dim=0) / 3
+                save_image(_mask, preprocessed_sample_fname.replace(&#34;.jpg&#34;, &#34;.png&#34;))
+
+    def write_on_epoch_end(
+        self,
+        trainer,
+        pl_module,
+        predictions,
+        batch_indices,
+    ) -&gt; None:
+        &#34;&#34;&#34;
+        Write predictions to disk after passing through an entire dataset.  Saves
+        predictions and corresponding batch indices for each GPU.
+        &#34;&#34;&#34;
+        # this will create N (num processes) files in `output_root` each containing
+        # the predictions of it&#39;s respective rank
+        torch.save(
+            predictions,
+            os.path.join(self.output_root, f&#34;predictions_{trainer.global_rank}.pt&#34;),
+        )
+
+        # optionally, you can also save `batch_indices` to get the information about the data index
+        # from your prediction data
+        torch.save(
+            batch_indices,
+            os.path.join(self.output_root, f&#34;batch_indices_{trainer.global_rank}.pt&#34;),
+        )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>lightning.pytorch.callbacks.prediction_writer.BasePredictionWriter</li>
+<li>lightning.pytorch.callbacks.callback.Callback</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="iris.predict.IrisPredictionWriter.write_on_batch_end"><code class="name flex">
+<span>def <span class="ident">write_on_batch_end</span></span>(<span>self, trainer, pl_module, prediction, batch_indices, batch, batch_idx: int, dataloader_idx: int) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Write predictions to disk after passing a single batch.
+Saves
+preprocessed image and predictions.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def write_on_batch_end(
+    self,
+    trainer,
+    pl_module,
+    prediction,
+    batch_indices,
+    batch,
+    batch_idx: int,
+    dataloader_idx: int,
+) -&gt; None:
+    &#34;&#34;&#34;
+    Write predictions to disk after passing a single batch.  Saves
+    preprocessed image and predictions.
+    &#34;&#34;&#34;
+    samples = batch[0]
+    for sample, sample_fname, ind, pred in zip(
+        samples, batch[2], batch_indices, prediction  # type: ignore
+    ):
+        # save the preprocessed sample
+        preprocessed_sample_fname = os.path.join(
+            self.output_root, os.path.basename(sample_fname)
+        )
+        save_image(sample, preprocessed_sample_fname)
+
+        # save a mask if applicable
+        if pl_module.hparams.task == &#34;segmentation&#34;:  # type: ignore
+            _mask = torch.nn.functional.softmax(pred, dim=0).argmax(dim=0) / 3
+            save_image(_mask, preprocessed_sample_fname.replace(&#34;.jpg&#34;, &#34;.png&#34;))</code></pre>
+</details>
+</dd>
+<dt id="iris.predict.IrisPredictionWriter.write_on_epoch_end"><code class="name flex">
+<span>def <span class="ident">write_on_epoch_end</span></span>(<span>self, trainer, pl_module, predictions, batch_indices) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Write predictions to disk after passing through an entire dataset.
+Saves
+predictions and corresponding batch indices for each GPU.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def write_on_epoch_end(
+    self,
+    trainer,
+    pl_module,
+    predictions,
+    batch_indices,
+) -&gt; None:
+    &#34;&#34;&#34;
+    Write predictions to disk after passing through an entire dataset.  Saves
+    predictions and corresponding batch indices for each GPU.
+    &#34;&#34;&#34;
+    # this will create N (num processes) files in `output_root` each containing
+    # the predictions of it&#39;s respective rank
+    torch.save(
+        predictions,
+        os.path.join(self.output_root, f&#34;predictions_{trainer.global_rank}.pt&#34;),
+    )
+
+    # optionally, you can also save `batch_indices` to get the information about the data index
+    # from your prediction data
+    torch.save(
+        batch_indices,
+        os.path.join(self.output_root, f&#34;batch_indices_{trainer.global_rank}.pt&#34;),
+    )</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="iris" href="index.html">iris</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="iris.predict.get_predictor" href="#iris.predict.get_predictor">get_predictor</a></code></li>
+<li><code><a title="iris.predict.init" href="#iris.predict.init">init</a></code></li>
+<li><code><a title="iris.predict.predict" href="#iris.predict.predict">predict</a></code></li>
+<li><code><a title="iris.predict.process_request" href="#iris.predict.process_request">process_request</a></code></li>
+<li><code><a title="iris.predict.run" href="#iris.predict.run">run</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="iris.predict.IrisPredictionWriter" href="#iris.predict.IrisPredictionWriter">IrisPredictionWriter</a></code></h4>
+<ul class="">
+<li><code><a title="iris.predict.IrisPredictionWriter.write_on_batch_end" href="#iris.predict.IrisPredictionWriter.write_on_batch_end">write_on_batch_end</a></code></li>
+<li><code><a title="iris.predict.IrisPredictionWriter.write_on_epoch_end" href="#iris.predict.IrisPredictionWriter.write_on_epoch_end">write_on_epoch_end</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

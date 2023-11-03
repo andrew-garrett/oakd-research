@@ -1,41 +1,309 @@
-# oakd-research
+<a name="readme-top"></a>
 
-This is a repository for creating computer vision (traditional and deep learning) based applications with the OpenCV AI Kit RGBD Camera (OAK-D Cam).
+<!-- PROJECT SHIELDS -->
+<!--
+*** I'm using markdown "reference style" links for readability.
+*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
+*** See the bottom of this document for the declaration of the reference variables
+*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
+*** https://www.markdownguide.org/basic-syntax/#reference-style-links
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![MIT License][license-shield]][license-url]
+-->
 
-Each branch is a different application or system which utilize the camera in different ways.  My goal here is to explore topics in vision and edge deployment of vision systems.  This will hopefully educate not only myself, but other young minds interested in the beautiful fields of computer vision and perception.
+[![Python package](https://github.com/CorneaCare/corneacare_corneai/actions/workflows/python-package.yml/badge.svg)](https://github.com/CorneaCare/corneacare_corneai/actions/workflows/python-package.yml)
+[![Python Package using Conda](https://github.com/CorneaCare/corneacare_corneai/actions/workflows/python-package-conda.yml/badge.svg)](https://github.com/CorneaCare/corneacare_corneai/actions/workflows/python-package-conda.yml)
+[![Deploy static content to Pages](https://github.com/CorneaCare/corneacare_corneai/actions/workflows/static.yml/badge.svg)](https://github.com/CorneaCare/corneacare_corneai/actions/workflows/static.yml)
 
-Some of the topics I will explore include:
 
-- Object Detection
-- Segmentation
-- Image Processing Pipelines
-- Scene Understanding
-- SLAM and Pose Estimation
-- 3D Reconstruction
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://github.com/CorneaCare/corneacare_corneai">
+    <img src="https://avatars.githubusercontent.com/u/69227803?s=200&v=4" alt="Logo" width="80" height="80">
+  </a>
 
-# Usage
+  <h3 align="center">CorneaCare corneai</h3>
 
+  <p align="center">
+    <a href="https://github.com/CorneaCare/corneacare_corneai/tree/main/docs/corneai/markdown"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="https://github.com/CorneaCare/corneacare_corneai/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/CorneaCare/corneacare_corneai/issues">Request Feature</a>
+  </p>
+</div>
+
+
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#built-with">Built With</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li><a href="#usage">Usage</a></li>
+    <!-- <li><a href="#roadmap">Roadmap</a></li> -->
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#license">License</a></li>
+    <!-- <li><a href="#contact">Contact</a></li> -->
+    <li><a href="#acknowledgments">Acknowledgments</a></li>
+  </ol>
+</details>
+
+
+<!-- ABOUT THE PROJECT -->
+## About The Project
+
+corneai is the AI backend supporting CorneaCare.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+## Built With
+
+<!--
+This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
+
+* [![Next][Next.js]][Next-url]
+* [![React][React.js]][React-url]
+* [![Vue][Vue.js]][Vue-url]
+* [![Angular][Angular.io]][Angular-url]
+* [![Svelte][Svelte.dev]][Svelte-url]
+* [![Laravel][Laravel.com]][Laravel-url]
+* [![Bootstrap][Bootstrap.com]][Bootstrap-url]
+* [![JQuery][JQuery.com]][JQuery-url]
+-->
+
+* Docker
+* Conda
+* Pip
+* Weights and Biases
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+<!-- GETTING STARTED -->
+## Getting Started
+
+To get a local copy up and running follow these simple example steps.
+
+### Prerequisites
+
+### Installation
+
+1. Clone the repo
+   ```sh
+   git clone https://github.com/CorneaCare/corneacare_corneai.git
+   cd corneacare_corneai
+   ```
+2. (recommended) Use Anaconda to install/update dependencies
+    * If using linux:
+      ```sh
+      cd setup_files && setup_env.sh
+      ```
+    * If using windows:
+      ```sh
+      cd setup_files && setup_env.bat
+      ```
+3. (alternative) Use pip to install/update dependencies
+    ```sh
+    pip install -r setup_files/requirements.txt && pip install .
+    ```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+<!-- USAGE EXAMPLES -->
+## Usage
+
+### Customization:
+
+User can control task, dataset, model, and training/inference hyperparameters from corneai.json file.
+
+- Task
+  - "task": (str) the desired task, one of ["segmentation", "classification", "multilabel"]
+- Dataset
+  - "dataset_name": (str) a path-like name of the desired dataset, assumed to be relative to a data_root directory
+  - "num_classes": (str) the number of classes in the desired dataset.  For segmentation and single-label classification, this is the number of classes.  For multi-label classification, this is the number of labels.
+  - "img_sz": (list[int, int, int]) the desired size of images, given as [C, H, W]
+  - "batch_size": (int) the desired batch_size for dataloading
+- Model
+  - "model_arch": (str) any model available in torchvision.models, but must match the task.
+  - "pretrained": (bool) indicate whether or not model is pretrained
+- Training/Inference
+  - Training-only:
+    - "criterion": (str) the desired loss function, either a valid one from torch or one of the custom classes in corneai.criteria
+    - "epochs": (int) the desired maximum number of epochs to train
+    - "lr": (float) the desired initial learning rate
+    - "momentum": (float) the desired momentum for SGD (beta_1 for Adam-like optimizers)
+    - "nesterov": (bool) indicate whether or not to use nesterov-accelerated optimization
+    - "weight_decay": (float) the desired weight decay
+    - "optimizer": (str) the desired optimization algorithm, one of those available in torch.optim
+    - "scheduler": (bool) when false trains with an adaptive learning rate scheduler based on validation loss (ReduceLRonPlateau), and when true trains with a cosine-annealing with linear warmup scheduler.
+    - "ignore_index": (int | list[int]) specifying the indices to ignore in loss computation
+
+### Autocapture:
 ```
-python main.py
+(corneai) C:\WORK\corneacare_corneai\corneai>python autocapture.py --help
+usage: autocapture.py [-h] [--src {image,dataset,webcam}] [--path PATH]
+
+R&D autocapture feature for corneai
+
+options:
+  -h, --help                    show this help message and exit
+  --src {image,dataset,webcam}  AI pipeline runs on this type of data (default: dataset)
+  --path PATH                   If specified, the exact source of data (can be a folder or file) (default: None)
+```
+Note: If using autocapture with an image/video, be sure to specify the relative path of the image/video
+
+
+### Training:
+```
+(corneai) C:\WORK\corneacare_corneai\corneai>python train.py --help
+usage: train.py [-h] [--debug] [--tune] [--data-root DATA_ROOT] [--n-gpus N_GPUS] [--sweep SWEEP]
+
+Training script for corneai
+
+options:
+  -h, --help                    show this help message and exit
+  --debug                       Run in debug mode (verbose logging, profiling, overfitted training) (default: False)
+  --tune                        Tune the model for batch size, learning rate (default: False)
+  --data-root DATA_ROOT         The root where the dataset folder is located (default: ./datasets/)
+  --n-gpus N_GPUS               Number of GPUs, 0 means cpu, 1 means single gpu, >1 means distributed (default: 1)
+  --sweep SWEEP                 The path to a wandb sweep config file (default: None)
 ```
 
+### Prediction
 ```
-usage: main.py [-h] [--task {cls,objdet,instseg}]
+(corneai) C:\WORK\corneacare_corneai\corneai>python predict.py --help
+usage: predict.py [-h] [--model-root MODEL_ROOT] [--model-arch MODEL_ARCH] [--model-id MODEL_ID] [--model-alias {best,latest,v0}] [--data-root DATA_ROOT] [--n-gpus N_GPUS]
 
-Runner for various training and logging vision pipelines
+Inference script for corneai
 
-optional arguments:
-  -h, --help            show this help message and exit
-  --task {cls,objdet,instseg}
-                        type of training task for network selection (default: instseg)
+options:
+  -h, --help                         show this help message and exit
+  --model-root MODEL_ROOT            The directory for the model checkpoint, expected to be model.ckpt. (default: None)
+  --model-arch MODEL_ARCH            The desired model architecture (default: None)
+  --model-id MODEL_ID                The wandb run ID for the model checkpoint (default: None)
+  --model-alias {best,latest,v0}     The wandb artifact alias for the model checkpoint (default: best)
+  --data-root DATA_ROOT              The root where the dataset folder is located (default: ./tmp/)
+  --n-gpus N_GPUS                    Number of GPUs, 0 means cpu, 1 means single gpu, >1 means distributed (default: 1)
 ```
 
-The model_cfg.json in the "./oak_{task}" dictates the behavior of main.py, where user can select different models, 
-training hyperparameters, and datasets.
+_For more examples, please refer to the [Documentation](./docs/corneai/index.html)_
 
-Datasets can either be sourced from local directories or from roboflow.  To specify a different dataset, edit the appropriate model_cfg.json in the
-directory for your task (i.e. for detection tasks, edit  [`oak_detection/model_cfg.json`](./oak_detection/model_cfg.json) ).  The format of the `dataset_name` parameter for pulling roboflow datasets is `[WORKSPACE]/[PROJECT]/[VERSION]`.
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-Datasets are stored in the `datasets` directory, which are stored by task, `[WORKSPACE]/[PROJECT]/[VERSION]`, and potentially the label format.
 
-Runs are stored in the `runs` directory, which are stored by task, training dataset, and model architecture.
+<!-- ROADMAP -->
+<!--
+## Roadmap
+
+- [x] Add Changelog
+- [x] Add back to top links
+- [ ] Add Additional Templates w/ Examples
+- [ ] Add "components" document to easily copy & paste sections of the readme
+- [ ] Multi-language Support
+    - [ ] Chinese
+    - [ ] Spanish
+
+See the [open issues](https://github.com/CorneaCare/corneacare_corneai/issues) for a full list of proposed features (and known issues).
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+-->
+
+
+<!-- CONTRIBUTING -->
+## Contributing
+
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
+Don't forget to give the project a star! Thanks again!
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+<!-- LICENSE -->
+## License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+<!-- CONTACT -->
+<!--
+## Contact
+
+Your Name - [@your_twitter](https://twitter.com/your_username) - email@example.com
+
+Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+-->
+
+
+<!-- ACKNOWLEDGMENTS -->
+## Acknowledgments
+
+This readme is created from [this template](https://github.com/othneildrew/Best-README-Template/).  This software is architected and written by Andrew Garrett.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+[contributors-shield]: https://img.shields.io/github/contributors/CorneaCare/corneacare_corneai.svg
+[contributors-url]: https://github.com/CorneaCare/corneacare_corneai/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/CorneaCare/corneacare_corneai.svg
+[forks-url]: https://github.com/CorneaCare/corneacare_corneai/network/members
+[stars-shield]: https://img.shields.io/github/stars/CorneaCare/corneacare_corneai.svg
+[stars-url]: https://github.com/CorneaCare/corneacare_corneai/stargazers
+[issues-shield]: https://img.shields.io/github/issues/CorneaCare/corneacare_corneai.svg
+[issues-url]: https://github.com/CorneaCare/corneacare_corneai/issues
+[license-shield]: https://img.shields.io/github/license/CorneaCare/corneacare_corneai.svg
+[license-url]: https://github.com/CorneaCare/corneacare_corneai/blob/main/LICENSE
+
+<!-- 
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
+[linkedin-url]: https://linkedin.com/in/othneildrew
+[product-screenshot]: images/screenshot.png
+[Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
+[Next-url]: https://nextjs.org/
+[React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
+[React-url]: https://reactjs.org/
+[Vue.js]: https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D
+[Vue-url]: https://vuejs.org/
+[Angular.io]: https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white
+[Angular-url]: https://angular.io/
+[Svelte.dev]: https://img.shields.io/badge/Svelte-4A4A55?style=for-the-badge&logo=svelte&logoColor=FF3E00
+[Svelte-url]: https://svelte.dev/
+[Laravel.com]: https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white
+[Laravel-url]: https://laravel.com
+[Bootstrap.com]: https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white
+[Bootstrap-url]: https://getbootstrap.com
+[JQuery.com]: https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white
+[JQuery-url]: https://jquery.com 
+-->

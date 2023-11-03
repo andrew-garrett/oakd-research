@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>iris.classify API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>iris.classify</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">#################### IMPORTS ####################
+#################################################
+
+
+from typing import Any, Dict, Optional, Sequence, Tuple
+
+import numpy as np
+import xgboost as xgb
+from scipy.stats import randint, uniform  # type: ignore
+from sklearn.metrics import confusion_matrix
+from sklearn.model_selection import RandomizedSearchCV, train_test_split
+
+# from iris.data import IrisDataset
+
+#################### TABULAR DATA CLASSIFIER ####################
+#################################################################
+
+
+def report_best_scores(results: Dict[str, np.ndarray], n_top: int = 3) -&gt; None:
+    &#34;&#34;&#34;
+    Print the summary statistics for the top n models from a hyperparameter search
+
+    Arguments:
+        - results: the cv_results_ attribute of GridSearchCV or RandomizedSearchCV object (sklearn.model_selection)
+        - n_top: the number of models to display information from
+    &#34;&#34;&#34;
+    for i in range(1, n_top + 1):
+        candidates = np.flatnonzero(results[&#34;rank_test_score&#34;] == i)
+        for candidate in candidates:
+            print(&#34;Model with rank: {0}&#34;.format(i))
+            print(
+                &#34;Mean validation score: {0:.5f} (std: {1:.5f})&#34;.format(
+                    results[&#34;mean_test_score&#34;][candidate],
+                    results[&#34;std_test_score&#34;][candidate],
+                )
+            )
+            print(&#34;Parameters: {0}&#34;.format(results[&#34;params&#34;][candidate]))
+            print(&#34;&#34;)
+
+
+def train_xgb(
+    X: Any,
+    y: Any,
+    objective: str = &#34;binary:logistic&#34;,
+    eval_set: Optional[Sequence[Tuple[Any, Any]]] = None,
+) -&gt; None:
+    &#34;&#34;&#34;
+    Train an XGBoost model on a dataset formatted for sklearn models, seeking
+    to minimize a given objective
+
+    Arguments:
+        - X: the features of the dataset
+        - y: the targets of the dataset
+        - objective: a string indicating the task:loss_fn (&#34;multi:softprob&#34; for multi-class classification)
+        - eval_set: a test set, if desired
+    &#34;&#34;&#34;
+    xgb_model = xgb.XGBClassifier(
+        objective=objective, early_stopping_rounds=10, random_state=42
+    )
+    xgb_model.fit(X, y, eval_set=eval_set, verbose=0)
+
+    y_pred = xgb_model.predict(X)
+
+    print(confusion_matrix(y, y_pred))
+
+
+def tune_xgb(
+    X: Any,
+    y: Any,
+    objective: str = &#34;binary:logistic&#34;,
+    eval_set: Optional[Sequence[Tuple[Any, Any]]] = None,
+) -&gt; None:
+    &#34;&#34;&#34;
+    Tune an XGBoost model on a dataset formatted for sklearn models, seeking
+    to minimize a given objective
+
+    Uses sklearn.model_selection.RandomizedSearchV
+
+    Arguments:
+        - X: the features of the dataset
+        - y: the targets of the dataset
+        - objective: a string indicating the task:loss_fn
+        - eval_set: a test set, if desired
+    &#34;&#34;&#34;
+    xgb_model = xgb.XGBClassifier(
+        objective=objective, early_stopping_rounds=10, random_state=42
+    )
+
+    params = {
+        &#34;colsample_bytree&#34;: uniform(0.7, 0.3),
+        &#34;gamma&#34;: uniform(0, 0.5),
+        &#34;learning_rate&#34;: uniform(0.03, 0.3),  # default 0.1
+        &#34;max_depth&#34;: randint(2, 6),  # default 3
+        &#34;n_estimators&#34;: randint(100, 150),  # default 100
+        &#34;subsample&#34;: uniform(0.6, 0.4),
+    }
+
+    search = RandomizedSearchCV(
+        xgb_model,
+        param_distributions=params,
+        random_state=42,
+        n_iter=200,
+        cv=3,
+        n_jobs=1,
+        return_train_score=True,
+    )
+
+    search.fit(X, y, eval_set=eval_set, verbose=1)
+
+    report_best_scores(search.cv_results_, 1)
+
+    if eval_set is not None:
+        y_pred = search.predict(eval_set[0][0])
+        print(confusion_matrix(eval_set[0][1], y_pred))
+
+
+# if __name__ == &#34;__main__&#34;:
+# print()
+# print(&#34;Train an xgb model (binary classification)&#34;)
+# cancer = load_breast_cancer()
+# X = cancer.data
+# y = cancer.target
+# X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2)
+# train_xgb(X_train, y_train, objective=&#34;binary:logistic&#34;, eval_set=[(X_val, y_val)])
+
+# print()
+# print(&#34;Train an xgb model (multi-class classification)&#34;)
+# wine = load_wine()
+# X = wine.data
+# y = wine.target
+# X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2)
+# train_xgb(X_train, y_train, objective=&#34;multi:softprob&#34;, eval_set=[(X_val, y_val)])
+
+# print()
+# print(&#34;Tune an xgb model (classification)&#34;)
+
+# # Turn down for faster run time
+# n_samples = 5000
+# X, y = fetch_20newsgroups_vectorized(subset=&#34;all&#34;, return_X_y=True)
+# X = X[:n_samples]
+# y = y[:n_samples]
+# X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2)
+# tune_xgb(X_train, y_train, objective=&#34;multi:softprob&#34;, eval_set=[(X_val, y_val)])
+
+# iris_dataset = IrisDataset()
+# X, y = iris_dataset.X, iris_dataset.y
+# X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2)
+# tune_xgb(X_train, y_train, objective=&#34;binary:logistic&#34;, eval_set=[(X_val, y_val)])</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="iris.classify.report_best_scores"><code class="name flex">
+<span>def <span class="ident">report_best_scores</span></span>(<span>results: Dict[str, numpy.ndarray], n_top: int = 3) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Print the summary statistics for the top n models from a hyperparameter search</p>
+<h2 id="arguments">Arguments</h2>
+<ul>
+<li>results: the cv_results_ attribute of GridSearchCV or RandomizedSearchCV object (sklearn.model_selection)</li>
+<li>n_top: the number of models to display information from</li>
+</ul></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def report_best_scores(results: Dict[str, np.ndarray], n_top: int = 3) -&gt; None:
+    &#34;&#34;&#34;
+    Print the summary statistics for the top n models from a hyperparameter search
+
+    Arguments:
+        - results: the cv_results_ attribute of GridSearchCV or RandomizedSearchCV object (sklearn.model_selection)
+        - n_top: the number of models to display information from
+    &#34;&#34;&#34;
+    for i in range(1, n_top + 1):
+        candidates = np.flatnonzero(results[&#34;rank_test_score&#34;] == i)
+        for candidate in candidates:
+            print(&#34;Model with rank: {0}&#34;.format(i))
+            print(
+                &#34;Mean validation score: {0:.5f} (std: {1:.5f})&#34;.format(
+                    results[&#34;mean_test_score&#34;][candidate],
+                    results[&#34;std_test_score&#34;][candidate],
+                )
+            )
+            print(&#34;Parameters: {0}&#34;.format(results[&#34;params&#34;][candidate]))
+            print(&#34;&#34;)</code></pre>
+</details>
+</dd>
+<dt id="iris.classify.train_xgb"><code class="name flex">
+<span>def <span class="ident">train_xgb</span></span>(<span>X: Any, y: Any, objective: str = 'binary:logistic', eval_set: Optional[Sequence[Tuple[Any, Any]]] = None) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Train an XGBoost model on a dataset formatted for sklearn models, seeking
+to minimize a given objective</p>
+<h2 id="arguments">Arguments</h2>
+<ul>
+<li>X: the features of the dataset</li>
+<li>y: the targets of the dataset</li>
+<li>objective: a string indicating the task:loss_fn ("multi:softprob" for multi-class classification)</li>
+<li>eval_set: a test set, if desired</li>
+</ul></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def train_xgb(
+    X: Any,
+    y: Any,
+    objective: str = &#34;binary:logistic&#34;,
+    eval_set: Optional[Sequence[Tuple[Any, Any]]] = None,
+) -&gt; None:
+    &#34;&#34;&#34;
+    Train an XGBoost model on a dataset formatted for sklearn models, seeking
+    to minimize a given objective
+
+    Arguments:
+        - X: the features of the dataset
+        - y: the targets of the dataset
+        - objective: a string indicating the task:loss_fn (&#34;multi:softprob&#34; for multi-class classification)
+        - eval_set: a test set, if desired
+    &#34;&#34;&#34;
+    xgb_model = xgb.XGBClassifier(
+        objective=objective, early_stopping_rounds=10, random_state=42
+    )
+    xgb_model.fit(X, y, eval_set=eval_set, verbose=0)
+
+    y_pred = xgb_model.predict(X)
+
+    print(confusion_matrix(y, y_pred))</code></pre>
+</details>
+</dd>
+<dt id="iris.classify.tune_xgb"><code class="name flex">
+<span>def <span class="ident">tune_xgb</span></span>(<span>X: Any, y: Any, objective: str = 'binary:logistic', eval_set: Optional[Sequence[Tuple[Any, Any]]] = None) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Tune an XGBoost model on a dataset formatted for sklearn models, seeking
+to minimize a given objective</p>
+<p>Uses sklearn.model_selection.RandomizedSearchV</p>
+<h2 id="arguments">Arguments</h2>
+<ul>
+<li>X: the features of the dataset</li>
+<li>y: the targets of the dataset</li>
+<li>objective: a string indicating the task:loss_fn</li>
+<li>eval_set: a test set, if desired</li>
+</ul></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def tune_xgb(
+    X: Any,
+    y: Any,
+    objective: str = &#34;binary:logistic&#34;,
+    eval_set: Optional[Sequence[Tuple[Any, Any]]] = None,
+) -&gt; None:
+    &#34;&#34;&#34;
+    Tune an XGBoost model on a dataset formatted for sklearn models, seeking
+    to minimize a given objective
+
+    Uses sklearn.model_selection.RandomizedSearchV
+
+    Arguments:
+        - X: the features of the dataset
+        - y: the targets of the dataset
+        - objective: a string indicating the task:loss_fn
+        - eval_set: a test set, if desired
+    &#34;&#34;&#34;
+    xgb_model = xgb.XGBClassifier(
+        objective=objective, early_stopping_rounds=10, random_state=42
+    )
+
+    params = {
+        &#34;colsample_bytree&#34;: uniform(0.7, 0.3),
+        &#34;gamma&#34;: uniform(0, 0.5),
+        &#34;learning_rate&#34;: uniform(0.03, 0.3),  # default 0.1
+        &#34;max_depth&#34;: randint(2, 6),  # default 3
+        &#34;n_estimators&#34;: randint(100, 150),  # default 100
+        &#34;subsample&#34;: uniform(0.6, 0.4),
+    }
+
+    search = RandomizedSearchCV(
+        xgb_model,
+        param_distributions=params,
+        random_state=42,
+        n_iter=200,
+        cv=3,
+        n_jobs=1,
+        return_train_score=True,
+    )
+
+    search.fit(X, y, eval_set=eval_set, verbose=1)
+
+    report_best_scores(search.cv_results_, 1)
+
+    if eval_set is not None:
+        y_pred = search.predict(eval_set[0][0])
+        print(confusion_matrix(eval_set[0][1], y_pred))</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="iris" href="index.html">iris</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="iris.classify.report_best_scores" href="#iris.classify.report_best_scores">report_best_scores</a></code></li>
+<li><code><a title="iris.classify.train_xgb" href="#iris.classify.train_xgb">train_xgb</a></code></li>
+<li><code><a title="iris.classify.tune_xgb" href="#iris.classify.tune_xgb">tune_xgb</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

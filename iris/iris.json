@@ -1,0 +1,4 @@
+{
+    "task": "segmentation",
+    "epochs": 10
+}

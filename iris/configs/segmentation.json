@@ -1,0 +1,24 @@
+{
+	"batch_size": 2,
+	"criterion": "DiceLoss",
+	"dataset_name": "custom/dummy_segmentation",
+	"epochs": 100,
+	"imgsz": [
+		3,
+		320,
+		320
+	],
+	"lr": 0.05,
+	"model_arch": "fcn_resnet50",
+	"num_classes": 4,
+	"pretrained": true,
+	"momentum": 0.85,
+	"nesterov": true,
+	"optimizer": "SGD",
+	"scheduler": false,
+	"seed": 1234,
+	"weight_decay": 0.00001,
+	"ignore_index": -100,
+	"precision": "32-true",
+	"normalize": false
+}

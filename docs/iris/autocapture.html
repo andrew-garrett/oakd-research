@@ -1,0 +1,976 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>iris.autocapture API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>iris.autocapture</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">#################### IMPORTS ####################
+#################################################
+
+
+import argparse
+import os
+from typing import Sequence, Tuple
+
+import cv2
+import numpy as np
+
+from iris.utils import box_iou, enlarge_box, save_sharpest_image
+
+#################### GLOBAL VARIABLES ####################
+##########################################################
+
+CV2_FACE_CASCADE_MODEL = cv2.CascadeClassifier(
+    cv2.data.haarcascades + &#34;haarcascade_frontalface_default.xml&#34;  # type: ignore
+)
+CV2_EYE_CASCADE_MODEL = cv2.CascadeClassifier(
+    cv2.data.haarcascades + &#34;haarcascade_eye_tree_eyeglasses.xml&#34;  # type: ignore
+)
+
+AUTOCAPTURE_MODE = &#34;eye&#34;  # autocapture mode (&#34;face&#34;, &#34;eye&#34;, &#34;face and eye&#34;)
+IOU_THRESH = 0.5  # threshold for autocapture alignment
+PADDING_FACTOR = 1.5  # factor to enlarge/pad eye detections
+CENTER_SQUARE_WIDTH_PCT = 0.65  # alignment box width as a percentage of frame width
+NUM_CANDIDATES = 15  # number of candidate crops to collect for autofocus
+ROOT = &#34;./datasets/autocapture&#34;  # root where dataset is located
+DATASET_NAME = &#34;autocapture_test_videos&#34;  # name of the dataset
+
+#################### AUTOCAPTURE PIPELINE ####################
+##############################################################
+
+
+def detect_faces(frame: np.ndarray) -&gt; Tuple[Sequence, np.ndarray]:
+    &#34;&#34;&#34;
+    Function to detect faces with OpenCV CascadeClassifier
+
+    Arguments:
+        - frame: the opencv frame
+
+    Returns:
+        - faces: a list of face detections in normalized [x_tl, y_tl, w, h] coordinates
+        - processing_frame: the preprocessed opencv frame, which can be reused
+    &#34;&#34;&#34;
+    # resizing (preserving aspect ratio) and grayscaling
+    h, w = frame.shape[:2]
+    ar = w / h
+    new_shape = (int(min(h, 256) * ar), min(h, 256))  # width, height
+    processing_frame = cv2.resize(frame, new_shape, interpolation=cv2.INTER_CUBIC)
+    processing_frame = cv2.cvtColor(processing_frame, cv2.COLOR_BGR2GRAY)
+    # detect faces
+    faces = CV2_FACE_CASCADE_MODEL.detectMultiScale(
+        processing_frame, scaleFactor=1.1, minNeighbors=6
+    )
+    if len(faces) &gt; 0:
+        # only process one face
+        faces = [faces[0]]
+        faces[0] = [  # type: ignore
+            faces[0][0] / new_shape[0],
+            faces[0][1] / new_shape[1],
+            faces[0][2] / new_shape[0],
+            faces[0][3] / new_shape[1],
+        ]
+    return faces, processing_frame
+
+
+def detect_eyes(
+    frame: np.ndarray,
+    processed: bool = False,
+    padding_factor: float = PADDING_FACTOR,
+) -&gt; Tuple[Sequence, np.ndarray]:
+    &#34;&#34;&#34;
+    Function to detect faces with OpenCV CascadeClassifier
+
+    Arguments:
+        - frame: the opencv frame
+        - processed: indicator of whether or not the frame has already been preprocessed
+
+    Returns:
+        - eyes: a list of eye detections in normalized [x_tl, y_tl, w, h] coordinates
+        - processing_frame: the preprocessed opencv frame, which can be reused
+    &#34;&#34;&#34;
+    # pre-allocate
+    processing_frame = frame
+    h, w = frame.shape[:2]
+    new_shape = (w, h)  # width, height
+    # if frame has not already been preprocessed
+    if not processed:
+        # resizing (preserving aspect ratio) and grayscaling
+        ar = w / h
+        new_shape = (int(min(h, 256) * ar), min(h, 256))  # width, height
+        processing_frame = cv2.resize(
+            processing_frame, new_shape, interpolation=cv2.INTER_CUBIC
+        )
+        processing_frame = cv2.cvtColor(processing_frame, cv2.COLOR_BGR2GRAY)
+    # detect eyes
+    eyes = CV2_EYE_CASCADE_MODEL.detectMultiScale(
+        processing_frame, scaleFactor=1.05, minNeighbors=6
+    )
+    if len(eyes) &gt; 0:
+        # for at most 2 eye detections, enlarge and normalize the coordinates
+        padded_eyes = []
+        for i, eye in enumerate(eyes[:2]):
+            padded_eye = enlarge_box(eye, padding_factor=padding_factor)
+            # normalize coordinates, ensuring that the detection is contained within the image
+            padded_eye[0] = min(1.0, max(0.0, padded_eye[0] / new_shape[0]))  # type: ignore
+            padded_eye[1] = min(1.0, max(0.0, padded_eye[1] / new_shape[1]))  # type: ignore
+            padded_eye[2] = min(  # type: ignore
+                1.0 - padded_eye[0], max(0.0, padded_eye[2] / new_shape[0])
+            )
+            padded_eye[3] = min(  # type: ignore
+                1.0 - padded_eye[1], max(0.0, padded_eye[3] / new_shape[1])
+            )
+            padded_eyes.append(padded_eye)
+        eyes = padded_eyes
+    return eyes, processing_frame
+
+
+def detect_faces_and_eyes(frame: np.ndarray) -&gt; Tuple[Sequence, np.ndarray]:
+    &#34;&#34;&#34;
+    Function to detect faces and eyes with OpenCV CascadeClassifier
+
+    Arguments:
+        - frame: the opencv frame
+
+    Returns:
+        - detections: a list of face and eye detections in normalized [x_tl, y_tl, w, h] coordinates
+        - processing_frame: the preprocessed opencv frame, which can be reused
+    &#34;&#34;&#34;
+    # detect faces and re-use th processing frame
+    faces, processing_frame = detect_faces(frame)
+    h_p, w_p = processing_frame.shape[:2]
+    detections = []
+    for face in faces:
+        detections.append(face)
+        # detect eyes on a face crop, efficiently
+        face_eyes, _ = detect_eyes(
+            processing_frame[
+                int(face[1] * h_p) : int((face[1] + face[3]) * h_p),
+                int(face[0] * w_p) : int((face[0] + face[2]) * w_p),
+            ],
+            processed=True,
+        )
+        eyes = []
+        for face_eye in face_eyes:
+            # eye detections are relative to face crop, so we add the offset
+            eyes.append(
+                [
+                    (face[0] + (face_eye[0] * face[2])),
+                    (face[1] + (face_eye[1] * face[3])),
+                    (face_eye[2] * face[2]),
+                    (face_eye[3] * face[3]),
+                ]
+            )
+        # in face and eye mode, we must detect the face and both eyes for a complete detection
+        if len(eyes) == 2:
+            detections.extend(eyes)
+
+    return detections, processing_frame
+
+
+def display_detections(
+    frame: np.ndarray,
+    detections: Sequence,
+    mode: str = AUTOCAPTURE_MODE,
+    iou_thresh: float = IOU_THRESH,
+    center_square_width: float = CENTER_SQUARE_WIDTH_PCT,
+) -&gt; Tuple[np.ndarray, Sequence[np.ndarray], Sequence[float]]:
+    &#34;&#34;&#34;
+    Function to annotate a frame with detections and UI components
+
+    Arguments:
+        - frame: the opencv frame
+        - detections: the list of detections in normalized [x_tl, y_tl, w, h] coordinates
+        - mode: the autocapture mode (&#34;face&#34;, &#34;eye&#34;, &#34;face and eye&#34;)
+        - iou_thresh: the minimum IOU threshold for alignment with target box
+        - center_square_width: alignment box width as a percentage of frame width
+
+    Returns:
+        - display_frame: a downsized copy of the input frame, with detections and UI components
+        - crops: a list of high resolution crops
+        - ious: the IOUs of detections with alignment box
+    &#34;&#34;&#34;
+    # parameters for display
+    display_height = 720
+    fontScale = 0.75
+    thickness = 2
+    color = (0, 0, 255)
+    text = f&#34;Align {mode} here&#34;
+    fontFace = cv2.FONT_HERSHEY_SIMPLEX
+
+    # resize (preserving aspect ratio)
+    h, w, _ = frame.shape
+    ar = w / h
+    new_shape = (int(display_height * ar), display_height)  # width, height
+    display_frame = cv2.resize(frame, new_shape, interpolation=cv2.INTER_CUBIC)
+
+    # alignment box coordinates
+    center_box_w = center_square_width * new_shape[0]
+    center_box = (
+        int((new_shape[0] // 2) - (center_box_w // 2)),
+        int((new_shape[1] // 2) - (center_box_w // 2)),
+        int(center_box_w),
+        int(center_box_w),
+    )
+
+    # compute iou of each detection with alignment box
+    ious = []
+    if len(detections) &gt; 0:
+        for det in detections:
+            box = (
+                int(det[0] * new_shape[0]),
+                int(det[1] * new_shape[1]),
+                int(det[2] * new_shape[0]),
+                int(det[3] * new_shape[1]),
+            )
+            iou = box_iou(center_box, box)  # type: ignore
+            ious.append(iou)
+            # draw detections
+            display_frame = cv2.rectangle(
+                display_frame, box, color=(255, 0, 0), thickness=thickness
+            )
+        # if the first box is aligned, then change box color and text prompt
+        if ious[0] &gt;= iou_thresh:
+            color = (0, 255, 0)
+            text = f&#34;{mode.capitalize()} aligned!&#34;
+    display_frame = cv2.rectangle(
+        display_frame, center_box, color=color, thickness=thickness
+    )
+    display_frame = cv2.putText(
+        display_frame,
+        text,
+        org=(center_box[0], center_box[1] - 15),
+        fontFace=fontFace,
+        fontScale=fontScale,
+        color=color,
+        thickness=thickness,
+    )
+
+    # for each detection, extract the crop of the original image
+    crops = []
+    if len(detections) &gt; 0 and ious[0] &gt;= iou_thresh:
+        for i, det in enumerate(detections):
+            crops.append(
+                frame[
+                    int(det[1] * h) : int((det[1] + det[3]) * h),
+                    int(det[0] * w) : int((det[0] + det[2]) * w),
+                ]
+            )
+    return (
+        display_frame,
+        crops,
+        ious,
+    )
+
+
+def autocapture(
+    cap,
+    mode: str = AUTOCAPTURE_MODE,
+    fname: str = &#34;test_image.jpg&#34;,
+    iou_thresh: float = IOU_THRESH,
+    num_candidates: int = NUM_CANDIDATES,
+    rotate: bool = True,
+):
+    &#34;&#34;&#34;
+    Uses OpenCV to detect eyes and capture high resolution images
+
+    Arguments:
+        - cap: a cv2.VideoCapture object
+        - mode: the autocapture mode (&#34;face&#34;, &#34;eye&#34;, &#34;face and eye&#34;)
+        - fname: the desired filename for the best saved crop
+        - iou_thresh: the minimum IOU threshold for alignment with target box
+        - num_candidates: the number of crops to consider in sharpness optimization
+    &#34;&#34;&#34;
+    # choose the detection function
+    if mode == &#34;face&#34;:
+        detection_fn = lambda frame: detect_faces(frame)
+    elif mode == &#34;eye&#34;:
+        detection_fn = lambda frame: detect_eyes(frame)
+    else:
+        detection_fn = lambda frame: detect_faces_and_eyes(frame)
+
+    candidate_saves = []
+    while cap.isOpened():
+        retval, frame = cap.read()
+
+        # TEMPORARY: For some reason cv2 4.8 rotates images when passed through a videocapture object
+        if rotate:
+            frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+        # END TEMPORARY
+        if retval:
+            detections, _ = detection_fn(frame)
+            display_frame, crops, ious = display_detections(
+                frame, detections, mode=mode, iou_thresh=iou_thresh
+            )
+            if len(crops) &gt; 0:
+                candidate_saves.append(crops)
+            waitKey = cv2.waitKey(1)
+            if waitKey == ord(&#34;q&#34;) or len(candidate_saves) &gt;= num_candidates:
+                break
+        else:
+            break
+
+    # save the best focused image
+    save_sharpest_image(
+        candidate_saves,
+        mode=mode,
+        fname=fname,
+    )
+
+
+def test_autocapture(
+    mode: str = AUTOCAPTURE_MODE,
+    iou_thresh: float = IOU_THRESH,
+    root: str = ROOT,
+    dataset_name: str = DATASET_NAME,
+    rotate: bool = True,
+):
+    &#34;&#34;&#34;
+    Function to test autoapture functionality on all images/videos in a folder
+
+    Arguments:
+        - mode: the autocapture mode (&#34;face&#34;, &#34;eye&#34;, &#34;face and eye&#34;)
+        - root: the root where the dataset folder is located
+        - dataset_name: the name of the dataset folder
+        - rotate: indicator as to whether images should be rotated 90 degrees or not
+    &#34;&#34;&#34;
+    dataset_root = os.path.join(root, dataset_name, &#34;images&#34;)
+    crop_root = os.path.join(root, f&#34;{dataset_name}_crops&#34;, &#34;images&#34;)
+
+    # TEST IMAGES AND VIDEOS
+    for fname in os.listdir(dataset_root):
+        filetype = fname.split(&#34;.&#34;)[-1]
+        cap = cv2.VideoCapture(os.path.join(dataset_root, fname))
+        autocapture(
+            cap,
+            mode=mode,
+            fname=os.path.join(
+                crop_root,
+                fname.replace(filetype, &#34;png&#34;),
+            ),
+            iou_thresh=iou_thresh,
+            rotate=rotate,
+        )
+        # cv2.waitKey()
+        cap.release()
+
+    # cv2.destroyAllWindows()
+
+
+def main(cap_source: str, fname: str) -&gt; None:
+    &#34;&#34;&#34;
+    Function to run autocapture pipeline on a given source
+
+    Arguments:
+        - cap_source: the data source type (&#34;webcam&#34;, &#34;image&#34;, &#34;dataset&#34;)
+        - fname: the file/folder name for data, if relevant
+    &#34;&#34;&#34;
+
+    # Dataset source
+    root, dataset_name = os.path.dirname(fname), os.path.basename(fname)
+    if cap_source == &#34;dataset&#34;:
+        test_autocapture(root=root, dataset_name=dataset_name)
+    else:
+        crop_root = root.replace(
+            os.path.basename(root), f&#34;{os.path.basename(root)}_crops&#34;
+        )
+        crop_fname = os.path.join(
+            crop_root,
+            dataset_name.split(&#34;.&#34;)[0] + &#34;.png&#34;,
+        )
+
+        cap = None
+        if cap_source == &#34;webcam&#34;:
+            cap = cv2.VideoCapture(0)
+        elif cap_source == &#34;image&#34;:
+            cap = cv2.VideoCapture(fname)
+
+        if cap is not None:
+            autocapture(
+                cap,
+                fname=crop_fname,
+            )
+            cap.release()
+
+    cv2.destroyAllWindows()
+
+
+if __name__ == &#34;__main__&#34;:
+    parser = argparse.ArgumentParser(
+        prog=&#34;autocapture.py&#34;,
+        description=&#34;R&amp;D autocapture feature for iris&#34;,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument(
+        &#34;--src&#34;,
+        default=&#34;dataset&#34;,
+        type=str,
+        choices=[&#34;image&#34;, &#34;dataset&#34;, &#34;webcam&#34;],
+        help=&#34;AI pipeline runs on this type of data&#34;,
+    )
+    parser.add_argument(
+        &#34;--path&#34;,
+        type=str,
+        help=&#34;If specified, the exact source of data (can be a folder or file)&#34;,
+    )
+    ARGS = parser.parse_args()
+
+    CAP_SOURCE = ARGS.src
+    if CAP_SOURCE == &#34;webcam&#34;:
+        fname = &#34;./datasets/autocapture/autocapture_test_videos/best.png&#34;
+    else:
+        if ARGS.path is not None:
+            fname = ARGS.path
+        else:
+            if CAP_SOURCE == &#34;image&#34;:
+                fname = &#34;./datasets/autocapture/autocapture_test_samples/test_image.jpg&#34;
+            else:
+                # fname = &#34;./datasets/autocapture/autocapture_test_videos&#34;
+                fname = &#34;./datasets/corneacare/combined&#34;
+
+    main(cap_source=CAP_SOURCE, fname=fname)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="iris.autocapture.autocapture"><code class="name flex">
+<span>def <span class="ident">autocapture</span></span>(<span>cap, mode: str = 'eye', fname: str = 'test_image.jpg', iou_thresh: float = 0.5, num_candidates: int = 15, rotate: bool = True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Uses OpenCV to detect eyes and capture high resolution images</p>
+<h2 id="arguments">Arguments</h2>
+<ul>
+<li>cap: a cv2.VideoCapture object</li>
+<li>mode: the autocapture mode ("face", "eye", "face and eye")</li>
+<li>fname: the desired filename for the best saved crop</li>
+<li>iou_thresh: the minimum IOU threshold for alignment with target box</li>
+<li>num_candidates: the number of crops to consider in sharpness optimization</li>
+</ul></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def autocapture(
+    cap,
+    mode: str = AUTOCAPTURE_MODE,
+    fname: str = &#34;test_image.jpg&#34;,
+    iou_thresh: float = IOU_THRESH,
+    num_candidates: int = NUM_CANDIDATES,
+    rotate: bool = True,
+):
+    &#34;&#34;&#34;
+    Uses OpenCV to detect eyes and capture high resolution images
+
+    Arguments:
+        - cap: a cv2.VideoCapture object
+        - mode: the autocapture mode (&#34;face&#34;, &#34;eye&#34;, &#34;face and eye&#34;)
+        - fname: the desired filename for the best saved crop
+        - iou_thresh: the minimum IOU threshold for alignment with target box
+        - num_candidates: the number of crops to consider in sharpness optimization
+    &#34;&#34;&#34;
+    # choose the detection function
+    if mode == &#34;face&#34;:
+        detection_fn = lambda frame: detect_faces(frame)
+    elif mode == &#34;eye&#34;:
+        detection_fn = lambda frame: detect_eyes(frame)
+    else:
+        detection_fn = lambda frame: detect_faces_and_eyes(frame)
+
+    candidate_saves = []
+    while cap.isOpened():
+        retval, frame = cap.read()
+
+        # TEMPORARY: For some reason cv2 4.8 rotates images when passed through a videocapture object
+        if rotate:
+            frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+        # END TEMPORARY
+        if retval:
+            detections, _ = detection_fn(frame)
+            display_frame, crops, ious = display_detections(
+                frame, detections, mode=mode, iou_thresh=iou_thresh
+            )
+            if len(crops) &gt; 0:
+                candidate_saves.append(crops)
+            waitKey = cv2.waitKey(1)
+            if waitKey == ord(&#34;q&#34;) or len(candidate_saves) &gt;= num_candidates:
+                break
+        else:
+            break
+
+    # save the best focused image
+    save_sharpest_image(
+        candidate_saves,
+        mode=mode,
+        fname=fname,
+    )</code></pre>
+</details>
+</dd>
+<dt id="iris.autocapture.detect_eyes"><code class="name flex">
+<span>def <span class="ident">detect_eyes</span></span>(<span>frame: numpy.ndarray, processed: bool = False, padding_factor: float = 1.5) ‑> Tuple[Sequence, numpy.ndarray]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Function to detect faces with OpenCV CascadeClassifier</p>
+<h2 id="arguments">Arguments</h2>
+<ul>
+<li>frame: the opencv frame</li>
+<li>processed: indicator of whether or not the frame has already been preprocessed</li>
+</ul>
+<h2 id="returns">Returns</h2>
+<ul>
+<li>eyes: a list of eye detections in normalized [x_tl, y_tl, w, h] coordinates</li>
+<li>processing_frame: the preprocessed opencv frame, which can be reused</li>
+</ul></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def detect_eyes(
+    frame: np.ndarray,
+    processed: bool = False,
+    padding_factor: float = PADDING_FACTOR,
+) -&gt; Tuple[Sequence, np.ndarray]:
+    &#34;&#34;&#34;
+    Function to detect faces with OpenCV CascadeClassifier
+
+    Arguments:
+        - frame: the opencv frame
+        - processed: indicator of whether or not the frame has already been preprocessed
+
+    Returns:
+        - eyes: a list of eye detections in normalized [x_tl, y_tl, w, h] coordinates
+        - processing_frame: the preprocessed opencv frame, which can be reused
+    &#34;&#34;&#34;
+    # pre-allocate
+    processing_frame = frame
+    h, w = frame.shape[:2]
+    new_shape = (w, h)  # width, height
+    # if frame has not already been preprocessed
+    if not processed:
+        # resizing (preserving aspect ratio) and grayscaling
+        ar = w / h
+        new_shape = (int(min(h, 256) * ar), min(h, 256))  # width, height
+        processing_frame = cv2.resize(
+            processing_frame, new_shape, interpolation=cv2.INTER_CUBIC
+        )
+        processing_frame = cv2.cvtColor(processing_frame, cv2.COLOR_BGR2GRAY)
+    # detect eyes
+    eyes = CV2_EYE_CASCADE_MODEL.detectMultiScale(
+        processing_frame, scaleFactor=1.05, minNeighbors=6
+    )
+    if len(eyes) &gt; 0:
+        # for at most 2 eye detections, enlarge and normalize the coordinates
+        padded_eyes = []
+        for i, eye in enumerate(eyes[:2]):
+            padded_eye = enlarge_box(eye, padding_factor=padding_factor)
+            # normalize coordinates, ensuring that the detection is contained within the image
+            padded_eye[0] = min(1.0, max(0.0, padded_eye[0] / new_shape[0]))  # type: ignore
+            padded_eye[1] = min(1.0, max(0.0, padded_eye[1] / new_shape[1]))  # type: ignore
+            padded_eye[2] = min(  # type: ignore
+                1.0 - padded_eye[0], max(0.0, padded_eye[2] / new_shape[0])
+            )
+            padded_eye[3] = min(  # type: ignore
+                1.0 - padded_eye[1], max(0.0, padded_eye[3] / new_shape[1])
+            )
+            padded_eyes.append(padded_eye)
+        eyes = padded_eyes
+    return eyes, processing_frame</code></pre>
+</details>
+</dd>
+<dt id="iris.autocapture.detect_faces"><code class="name flex">
+<span>def <span class="ident">detect_faces</span></span>(<span>frame: numpy.ndarray) ‑> Tuple[Sequence, numpy.ndarray]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Function to detect faces with OpenCV CascadeClassifier</p>
+<h2 id="arguments">Arguments</h2>
+<ul>
+<li>frame: the opencv frame</li>
+</ul>
+<h2 id="returns">Returns</h2>
+<ul>
+<li>faces: a list of face detections in normalized [x_tl, y_tl, w, h] coordinates</li>
+<li>processing_frame: the preprocessed opencv frame, which can be reused</li>
+</ul></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def detect_faces(frame: np.ndarray) -&gt; Tuple[Sequence, np.ndarray]:
+    &#34;&#34;&#34;
+    Function to detect faces with OpenCV CascadeClassifier
+
+    Arguments:
+        - frame: the opencv frame
+
+    Returns:
+        - faces: a list of face detections in normalized [x_tl, y_tl, w, h] coordinates
+        - processing_frame: the preprocessed opencv frame, which can be reused
+    &#34;&#34;&#34;
+    # resizing (preserving aspect ratio) and grayscaling
+    h, w = frame.shape[:2]
+    ar = w / h
+    new_shape = (int(min(h, 256) * ar), min(h, 256))  # width, height
+    processing_frame = cv2.resize(frame, new_shape, interpolation=cv2.INTER_CUBIC)
+    processing_frame = cv2.cvtColor(processing_frame, cv2.COLOR_BGR2GRAY)
+    # detect faces
+    faces = CV2_FACE_CASCADE_MODEL.detectMultiScale(
+        processing_frame, scaleFactor=1.1, minNeighbors=6
+    )
+    if len(faces) &gt; 0:
+        # only process one face
+        faces = [faces[0]]
+        faces[0] = [  # type: ignore
+            faces[0][0] / new_shape[0],
+            faces[0][1] / new_shape[1],
+            faces[0][2] / new_shape[0],
+            faces[0][3] / new_shape[1],
+        ]
+    return faces, processing_frame</code></pre>
+</details>
+</dd>
+<dt id="iris.autocapture.detect_faces_and_eyes"><code class="name flex">
+<span>def <span class="ident">detect_faces_and_eyes</span></span>(<span>frame: numpy.ndarray) ‑> Tuple[Sequence, numpy.ndarray]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Function to detect faces and eyes with OpenCV CascadeClassifier</p>
+<h2 id="arguments">Arguments</h2>
+<ul>
+<li>frame: the opencv frame</li>
+</ul>
+<h2 id="returns">Returns</h2>
+<ul>
+<li>detections: a list of face and eye detections in normalized [x_tl, y_tl, w, h] coordinates</li>
+<li>processing_frame: the preprocessed opencv frame, which can be reused</li>
+</ul></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def detect_faces_and_eyes(frame: np.ndarray) -&gt; Tuple[Sequence, np.ndarray]:
+    &#34;&#34;&#34;
+    Function to detect faces and eyes with OpenCV CascadeClassifier
+
+    Arguments:
+        - frame: the opencv frame
+
+    Returns:
+        - detections: a list of face and eye detections in normalized [x_tl, y_tl, w, h] coordinates
+        - processing_frame: the preprocessed opencv frame, which can be reused
+    &#34;&#34;&#34;
+    # detect faces and re-use th processing frame
+    faces, processing_frame = detect_faces(frame)
+    h_p, w_p = processing_frame.shape[:2]
+    detections = []
+    for face in faces:
+        detections.append(face)
+        # detect eyes on a face crop, efficiently
+        face_eyes, _ = detect_eyes(
+            processing_frame[
+                int(face[1] * h_p) : int((face[1] + face[3]) * h_p),
+                int(face[0] * w_p) : int((face[0] + face[2]) * w_p),
+            ],
+            processed=True,
+        )
+        eyes = []
+        for face_eye in face_eyes:
+            # eye detections are relative to face crop, so we add the offset
+            eyes.append(
+                [
+                    (face[0] + (face_eye[0] * face[2])),
+                    (face[1] + (face_eye[1] * face[3])),
+                    (face_eye[2] * face[2]),
+                    (face_eye[3] * face[3]),
+                ]
+            )
+        # in face and eye mode, we must detect the face and both eyes for a complete detection
+        if len(eyes) == 2:
+            detections.extend(eyes)
+
+    return detections, processing_frame</code></pre>
+</details>
+</dd>
+<dt id="iris.autocapture.display_detections"><code class="name flex">
+<span>def <span class="ident">display_detections</span></span>(<span>frame: numpy.ndarray, detections: Sequence, mode: str = 'eye', iou_thresh: float = 0.5, center_square_width: float = 0.65) ‑> Tuple[numpy.ndarray, Sequence[numpy.ndarray], Sequence[float]]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Function to annotate a frame with detections and UI components</p>
+<h2 id="arguments">Arguments</h2>
+<ul>
+<li>frame: the opencv frame</li>
+<li>detections: the list of detections in normalized [x_tl, y_tl, w, h] coordinates</li>
+<li>mode: the autocapture mode ("face", "eye", "face and eye")</li>
+<li>iou_thresh: the minimum IOU threshold for alignment with target box</li>
+<li>center_square_width: alignment box width as a percentage of frame width</li>
+</ul>
+<h2 id="returns">Returns</h2>
+<ul>
+<li>display_frame: a downsized copy of the input frame, with detections and UI components</li>
+<li>crops: a list of high resolution crops</li>
+<li>ious: the IOUs of detections with alignment box</li>
+</ul></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def display_detections(
+    frame: np.ndarray,
+    detections: Sequence,
+    mode: str = AUTOCAPTURE_MODE,
+    iou_thresh: float = IOU_THRESH,
+    center_square_width: float = CENTER_SQUARE_WIDTH_PCT,
+) -&gt; Tuple[np.ndarray, Sequence[np.ndarray], Sequence[float]]:
+    &#34;&#34;&#34;
+    Function to annotate a frame with detections and UI components
+
+    Arguments:
+        - frame: the opencv frame
+        - detections: the list of detections in normalized [x_tl, y_tl, w, h] coordinates
+        - mode: the autocapture mode (&#34;face&#34;, &#34;eye&#34;, &#34;face and eye&#34;)
+        - iou_thresh: the minimum IOU threshold for alignment with target box
+        - center_square_width: alignment box width as a percentage of frame width
+
+    Returns:
+        - display_frame: a downsized copy of the input frame, with detections and UI components
+        - crops: a list of high resolution crops
+        - ious: the IOUs of detections with alignment box
+    &#34;&#34;&#34;
+    # parameters for display
+    display_height = 720
+    fontScale = 0.75
+    thickness = 2
+    color = (0, 0, 255)
+    text = f&#34;Align {mode} here&#34;
+    fontFace = cv2.FONT_HERSHEY_SIMPLEX
+
+    # resize (preserving aspect ratio)
+    h, w, _ = frame.shape
+    ar = w / h
+    new_shape = (int(display_height * ar), display_height)  # width, height
+    display_frame = cv2.resize(frame, new_shape, interpolation=cv2.INTER_CUBIC)
+
+    # alignment box coordinates
+    center_box_w = center_square_width * new_shape[0]
+    center_box = (
+        int((new_shape[0] // 2) - (center_box_w // 2)),
+        int((new_shape[1] // 2) - (center_box_w // 2)),
+        int(center_box_w),
+        int(center_box_w),
+    )
+
+    # compute iou of each detection with alignment box
+    ious = []
+    if len(detections) &gt; 0:
+        for det in detections:
+            box = (
+                int(det[0] * new_shape[0]),
+                int(det[1] * new_shape[1]),
+                int(det[2] * new_shape[0]),
+                int(det[3] * new_shape[1]),
+            )
+            iou = box_iou(center_box, box)  # type: ignore
+            ious.append(iou)
+            # draw detections
+            display_frame = cv2.rectangle(
+                display_frame, box, color=(255, 0, 0), thickness=thickness
+            )
+        # if the first box is aligned, then change box color and text prompt
+        if ious[0] &gt;= iou_thresh:
+            color = (0, 255, 0)
+            text = f&#34;{mode.capitalize()} aligned!&#34;
+    display_frame = cv2.rectangle(
+        display_frame, center_box, color=color, thickness=thickness
+    )
+    display_frame = cv2.putText(
+        display_frame,
+        text,
+        org=(center_box[0], center_box[1] - 15),
+        fontFace=fontFace,
+        fontScale=fontScale,
+        color=color,
+        thickness=thickness,
+    )
+
+    # for each detection, extract the crop of the original image
+    crops = []
+    if len(detections) &gt; 0 and ious[0] &gt;= iou_thresh:
+        for i, det in enumerate(detections):
+            crops.append(
+                frame[
+                    int(det[1] * h) : int((det[1] + det[3]) * h),
+                    int(det[0] * w) : int((det[0] + det[2]) * w),
+                ]
+            )
+    return (
+        display_frame,
+        crops,
+        ious,
+    )</code></pre>
+</details>
+</dd>
+<dt id="iris.autocapture.main"><code class="name flex">
+<span>def <span class="ident">main</span></span>(<span>cap_source: str, fname: str) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Function to run autocapture pipeline on a given source</p>
+<h2 id="arguments">Arguments</h2>
+<ul>
+<li>cap_source: the data source type ("webcam", "image", "dataset")</li>
+<li>fname: the file/folder name for data, if relevant</li>
+</ul></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def main(cap_source: str, fname: str) -&gt; None:
+    &#34;&#34;&#34;
+    Function to run autocapture pipeline on a given source
+
+    Arguments:
+        - cap_source: the data source type (&#34;webcam&#34;, &#34;image&#34;, &#34;dataset&#34;)
+        - fname: the file/folder name for data, if relevant
+    &#34;&#34;&#34;
+
+    # Dataset source
+    root, dataset_name = os.path.dirname(fname), os.path.basename(fname)
+    if cap_source == &#34;dataset&#34;:
+        test_autocapture(root=root, dataset_name=dataset_name)
+    else:
+        crop_root = root.replace(
+            os.path.basename(root), f&#34;{os.path.basename(root)}_crops&#34;
+        )
+        crop_fname = os.path.join(
+            crop_root,
+            dataset_name.split(&#34;.&#34;)[0] + &#34;.png&#34;,
+        )
+
+        cap = None
+        if cap_source == &#34;webcam&#34;:
+            cap = cv2.VideoCapture(0)
+        elif cap_source == &#34;image&#34;:
+            cap = cv2.VideoCapture(fname)
+
+        if cap is not None:
+            autocapture(
+                cap,
+                fname=crop_fname,
+            )
+            cap.release()
+
+    cv2.destroyAllWindows()</code></pre>
+</details>
+</dd>
+<dt id="iris.autocapture.test_autocapture"><code class="name flex">
+<span>def <span class="ident">test_autocapture</span></span>(<span>mode: str = 'eye', iou_thresh: float = 0.5, root: str = './datasets/autocapture', dataset_name: str = 'autocapture_test_videos', rotate: bool = True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Function to test autoapture functionality on all images/videos in a folder</p>
+<h2 id="arguments">Arguments</h2>
+<ul>
+<li>mode: the autocapture mode ("face", "eye", "face and eye")</li>
+<li>root: the root where the dataset folder is located</li>
+<li>dataset_name: the name of the dataset folder</li>
+<li>rotate: indicator as to whether images should be rotated 90 degrees or not</li>
+</ul></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_autocapture(
+    mode: str = AUTOCAPTURE_MODE,
+    iou_thresh: float = IOU_THRESH,
+    root: str = ROOT,
+    dataset_name: str = DATASET_NAME,
+    rotate: bool = True,
+):
+    &#34;&#34;&#34;
+    Function to test autoapture functionality on all images/videos in a folder
+
+    Arguments:
+        - mode: the autocapture mode (&#34;face&#34;, &#34;eye&#34;, &#34;face and eye&#34;)
+        - root: the root where the dataset folder is located
+        - dataset_name: the name of the dataset folder
+        - rotate: indicator as to whether images should be rotated 90 degrees or not
+    &#34;&#34;&#34;
+    dataset_root = os.path.join(root, dataset_name, &#34;images&#34;)
+    crop_root = os.path.join(root, f&#34;{dataset_name}_crops&#34;, &#34;images&#34;)
+
+    # TEST IMAGES AND VIDEOS
+    for fname in os.listdir(dataset_root):
+        filetype = fname.split(&#34;.&#34;)[-1]
+        cap = cv2.VideoCapture(os.path.join(dataset_root, fname))
+        autocapture(
+            cap,
+            mode=mode,
+            fname=os.path.join(
+                crop_root,
+                fname.replace(filetype, &#34;png&#34;),
+            ),
+            iou_thresh=iou_thresh,
+            rotate=rotate,
+        )
+        # cv2.waitKey()
+        cap.release()
+
+    # cv2.destroyAllWindows()</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="iris" href="index.html">iris</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="iris.autocapture.autocapture" href="#iris.autocapture.autocapture">autocapture</a></code></li>
+<li><code><a title="iris.autocapture.detect_eyes" href="#iris.autocapture.detect_eyes">detect_eyes</a></code></li>
+<li><code><a title="iris.autocapture.detect_faces" href="#iris.autocapture.detect_faces">detect_faces</a></code></li>
+<li><code><a title="iris.autocapture.detect_faces_and_eyes" href="#iris.autocapture.detect_faces_and_eyes">detect_faces_and_eyes</a></code></li>
+<li><code><a title="iris.autocapture.display_detections" href="#iris.autocapture.display_detections">display_detections</a></code></li>
+<li><code><a title="iris.autocapture.main" href="#iris.autocapture.main">main</a></code></li>
+<li><code><a title="iris.autocapture.test_autocapture" href="#iris.autocapture.test_autocapture">test_autocapture</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

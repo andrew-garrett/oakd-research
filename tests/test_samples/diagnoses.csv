@@ -1,0 +1,4 @@
+filename, Dry Eye (Mild), Dry Eye (Moderate), Dry Eye (Severe), Dry Eye (Absent)
+C1_S1_I1_L.jpg, 1, 0, 0, 0
+eye_test_image.jpg, 0, 1, 0, 0
+face_test_image.jpg, 0, 0, 1, 0

@@ -1,0 +1,12 @@
+{
+    "task": "multilabel",
+    "dataset_name": "test_samples",
+    "num_classes": 4,
+    "imgsz": [
+        3,
+        128,
+        128
+    ],
+    "batch_size": 2,
+    "epochs": 2
+}
