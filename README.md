@@ -14,27 +14,26 @@
 [![MIT License][license-shield]][license-url]
 -->
 
-[![Python package](https://github.com/CorneaCare/corneacare_corneai/actions/workflows/python-package.yml/badge.svg)](https://github.com/CorneaCare/corneacare_corneai/actions/workflows/python-package.yml)
-[![Python Package using Conda](https://github.com/CorneaCare/corneacare_corneai/actions/workflows/python-package-conda.yml/badge.svg)](https://github.com/CorneaCare/corneacare_corneai/actions/workflows/python-package-conda.yml)
-[![Deploy static content to Pages](https://github.com/CorneaCare/corneacare_corneai/actions/workflows/static.yml/badge.svg)](https://github.com/CorneaCare/corneacare_corneai/actions/workflows/static.yml)
+[![Python package](https://github.com/andrew-garrett/oakd-research/actions/workflows/python-package.yml/badge.svg)](https://github.com/andrew-garrett/oakd-research/actions/workflows/python-package.yml)
+[![Deploy static content to Pages](https://github.com/andrew-garrett/oakd-research/actions/workflows/static.yml/badge.svg)](https://github.com/andrew-garrett/oakd-research/actions/workflows/static.yml)
 
 
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/CorneaCare/corneacare_corneai">
+  <a href="https://github.com/andrew-garrett/oakd-research">
     <img src="https://avatars.githubusercontent.com/u/69227803?s=200&v=4" alt="Logo" width="80" height="80">
   </a>
 
-  <h3 align="center">CorneaCare corneai</h3>
+  <h3 align="center">Iris</h3>
 
   <p align="center">
-    <a href="https://github.com/CorneaCare/corneacare_corneai/tree/main/docs/corneai/markdown"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/andrew-garrett/oakd-research/tree/main/docs/iris/"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/CorneaCare/corneacare_corneai/issues">Report Bug</a>
+    <a href="https://github.com/andrew-garrett/oakd-research/issues">Report Bug</a>
     ·
-    <a href="https://github.com/CorneaCare/corneacare_corneai/issues">Request Feature</a>
+    <a href="https://github.com/andrew-garrett/oakd-research/issues">Request Feature</a>
   </p>
 </div>
 
@@ -69,7 +68,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-corneai is the AI backend supporting CorneaCare.
+Iris is an Open-Source Package for Deep Computer Vision, Specifically geared towards training and deployment onto cloud and edge environments.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -108,21 +107,16 @@ To get a local copy up and running follow these simple example steps.
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/CorneaCare/corneacare_corneai.git
-   cd corneacare_corneai
+   git clone https://github.com/andrew-garrett/oakd-research.git
+   cd oakd-research
    ```
-2. (recommended) Use Anaconda to install/update dependencies
-    * If using linux:
-      ```sh
-      cd setup_files && setup_env.sh
-      ```
-    * If using windows:
-      ```sh
-      cd setup_files && setup_env.bat
-      ```
-3. (alternative) Use pip to install/update dependencies
+2. (recommended) Create a new anaconda environment.  Iris is compatible with python 3.8, 3.9, 3.10, and 3.11, but is generally used with 3.10.
     ```sh
-    pip install -r setup_files/requirements.txt && pip install .
+    conda create -n iris_env python=3.10
+    ```
+3. Use pip to install dependencies and the package itself
+    ```sh
+    pip install -r setup_files/requirements.txt && pip install -e .
     ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -133,7 +127,7 @@ To get a local copy up and running follow these simple example steps.
 
 ### Customization:
 
-User can control task, dataset, model, and training/inference hyperparameters from corneai.json file.
+User can control task, dataset, model, and training/inference hyperparameters from iris.json file.
 
 - Task
   - "task": (str) the desired task, one of ["segmentation", "classification", "multilabel"]
@@ -147,7 +141,7 @@ User can control task, dataset, model, and training/inference hyperparameters fr
   - "pretrained": (bool) indicate whether or not model is pretrained
 - Training/Inference
   - Training-only:
-    - "criterion": (str) the desired loss function, either a valid one from torch or one of the custom classes in corneai.criteria
+    - "criterion": (str) the desired loss function, either a valid one from torch or one of the custom classes in iris.criteria
     - "epochs": (int) the desired maximum number of epochs to train
     - "lr": (float) the desired initial learning rate
     - "momentum": (float) the desired momentum for SGD (beta_1 for Adam-like optimizers)
@@ -159,10 +153,10 @@ User can control task, dataset, model, and training/inference hyperparameters fr
 
 ### Autocapture:
 ```
-(corneai) C:\WORK\corneacare_corneai\corneai>python autocapture.py --help
+(iris_env) C:\oakd-research\iris>python autocapture.py --help
 usage: autocapture.py [-h] [--src {image,dataset,webcam}] [--path PATH]
 
-R&D autocapture feature for corneai
+R&D autocapture feature for iris
 
 options:
   -h, --help                    show this help message and exit
@@ -174,10 +168,10 @@ Note: If using autocapture with an image/video, be sure to specify the relative 
 
 ### Training:
 ```
-(corneai) C:\WORK\corneacare_corneai\corneai>python train.py --help
+(iris_env) C:\oakd-research\iris>python train.py --help
 usage: train.py [-h] [--debug] [--tune] [--data-root DATA_ROOT] [--n-gpus N_GPUS] [--sweep SWEEP]
 
-Training script for corneai
+Training script for iris
 
 options:
   -h, --help                    show this help message and exit
@@ -190,10 +184,10 @@ options:
 
 ### Prediction
 ```
-(corneai) C:\WORK\corneacare_corneai\corneai>python predict.py --help
+(iris_env) C:\oakd-research\iris>python predict.py --help
 usage: predict.py [-h] [--model-root MODEL_ROOT] [--model-arch MODEL_ARCH] [--model-id MODEL_ID] [--model-alias {best,latest,v0}] [--data-root DATA_ROOT] [--n-gpus N_GPUS]
 
-Inference script for corneai
+Inference script for iris
 
 options:
   -h, --help                         show this help message and exit
@@ -205,7 +199,7 @@ options:
   --n-gpus N_GPUS                    Number of GPUs, 0 means cpu, 1 means single gpu, >1 means distributed (default: 1)
 ```
 
-_For more examples, please refer to the [Documentation](./docs/corneai/index.html)_
+_For more examples, please refer to the [Documentation](./docs/iris/index.html)_
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -222,7 +216,7 @@ _For more examples, please refer to the [Documentation](./docs/corneai/index.htm
     - [ ] Chinese
     - [ ] Spanish
 
-See the [open issues](https://github.com/CorneaCare/corneacare_corneai/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/andrew-garrett/oakd-research/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 -->
@@ -275,16 +269,16 @@ This readme is created from [this template](https://github.com/othneildrew/Best-
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/CorneaCare/corneacare_corneai.svg
-[contributors-url]: https://github.com/CorneaCare/corneacare_corneai/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/CorneaCare/corneacare_corneai.svg
-[forks-url]: https://github.com/CorneaCare/corneacare_corneai/network/members
-[stars-shield]: https://img.shields.io/github/stars/CorneaCare/corneacare_corneai.svg
-[stars-url]: https://github.com/CorneaCare/corneacare_corneai/stargazers
-[issues-shield]: https://img.shields.io/github/issues/CorneaCare/corneacare_corneai.svg
-[issues-url]: https://github.com/CorneaCare/corneacare_corneai/issues
-[license-shield]: https://img.shields.io/github/license/CorneaCare/corneacare_corneai.svg
-[license-url]: https://github.com/CorneaCare/corneacare_corneai/blob/main/LICENSE
+[contributors-shield]: https://img.shields.io/github/contributors/andrew-garrett/oakd-research.svg
+[contributors-url]: https://github.com/andrew-garrett/oakd-research/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/andrew-garrett/oakd-research.svg
+[forks-url]: https://github.com/andrew-garrett/oakd-research/network/members
+[stars-shield]: https://img.shields.io/github/stars/andrew-garrett/oakd-research.svg
+[stars-url]: https://github.com/andrew-garrett/oakd-research/stargazers
+[issues-shield]: https://img.shields.io/github/issues/andrew-garrett/oakd-research.svg
+[issues-url]: https://github.com/andrew-garrett/oakd-research/issues
+[license-shield]: https://img.shields.io/github/license/andrew-garrett/oakd-research.svg
+[license-url]: https://github.com/andrew-garrett/oakd-research/blob/main/LICENSE
 
 <!-- 
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
