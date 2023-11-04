@@ -8,8 +8,6 @@ import torch
 from torchvision import transforms as T
 from torchvision.transforms import functional as F
 
-from iris.autocapture import detect_eyes
-
 #################### CUSTOM TRANSFORM PRESETS ####################
 ##################################################################
 
@@ -23,7 +21,6 @@ class PresetTrain(torch.nn.Module):
     Training augmentations:
 
         1. ConvertImageDtype(torch.float)
-        2. RandomAutocaptureCrop()
         3. RandomResize(base_size, base_size)
         4. RandomPerspective()
         5. RandomCrop(int(crop_size * base_size))
@@ -56,7 +53,6 @@ class PresetTrain(torch.nn.Module):
         trans.extend(
             [
                 ConvertImageDtype(torch.float),
-                RandomAutocaptureCrop(),
                 RandomResize(base_size, base_size),
                 RandomPerspective(),
                 # RandomCrop(int(crop_size * base_size)),
@@ -91,7 +87,7 @@ class PresetEval(torch.nn.Module):
     def __init__(
         self,
         task: str = "segmentation",
-        base_size: int = 320,
+        base_size: int = 224,
         mean: Optional[List[float]] = None,
         std: Optional[List[float]] = None,
     ) -> None:
@@ -109,10 +105,6 @@ class PresetEval(torch.nn.Module):
         trans.extend(
             [
                 ConvertImageDtype(torch.float),
-                RandomAutocaptureCrop(
-                    mean=torch.zeros(4),
-                    variance=(1e-9) * torch.ones(4),
-                ),
                 RandomResize(base_size, base_size),
                 StrideResize(),
             ]
@@ -123,7 +115,7 @@ class PresetEval(torch.nn.Module):
         self.transforms = Compose(trans, task)
 
     def forward(
-        self, image: torch.Tensor, target: torch.Tensor
+        self, image: torch.Tensor, target: Optional[torch.Tensor] = None
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         """
         Forward
@@ -136,6 +128,8 @@ class PresetEval(torch.nn.Module):
             - image: the transformed image (B x C x H x W)
             - target: the transformed segmentation mask (B x 1 x H x W)
         """
+        if target is None:
+            return self.transforms(image, target)[0]
         return self.transforms(image, target)
 
 
@@ -590,87 +584,4 @@ class RandomPerspective(torch.nn.Module):
             # This allows for the transform to be used on non-mask-style labels (classification probabilities)
             # NOTE: May cause problems if we integrate object detection/instance segmentation
             pass
-        return image, target
-
-
-class RandomAutocaptureCrop(torch.nn.Module):
-    """
-    Custom RandomAutocaptureCrop torch.nn.Module
-
-    Use the detect_eyes function from the autocapture module,
-    apply random noise to the (x, y, w, h)-dimensions, and extract the crop.
-    """
-
-    def __init__(
-        self,
-        mean: torch.Tensor = torch.tensor([0.0, 0.0, 0.1, 0.05]),
-        variance: torch.Tensor = 0.001 * torch.ones(4),
-        padding_factor: float = 1.15,
-    ) -> None:
-        """
-        Constructor
-
-        Arguments:
-            - loc: the center of the gaussian noise to add to the (x, y, w, h)-dimensions
-            - variance: the scale of gaussian noise to add to the (x, y, w, h)-dimensions
-        """
-        super(RandomAutocaptureCrop, self).__init__()
-        self.noise = torch.distributions.MultivariateNormal(
-            loc=mean,
-            covariance_matrix=torch.diag(variance),
-        )
-        self.padding_factor = padding_factor
-
-    def forward(
-        self, image: torch.Tensor, target: torch.Tensor
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
-        """
-        Forward
-
-        Arguments:
-            - image: the image (B x C x H x W)
-            - target: the segmentation mask (B x 1 x H x W)
-
-        Returns:
-            - image: the transformed image (B x C x H x W)
-            - target: the transformed segmentation mask (B x 1 x H x W)
-        """
-        if image.requires_grad:
-            # if the tensor requires grad, we should not detach it.
-            return image, target
-
-        cv2_frame = (
-            (255 * image).numpy().astype("uint8").transpose(1, 2, 0)
-        )  # torch tensor to cv2 frame (rgb)
-        cv2_frame = cv2_frame[..., ::-1]  # rgb to bgr
-
-        height, width = cv2_frame.shape[:-1]
-        det, _ = detect_eyes(cv2_frame, padding_factor=self.padding_factor)
-        if len(det) > 0:
-            # detection is (x_tl, y_tl, w, h), we want to keep the eye centered to we convert to (cx, cy, w, h)
-            noisy_det = torch.tensor(det[0])
-            noisy_det[:2] += noisy_det[2:] / 2
-            # perturb the detection
-            noisy_det += self.noise.sample()
-            # convert the coordinates back to (x_tl, y_tl, w, h)
-            noisy_det[:2] -= noisy_det[2:] / 2
-            image = F.crop(
-                image,
-                left=int(noisy_det[0] * width),
-                top=int(noisy_det[1] * height),
-                height=int(noisy_det[3] * height),
-                width=int(noisy_det[2] * width),
-            )
-            try:
-                target = F.crop(
-                    target,
-                    left=int(noisy_det[0] * width),
-                    top=int(noisy_det[1] * height),
-                    height=int(noisy_det[3] * height),
-                    width=int(noisy_det[2] * width),
-                )
-            except TypeError:
-                # This allows for the transform to be used on non-mask-style labels (classification probabilities)
-                # NOTE: May cause problems if we integrate object detection/instance segmentation
-                pass
         return image, target

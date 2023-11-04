@@ -11,3 +11,5 @@ wandb>=0.15.0
 protobuf<4
 click
 azureml-inference-server-http
+onnx==1.15.0
+onnxruntime==1.16.1

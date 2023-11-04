@@ -10,7 +10,7 @@ from typing import Any, Dict, Tuple
 
 import pkg_resources
 import torch
-from lightning.pytorch import LightningDataModule
+from pytorch_lightning import LightningDataModule
 from torch.utils.data import DataLoader, Dataset, random_split
 from torchvision.datasets import VisionDataset
 from torchvision.io import read_image
@@ -89,7 +89,7 @@ class IrisUnlabeledDataset(VisionDataset):
                     std=self.channel_stds if self.cfg["normalize"] else None,  # type: ignore
                 )
         else:
-            print("Unlabeled Dataset not found")
+            print(f"Image Dataset not found ({self.root})")
             sys.exit(1)
 
     def __getitem__(self, index: int) -> Tuple[torch.Tensor, torch.Size, str]:
@@ -171,12 +171,12 @@ class MultiClassClassificationIrisDataset(IrisUnlabeledDataset):
     ) -> None:
         super().__init__(cfg, root, stage)
         # get all labels
-        with open(os.path.join(self.root, "diagnoses.csv"), "r") as f:
+        with open(os.path.join(self.root, "labels.csv"), "r") as f:
             # preallocate empty array of targets to ensure that sample and target indices match
             targets = [None for _ in range(len(self.data))]
 
             # get the class mappings
-            classes = f.readline().replace("\n", "").split(", ")[1:]
+            classes = f.readline().replace("\n", "").split(",")[1:]
             # handle ignore indices
             if "ignore_index" not in self.cfg.keys():
                 ignore_index = []
@@ -192,7 +192,7 @@ class MultiClassClassificationIrisDataset(IrisUnlabeledDataset):
             cfg["num_classes"] = len(cfg["classes"])
 
             for line in f.readlines():
-                split_line = line.split(", ")
+                split_line = line.split(",")
                 # determine the fname of the corresponding sample to the current target
                 sample_fname = os.path.join(self.root, "images", split_line.pop(0))
                 # determine the index of the corresponding sample to the current target
@@ -248,12 +248,12 @@ class MultiLabelClassificationIrisDataset(IrisUnlabeledDataset):
     ) -> None:
         super().__init__(cfg, root, stage)
         # get all labels
-        with open(os.path.join(self.root, "exam-features.csv"), "r") as f:
+        with open(os.path.join(self.root, "labels.csv"), "r") as f:
             # preallocate empty array of targets to ensure that sample and target indices match
             targets = [None for _ in range(len(self.data))]
 
             # get the class mappings
-            classes = f.readline().replace("\n", "").split(", ")[1:]
+            classes = f.readline().replace("\n", "").split(",")[1:]
             # handle ignore indices
             if "ignore_index" not in self.cfg.keys():
                 ignore_index = []
@@ -269,7 +269,7 @@ class MultiLabelClassificationIrisDataset(IrisUnlabeledDataset):
             cfg["num_classes"] = len(cfg["classes"])
 
             for line in f.readlines():
-                split_line = line.split(", ")
+                split_line = line.split(",")
                 # determine the fname of the corresponding sample to the current target
                 sample_fname = os.path.join(self.root, "images", split_line.pop(0))
                 # determine the index of the corresponding sample to the current target

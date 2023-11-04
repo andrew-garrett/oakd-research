@@ -11,7 +11,7 @@ from typing import Any, List, Literal, Optional
 
 import torch
 from lightning import Trainer, seed_everything
-from lightning.pytorch.callbacks import BasePredictionWriter
+from pytorch_lightning.callbacks import BasePredictionWriter
 from torch.utils.data import DataLoader
 from torchvision.utils import save_image
 
@@ -145,7 +145,7 @@ def get_predictor(output_root: str = "./", n_gpus: int = 0) -> Trainer:
         devices=devices,
         strategy=strategy,
         logger=False,
-        callbacks=callbacks,
+        callbacks=callbacks,  # type: ignore
         # precision="16-mixed",
     )
 
@@ -184,7 +184,7 @@ def predict(
     )
 
     # inferencing with the best model
-    preds = predictor.predict(lit_module, dataloaders=unlabeled_dataloader)
+    preds = predictor.predict(lit_module, dataloaders=unlabeled_dataloader)  # type: ignore
     if preds is not None:
         preds = [pred.tolist() for pred in preds]  # type: ignore
         return preds
@@ -228,13 +228,15 @@ def init(
         # if either the model_arch or model_id arg's are not provided, we use the default model for the task
         if None in [model_arch, model_id]:
             default_model_paths = {
-                "segmentation": "fcn_resnet50/qixnu203/best",
-                "classification": "resnet50/f172idjz/best",
-                "multilabel": "resnet50/ytm89y60/best",
+                "segmentation": "fcn_resnet50/qixnu203/best/model.ckpt",
+                "classification": "resnet50/f172idjz/best/model.ckpt",
+                "multilabel": "resnet50/ytm89y60/best/model.ckpt",
             }
             model_root = f"../../models/{default_model_paths[cfg['task']]}"
         else:
-            model_root = f"../../models/{model_arch}/{model_id}/{model_alias}"
+            model_root = (
+                f"../../models/{model_arch}/{model_id}/{model_alias}/model.ckpt"
+            )
     model = get_model(cfg, model_root)
     if data_root is not None:
         if not os.path.exists(f"{data_root}{cfg['dataset_name']}/images/"):

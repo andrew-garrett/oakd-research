@@ -9,7 +9,7 @@
 		224
 	],
 	"lr": 0.01,
-	"model_arch": "vit_b_16",
+	"model_arch": "resnet18",
 	"num_classes": 4,
 	"pretrained": true,
 	"momentum": 0.85,
@@ -19,6 +19,6 @@
 	"seed": 1234,
 	"weight_decay": 0.00001,
 	"ignore_index": -100,
-	"precision": "16-mixed",
+	"precision": "32-true",
 	"normalize": true
 }

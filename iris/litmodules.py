@@ -5,7 +5,7 @@ import sys
 from typing import Any, Dict, Optional, OrderedDict, Tuple, Union
 
 import torch
-from lightning.pytorch import LightningModule
+from pytorch_lightning import LightningModule
 from torchmetrics.classification import (
     MulticlassAccuracy,
     MulticlassF1Score,
@@ -546,10 +546,9 @@ def get_model(
             # load a checkpoint
             map_location = "cuda" if torch.cuda.is_available() else "cpu"
             return task_litmodule_map[cfg["task"]].load_from_checkpoint(
-                f"{model_root}/model.ckpt",
+                model_root,
                 map_location=map_location,
                 cfg=cfg,
-                strict=False,
             )
         except Exception as e:
             print(e)

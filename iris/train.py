@@ -7,19 +7,20 @@ from typing import Any, Dict, Literal, Optional, Tuple
 
 import torch
 import wandb
-from lightning.pytorch import Trainer, seed_everything
-from lightning.pytorch.callbacks import (
+from pytorch_lightning import Trainer, seed_everything
+from pytorch_lightning.callbacks import (
     EarlyStopping,
     LearningRateMonitor,
     ModelCheckpoint,
     ModelSummary,
     StochasticWeightAveraging,
 )
-from lightning.pytorch.loggers.wandb import WandbLogger
-from lightning.pytorch.profilers import PyTorchProfiler
-from lightning.pytorch.tuner.tuning import Tuner
+from pytorch_lightning.loggers.wandb import WandbLogger
+from pytorch_lightning.profilers import PyTorchProfiler
+from pytorch_lightning.tuner.tuning import Tuner
 
 from iris.data import IrisLitDataModule
+from iris.export import export
 from iris.litmodules import IrisLitModule, get_model
 from iris.utils import load_sweep_config
 
@@ -215,13 +216,9 @@ def train(
             ckpt_path=os.path.join(checkpoint_root, os.listdir(checkpoint_root)[0]),
         )
 
-        # saving best model weights
-        torch.save(
-            lit_module.model,
-            os.path.join(checkpoint_root, os.listdir(checkpoint_root)[0]).replace(
-                ".ckpt", ".pth"
-            ),
-        )
+        # exporting best model to onnx
+        if cfg["export"]:
+            export(os.path.join(checkpoint_root, os.listdir(checkpoint_root)[0]))
 
 
 if __name__ == "__main__":
@@ -229,6 +226,12 @@ if __name__ == "__main__":
         prog="train.py",
         description="Training script for iris",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument(
+        "--data-root",
+        default="./datasets/",
+        type=str,
+        help="The root where the dataset folder is located",
     )
     parser.add_argument(
         "--debug",
@@ -239,12 +242,6 @@ if __name__ == "__main__":
         "--tune",
         action="store_true",
         help="Tune the model for batch size, learning rate",
-    )
-    parser.add_argument(
-        "--data-root",
-        default="./datasets/",
-        type=str,
-        help="The root where the dataset folder is located",
     )
     parser.add_argument(
         "--n-gpus",

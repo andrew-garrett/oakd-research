@@ -1,4 +1,5 @@
 {
-    "task": "segmentation",
-    "epochs": 10
+    "task": "classification",
+    "epochs": 1,
+    "export": "onnx"
 }
