@@ -68,7 +68,29 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-Iris is an Open-Source Package for Deep Computer Vision, Specifically geared towards training and deployment onto cloud and edge environments.
+Iris is an Open-Source Package for Deep Computer Vision, specifically geared towards training and deployment onto cloud and edge environments.
+
+Iris has a diverse functionality.  At the highest level, iris offers highly-configurable neural network training and inference for vision tasks such as multiclass classification, multilabel classification, and semantic segmentation.  
+
+Inspired by technologies like Pytorch Lightning, Iris is a package for reducing boilerplate training and inference code.  Iris allows the developer to input a custom image dataset, train a highly configurable vision neural network, and deploy the trained model for inference on a variety of different sources.
+
+Iris currently offers 3 cli functions:
+ 1. train.py - training entry script
+ 2. predict.py - inference entry script
+ 3. export.py - export to ONNX script
+
+Iris supports any of the above functions for 3 vision tasks:
+ 1. Single-Label Multiclass Classification
+ 2. Multi-Label Binary Classifiation
+ 3. Semantic Segmentation
+
+Some other highlights:
+ - Iris offers meta-learning techniques for Automated Model Selection (AutoML).
+ - Iris is cross-platform and compatible with multiple different versions of python.
+ - Iris offers training and inference docker images.
+ - Iris can be deployed to AzureML Realtime Inference API.
+ - Iris model can be exported to ONNX
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -113,10 +135,12 @@ To get a local copy up and running follow these simple example steps.
 2. (recommended) Create a new anaconda environment.  Iris is compatible with python 3.8, 3.9, 3.10, and 3.11, but is generally used with 3.10.
     ```sh
     conda create -n iris_env python=3.10
+    conda activate iris_env
     ```
 3. Use pip to install dependencies and the package itself
     ```sh
-    pip install -r setup_files/requirements.txt && pip install -e .
+    pip install -r setup_files/requirements.txt
+    pip install -e .
     ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -148,8 +172,11 @@ User can control task, dataset, model, and training/inference hyperparameters fr
     - "nesterov": (bool) indicate whether or not to use nesterov-accelerated optimization
     - "weight_decay": (float) the desired weight decay
     - "optimizer": (str) the desired optimization algorithm, one of those available in torch.optim
-    - "scheduler": (bool) when false trains with an adaptive learning rate scheduler based on validation loss (ReduceLRonPlateau), and when true trains with a cosine-annealing with linear warmup scheduler.
+    - "scheduler": (bool) when false trains with an adaptive learning rate scheduler based on validation loss (ReduceLRonPlateau), and when true trains with a cosine-annealing with linear warmup scheduler
     - "ignore_index": (int | list[int]) specifying the indices to ignore in loss computation
+    - "precision": (str) the precision, one of ["32-true", "16-mixed"]
+    - "normalize": (bool) whether or not to apply normalization to the samples
+    - "export": (bool) whether or not to export the final trained model to ONNX format
 
 ### Autocapture:
 ```
@@ -191,12 +218,27 @@ Inference script for iris
 
 options:
   -h, --help                         show this help message and exit
-  --model-root MODEL_ROOT            The directory for the model checkpoint, expected to be model.ckpt. (default: None)
+  --model-root MODEL_ROOT            The filepath for the model checkpoint, must to be .ckpt. if not specifed, must provide a valid pairing of [--model-arch, --model-id, --model-alias] arguments. (default: None)
   --model-arch MODEL_ARCH            The desired model architecture (default: None)
   --model-id MODEL_ID                The wandb run ID for the model checkpoint (default: None)
   --model-alias {best,latest,v0}     The wandb artifact alias for the model checkpoint (default: best)
   --data-root DATA_ROOT              The root where the dataset folder is located (default: ./tmp/)
   --n-gpus N_GPUS                    Number of GPUs, 0 means cpu, 1 means single gpu, >1 means distributed (default: 1)
+```
+
+### Exporting
+```
+(iris_env) C:\oakd-research\iris>python export.py --help      
+usage: export.py [-h] [--model-root MODEL_ROOT] [--model-arch MODEL_ARCH] [--model-id MODEL_ID] [--model-alias {best,latest,v0}]
+
+ONNX Export script for iris
+
+options:
+  -h, --help                         show this help message and exit
+  --model-root MODEL_ROOT            The filepath for the model checkpoint, must to be .ckpt. if not specifed, must provide a valid pairing of [--model-arch, --model-id, --model-alias] arguments (default: None)
+  --model-arch MODEL_ARCH            The desired model architecture (default: None)
+  --model-id MODEL_ID                The wandb run ID for the model checkpoint (default: None)
+  --model-alias {best,latest,v0}     The wandb artifact alias for the model checkpoint (default: best)
 ```
 
 _For more examples, please refer to the [Documentation](./docs/iris/index.html)_
