@@ -19,6 +19,7 @@ from pytorch_lightning.loggers.wandb import WandbLogger
 from pytorch_lightning.profilers import PyTorchProfiler
 from pytorch_lightning.tuner.tuning import Tuner
 
+import iris.transforms as T_iris
 from iris.data import IrisLitDataModule
 from iris.export import export
 from iris.litmodules import IrisLitModule, get_model
@@ -218,7 +219,17 @@ def train(
 
         # exporting best model to onnx
         if cfg["export"]:
-            export(os.path.join(checkpoint_root, os.listdir(checkpoint_root)[0]))
+            # define the preprocessing module for onnx export
+            preprocessing = T_iris.PresetInference(
+                base_size=cfg["imgsz"][1],
+                mean=lit_datamodule.fit_dataset.channel_means if cfg["normalize"] else None,  # type: ignore
+                std=lit_datamodule.fit_dataset.channel_means if cfg["normalize"] else None,  # type: ignore
+            )
+            # export the model
+            export(
+                os.path.join(checkpoint_root, os.listdir(checkpoint_root)[0]),
+                preprocessing=preprocessing,
+            )
 
 
 if __name__ == "__main__":

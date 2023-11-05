@@ -128,9 +128,46 @@ class PresetEval(torch.nn.Module):
             - image: the transformed image (B x C x H x W)
             - target: the transformed segmentation mask (B x 1 x H x W)
         """
-        if target is None:
-            return self.transforms(image, target)[0]
         return self.transforms(image, target)
+
+
+class PresetInference(torch.nn.Module):
+    def __init__(
+        self,
+        base_size: int = 224,
+        mean: Optional[List[float]] = None,
+        std: Optional[List[float]] = None,
+    ) -> None:
+        """
+        Constructor
+
+        Arguments:
+            - task: the learning task
+            - base_size: the desired approximate size of resized images
+        """
+        super(PresetInference, self).__init__()
+
+        self.transforms = [
+            T.ConvertImageDtype(torch.float),
+            T.Resize(base_size, antialias=True),  # type: ignore
+        ]
+
+        if None not in (mean, std):
+            self.transforms.append(T.Normalize(mean, std))
+
+        self.preprocessing = torch.nn.Sequential(*self.transforms)
+
+    def forward(self, image: torch.Tensor) -> torch.Tensor:
+        """
+        Forward
+
+        Arguments:
+            - image: the image (B x C x H x W)
+
+        Returns:
+            - image: the transformed image (B x C x H x W)
+        """
+        return self.preprocessing(image)
 
 
 #################### CUSTOM TRANSFORMS ####################

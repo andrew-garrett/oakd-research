@@ -1,6 +1,6 @@
 import argparse
 import os
-from typing import Optional
+from typing import Optional, OrderedDict
 
 import numpy as np
 import onnx
@@ -8,7 +8,32 @@ import onnxruntime as ort
 import torch
 
 from iris.data import IrisLitDataModule
-from iris.litmodules import get_model
+from iris.litmodules import IrisLitModule, get_model
+
+#################### ONNX EXPORT NN MODULE ####################
+###############################################################
+
+
+class IrisONNX(torch.nn.Module):
+    """
+    Iris torch.nn.Module for exporting models with preprocessing to ONNX format
+    """
+
+    def __init__(
+        self, lit_module: IrisLitModule, preprocessing: Optional[torch.nn.Module] = None
+    ):
+        super().__init__()
+        if preprocessing is not None:
+            self.model = torch.nn.Sequential(preprocessing, lit_module.model)
+        else:
+            self.model = lit_module.model
+
+    def forward(self, x: torch.Tensor):
+        preds = self.model(x)
+        if isinstance(preds, OrderedDict):
+            return preds["out"]
+        return preds
+
 
 #################### EXPORT FUNCTION ####################
 #########################################################
@@ -19,6 +44,7 @@ def export(
     model_arch: Optional[str] = None,
     model_id: Optional[str] = None,
     model_alias: Optional[str] = "best",
+    preprocessing: Optional[torch.nn.Module] = None,
     config_fname: str = "iris.json",
 ):
     """
@@ -42,29 +68,38 @@ def export(
         cfg["num_classes"] -= len(ignore_index)
     # if the model_root arg is not provided, we build the path
     if model_root is None:
-        model_root = f"../../models/{model_arch}/{model_id}/{model_alias}"
-    litmodule = get_model(cfg, model_root)
-    litmodule.eval()
-    model = litmodule.model
-    dummy_input = litmodule.example_input_array
-    dummy_output = litmodule(dummy_input)
+        model_root = f"../../models/{model_arch}/{model_id}/{model_alias}/model.ckpt"
+    # get the lit_module from the checkpoint
+    lit_module = get_model(cfg, model_root)
+    # create a wrapper module for exporting to ONNX
+    model = IrisONNX(lit_module, preprocessing)
+    model.eval()
+    # define some dummy inputs and outputs for validation
+    dummy_input_small = torch.randint(low=0, high=256, size=(1, 3, 540, 960))
+    dummy_output_small = model(dummy_input_small)
+    dummy_input_large = torch.randint(low=0, high=256, size=(1, 3, 1080, 1920))
+    dummy_output_large = model(dummy_input_large)
+    # define the output path
     ckpt_name = os.path.basename(model_root)
     output_path = model_root.replace(ckpt_name, ckpt_name.replace(".ckpt", ".onnx"))
+    # export to ONNX
     torch.onnx.export(
         model,
-        dummy_input,  # type: ignore
+        dummy_input_small,  # type: ignore
         output_path,
         # opset_version=10,  # the ONNX version to export the model to
         do_constant_folding=True,  # whether to execute constant folding for optimization
         input_names=["input"],  # the model's input names
         output_names=["output"],  # the model's output names
         dynamic_axes={
-            "input": {0: "batch_size"},  # variable length axes
+            "input": {0: "batch_size", 2: "height", 3: "width"},  # variable length axes
             "output": {0: "batch_size"},
         },
     )
 
-    validate_onnx_model(output_path, dummy_input, dummy_output)
+    # validate the ONNX model
+    validate_onnx_model(output_path, dummy_input_small, dummy_output_small)
+    validate_onnx_model(output_path, dummy_input_large, dummy_output_large)
 
 
 def validate_onnx_model(
