@@ -1,5 +1,5 @@
 {
     "task": "classification",
     "epochs": 1,
-    "export": "onnx"
+    "export": true
 }

@@ -222,8 +222,8 @@ def train(
             # define the preprocessing module for onnx export
             preprocessing = T_iris.PresetInference(
                 base_size=cfg["imgsz"][1],
-                mean=lit_datamodule.fit_dataset.channel_means if cfg["normalize"] else None,  # type: ignore
-                std=lit_datamodule.fit_dataset.channel_means if cfg["normalize"] else None,  # type: ignore
+                mean=lit_datamodule.fit_dataset.channel_means.tolist() if cfg["normalize"] else None,  # type: ignore
+                std=lit_datamodule.fit_dataset.channel_means.tolist() if cfg["normalize"] else None,  # type: ignore
             )
             # export the model
             export(

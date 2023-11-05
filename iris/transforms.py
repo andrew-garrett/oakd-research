@@ -149,7 +149,7 @@ class PresetInference(torch.nn.Module):
 
         self.transforms = [
             T.ConvertImageDtype(torch.float),
-            T.Resize(base_size, antialias=True),  # type: ignore
+            T.Resize([base_size, base_size], antialias=False),
         ]
 
         if None not in (mean, std):
@@ -260,7 +260,7 @@ class RandomResize(torch.nn.Module):
                 size = int(
                     torch.randint(self.min_size, self.max_size, size=(1,)).item()
                 )
-            image = F.resize(image, [size, size], antialias=True)
+            image = F.resize(image, [size, size], antialias=False)
             try:
                 target = F.resize(
                     target,
@@ -308,7 +308,7 @@ class StrideResize(torch.nn.Module):
         """
         w, h = image.shape[1:]
         desired_size = [w - (w % self.stride), h - (h % self.stride)]
-        image = F.resize(image, desired_size, antialias=True)
+        image = F.resize(image, desired_size, antialias=False)
         try:
             target = F.resize(
                 target,

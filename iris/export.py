@@ -1,6 +1,7 @@
 import argparse
 import os
-from typing import Optional, OrderedDict
+import time
+from typing import Optional
 
 import numpy as np
 import onnx
@@ -30,9 +31,8 @@ class IrisONNX(torch.nn.Module):
 
     def forward(self, x: torch.Tensor):
         preds = self.model(x)
-        if isinstance(preds, OrderedDict):
-            return preds["out"]
-        return preds
+        try: return preds["out"] # for segmentation models
+        except: return preds # for all other models
 
 
 #################### EXPORT FUNCTION ####################
@@ -55,10 +55,12 @@ def export(
         - model_arch: (optional) the model architecture
         - model_id: (optional) the wandb model id
         - model_alias: (optional) the wandb model alias,
-        - data_root: the directory where a dataset is stored or the path to a json file,
+        - preprocessing: (optional) the preprocessing module to be saved into the ONNX export
         - config_fname: the path to the desired config file,
     """
+    # parse the config
     cfg = IrisLitDataModule.parse_config(config_fname)
+
     # update the number of classes using ignore indices
     if "num_classes" in cfg.keys() and "ignore_index" in cfg.keys():
         ignore_index = cfg["ignore_index"]
@@ -66,27 +68,30 @@ def export(
             ignore_index = [ignore_index]
         ignore_index = [i for i in ignore_index if (i >= 0 and i <= cfg["num_classes"])]
         cfg["num_classes"] -= len(ignore_index)
+
     # if the model_root arg is not provided, we build the path
     if model_root is None:
         model_root = f"../../models/{model_arch}/{model_id}/{model_alias}/model.ckpt"
+
     # get the lit_module from the checkpoint
     lit_module = get_model(cfg, model_root)
+
     # create a wrapper module for exporting to ONNX
     model = IrisONNX(lit_module, preprocessing)
     model.eval()
-    # define some dummy inputs and outputs for validation
-    dummy_input_small = torch.randint(low=0, high=256, size=(1, 3, 540, 960))
-    dummy_output_small = model(dummy_input_small)
-    dummy_input_large = torch.randint(low=0, high=256, size=(1, 3, 1080, 1920))
-    dummy_output_large = model(dummy_input_large)
+
+    # dummy input
+    dummy_input = torch.randint(low=0, high=256, size=(1, 3, 1080, 1920))
+
     # define the output path
     ckpt_name = os.path.basename(model_root)
     output_path = model_root.replace(ckpt_name, ckpt_name.replace(".ckpt", ".onnx"))
     # export to ONNX
     torch.onnx.export(
         model,
-        dummy_input_small,  # type: ignore
+        dummy_input,
         output_path,
+        # verbose=True,
         # opset_version=10,  # the ONNX version to export the model to
         do_constant_folding=True,  # whether to execute constant folding for optimization
         input_names=["input"],  # the model's input names
@@ -97,18 +102,20 @@ def export(
         },
     )
 
+    print(f"Exported model has been saved to {output_path}")
+
     # validate the ONNX model
-    validate_onnx_model(output_path, dummy_input_small, dummy_output_small)
-    validate_onnx_model(output_path, dummy_input_large, dummy_output_large)
+    validate_onnx_export(output_path, model)
 
 
-def validate_onnx_model(
-    model_root: str, dummy_input: torch.Tensor, dummy_output: torch.Tensor
+def validate_onnx_export(
+    onnx_model_root: str,
+    model: Optional[torch.nn.Module] = None,
 ):
-    onnx_model = onnx.load(model_root)
+    onnx_model = onnx.load(onnx_model_root)
     onnx.checker.check_model(onnx_model)
 
-    ort_session = ort.InferenceSession(model_root, providers=["CPUExecutionProvider"])
+    ort_session = ort.InferenceSession(onnx_model_root, providers=["CPUExecutionProvider"])
 
     def to_numpy(tensor):
         return (
@@ -117,16 +124,59 @@ def validate_onnx_model(
             else tensor.cpu().numpy()
         )
 
-    # compute ONNX Runtime output prediction
-    ort_inputs = {ort_session.get_inputs()[0].name: to_numpy(dummy_input)}
-    ort_outs = ort_session.run(None, ort_inputs)
+    def measure_runtime(ort_session, model, dummy_input, n_runs=1):
+        pl_rt_list = []
+        for _ in range(n_runs):
+            # Pytorch Model Runtime
+            t0 = time.time()
+            dummy_output = model(dummy_input)
+            pl_rt_list.append(time.time() - t0)
+        pl_rt = np.mean(pl_rt_list)
 
-    # compare ONNX Runtime and PyTorch results
-    np.testing.assert_allclose(
-        to_numpy(dummy_output), ort_outs[0], rtol=1e-03, atol=1e-05
+        onnx_rt_list = []
+        for _ in range(n_runs):
+            # ONNX Model Runtime
+            t0 = time.time()
+            ort_dummy_input = {ort_session.get_inputs()[0].name: to_numpy(dummy_input)}
+            ort_dummy_output = ort_session.run(None, ort_dummy_input)
+            onnx_rt_list.append(time.time() - t0)
+        onnx_rt = np.mean(onnx_rt_list)
+
+        # Compare ONNX and Pytorch Model outputs
+        np.testing.assert_allclose(
+            to_numpy(dummy_output), ort_dummy_output[0], rtol=1e-03, atol=1e-05
+        )
+
+        print("Exported model has been tested with ONNXRuntime, and the result looks good!")
+        print(
+            f"Input shape: {dummy_input.shape} \n \
+                \t ONNX Runtime: {onnx_rt}s, ~{int(1/onnx_rt)}fps ({int(100 * pl_rt / onnx_rt)}% {'faster' if onnx_rt < pl_rt else 'slower'} than pytorch) \n \
+                \t PyTorch Runtime: {pl_rt}s, ~{int(1/pl_rt)}fps"
+        )
+
+    # small dummy input (measuring mean runtime)
+    measure_runtime(
+        ort_session, 
+        model,
+        torch.randint(low=0, high=256, size=(1, 3, 540, 540))
     )
 
-    print("Exported model has been tested with ONNXRuntime, and the result looks good!")
+    # medium dummy input (measuring mean runtime)
+    measure_runtime(
+        ort_session, 
+        model,
+        torch.randint(low=0, high=256, size=(1, 3, 1080, 1920))
+    )
+
+    # large dummy input (measuring mean runtime)
+    measure_runtime(
+        ort_session, 
+        model,
+        torch.randint(low=0, high=256, size=(1, 3, 3000, 4000))
+    )
+    
+
+    
 
 
 if __name__ == "__main__":
