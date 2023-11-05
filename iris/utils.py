@@ -3,54 +3,13 @@
 
 
 import json
-import os
-from typing import Any, Dict, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, Optional, Sequence, Tuple
 
-import cv2
-import numpy as np
 from torch import Tensor, vstack
 from torchvision.io import read_image
 
 #################### IO UTILITY FUNCTIONS ####################
 ##############################################################
-
-
-def save_sharpest_image(
-    candidate_saves: Sequence[np.ndarray],
-    mode: str = "face and eye",
-    fname: str = "best.png",
-) -> None:
-    """
-    Function to choose the best focused image from a list and save it locally
-
-    Arguments:
-        - candidate_saves: a list of opencv frames (usually the crops generated from detections)
-        - mode: the autocapture mode ("face", "eye", "face and eye")
-        - fname: the desired filename for the best saved crop
-        - num_candidates: the number of crops to consider in sharpness optimization
-    """
-    save_root = os.path.dirname(fname)
-    if not os.path.exists(save_root):
-        os.makedirs(save_root)
-    if len(candidate_saves) > 0:
-        best_candidate, best_focus = None, -1e6
-        for candidate in candidate_saves:
-            lap4_focus = np.std(cv2.Laplacian(candidate[0], cv2.CV_64F)) ** 2  # type: ignore
-            if lap4_focus > best_focus:
-                best_candidate, best_focus = candidate, lap4_focus
-        fname_split = fname.split(".")
-        if fname[0] == ".":
-            fname_split = fname_split[1:]
-            fname_split[0] = "." + fname_split[0]
-        for i, detection in enumerate(best_candidate):  # type: ignore
-            if i > 0:
-                continue
-            cv2.imwrite(
-                fname_split[0] + "." + fname_split[1],
-                detection,
-            )
-    else:
-        print("No suitable eye crops found")
 
 
 def load_image(f: str) -> Tensor:
@@ -96,58 +55,6 @@ def load_sweep_config(
 
 #################### GENERAL UTILITY FUNCTIONS ####################
 ###################################################################
-
-
-def enlarge_box(
-    coords: Sequence[Union[float, int]], padding_factor: float = 1.5
-) -> Sequence[Union[float, int]]:
-    """
-    Function to enlarge a detection by padding_factor
-
-    Argument:
-        - coords: a single bounding box's coordinates in [x_tl, y_tl, w, h] (can be normalized or un-normalized)
-
-    Returns:
-        - padded_coords: the enlarged bounding box coordinates in [x_tl, y_tl, w, h]
-    """
-    new_w, new_h = padding_factor * coords[2], padding_factor * coords[3]
-    new_x = coords[0] - (new_w - coords[2]) / 2
-    new_y = coords[1] - (new_h - coords[3]) / 2
-    padded_coords = [new_x, new_y, new_w, new_h]
-    # for un-normalized coordinates
-    if isinstance(coords[0], (int, np.intc)):  # type: ignore
-        padded_coords = list(map(int, padded_coords))
-    return padded_coords
-
-
-def box_iou(boxA: Sequence[int], boxB: Sequence[int]) -> float:
-    """
-    Function to compute the intersection over union of two bounding boxes
-
-    Arguments:
-        - boxA: bounding box, given by un-normalized [x_tl, y_tl, w, h] coordinates
-        - boxB: bounding box, given by un-normalized [x_tl, y_tl, w, h] coordinates
-
-    Returns:
-        - iou: intersection over union of boxA and boxB
-    """
-    # determine the (x, y)-coordinates of the intersection rectangle
-    xA = max(boxA[0], boxB[0])
-    yA = max(boxA[1], boxB[1])
-    xB = min(boxA[0] + boxA[2], boxB[0] + boxB[2])
-    yB = min(boxA[1] + boxA[3], boxB[1] + boxB[3])
-    # compute the area of intersection rectangle
-    interArea = max(0, xB - xA + 1) * max(0, yB - yA + 1)
-    # compute the area of both the prediction and ground-truth
-    # rectangles
-    boxAArea = (boxA[2] + 1) * (boxA[3] + 1)
-    boxBArea = (boxB[2] + 1) * (boxB[3] + 1)
-    # compute the intersection over union by taking the intersection
-    # area and dividing it by the sum of prediction + ground-truth
-    # areas - the interesection area
-    iou = interArea / float(boxAArea + boxBArea - interArea)
-    # return the intersection over union value
-    return iou
 
 
 def cat_list(images: Tuple[Tensor, ...], fill_value: int = 0) -> Tensor:

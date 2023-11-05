@@ -9,8 +9,6 @@ import sys
 import torch
 
 import iris
-import iris.autocapture  # tests generated
-import iris.classify
 import iris.criteria  # tests generated
 import iris.data
 import iris.litmodules
@@ -20,58 +18,6 @@ import iris.transforms  # tests generated
 ROOT = "./tests/"
 TEST_CFG = iris.data.IrisLitDataModule.parse_config(os.path.join(ROOT, "iris.json"))
 DATA_ROOT = os.path.join(ROOT, TEST_CFG["dataset_name"])
-
-#################### AUTOCAPTURE TESTS ####################
-###########################################################
-
-
-def test_face_autocapture():
-    """
-    Face autocapture test
-    """
-    assert os.path.exists(os.path.join(DATA_ROOT, "images/face_test_image.jpg"))
-    iris.autocapture.test_autocapture(
-        mode="face", root=ROOT, dataset_name=TEST_CFG["dataset_name"], rotate=False
-    )
-    # Test that output is consistent
-    assert os.path.exists(
-        os.path.join(DATA_ROOT + "_crops", "images/face_test_image.png")
-    )
-    shutil.rmtree(DATA_ROOT + "_crops")
-
-
-def test_eye_autocapture():
-    """
-    Single-eye autocapture test
-    """
-    assert os.path.exists(os.path.join(DATA_ROOT, "images/eye_test_image.jpg"))
-    iris.autocapture.test_autocapture(
-        mode="eye",
-        root=ROOT,
-        dataset_name=TEST_CFG["dataset_name"],
-        iou_thresh=0.25,
-    )
-    assert os.path.exists(
-        os.path.join(DATA_ROOT + "_crops", "images/eye_test_image.png")
-    )
-    shutil.rmtree(DATA_ROOT + "_crops")
-
-
-def test_face_and_eye_autocapture():
-    """
-    Both-eye autocapture test
-    """
-    assert os.path.exists(os.path.join(DATA_ROOT, "images/face_test_image.jpg"))
-    iris.autocapture.test_autocapture(
-        mode="face and eye",
-        root=ROOT,
-        dataset_name=TEST_CFG["dataset_name"],
-        rotate=False,
-    )
-    assert os.path.exists(
-        os.path.join(DATA_ROOT + "_crops", "images/face_test_image.png")
-    )
-    shutil.rmtree(DATA_ROOT + "_crops")
 
 
 #################### CRITERIA TESTS ####################
@@ -159,7 +105,7 @@ def test_transforms():
     for name, cls in inspect.getmembers(sys.modules[iris.transforms.__name__]):
         if inspect.isclass(cls) and "iris.transforms" in str(cls):
             print(name)
-            if name != "Compose":
+            if name not in ["Compose", "PresetInference"]:
                 # Test custom transforms on unlabeled data (target = None)
                 unlabeled_sample_transformed, unlabeled_target_transformed = cls()(
                     sample, None

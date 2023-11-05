@@ -6,7 +6,6 @@ import base64
 import json
 import logging
 import os
-import sys
 from typing import Any, List, Literal, Optional
 
 import torch
@@ -14,9 +13,6 @@ from lightning import Trainer, seed_everything
 from pytorch_lightning.callbacks import BasePredictionWriter
 from torch.utils.data import DataLoader
 from torchvision.utils import save_image
-
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 from iris.data import IrisLitDataModule, IrisUnlabeledDataset
 from iris.litmodules import IrisLitModule, get_model
